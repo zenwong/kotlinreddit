@@ -9,20 +9,17 @@ import java.util.*
 class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	lateinit var db: SQLiteDatabase
 
-	init {
-		db = writableDatabase
-	}
-
 	fun insertPosts(posts: List<RedditPost>) {
-		db.beginTransaction()
+		db = writableDatabase
+
 		posts.forEach {
-			db.insert("posts", "", it.getValues())
+			db.insert("posts", null, it.getValues())
 		}
-		db.setTransactionSuccessful()
-		db.endTransaction()
 	}
 
 	fun getPosts() : List<RedditPost> {
+		db = writableDatabase
+
 		val posts = ArrayList<RedditPost>()
 		val c = db.rawQuery("select * from posts", null)
 		if(c.moveToFirst()) {
@@ -40,17 +37,9 @@ class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	}
 
 	override fun onCreate(db: SQLiteDatabase) {
-		try {
-			db.beginTransaction()
-			db.execSQL(postsSchema)
-			db.execSQL(commentsSchema)
-			db.execSQL(messagesSchema)
-			db.setTransactionSuccessful()
-		} catch(e: Exception) {
-			println(e.message)
-		} finally {
-			db.endTransaction()
-		}
+		db.execSQL(postsSchema)
+		db.execSQL(commentsSchema)
+		db.execSQL(messagesSchema)
 	}
 
 	override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -62,7 +51,8 @@ class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	title text,
 	url text,
 	author text,
-	media_title text,
+	subreddit text,
+  media_title text,
 	media_preview text,
 	preview text,
 	thumbnail text,

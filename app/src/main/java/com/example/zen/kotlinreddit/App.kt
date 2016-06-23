@@ -42,7 +42,7 @@ class App : Application() {
 		db?.let {
 			println("getting posts from sqlite")
 			it.getPosts().forEach {
-				println(it.title)
+				println(it.rid)
 			}
 		}
 	}

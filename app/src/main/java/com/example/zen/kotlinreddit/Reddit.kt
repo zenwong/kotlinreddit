@@ -74,7 +74,10 @@ object Reddit {
 			}
 
 			override fun onResponse(call: Call?, response: Response) {
-				parseFrontPage(response.body().string())
+				if(response.isSuccessful) parseFrontPage(response.body().string())
+				else {
+					println("onResponse not successful " + response.code())
+				}
 			}
 		})
 	}
