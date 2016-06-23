@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.example.zen.kotlinreddit.models.AccessToken
 import com.example.zen.kotlinreddit.models.RedditPost
-import com.squareup.leakcanary.LeakCanary
+import com.example.zen.kotlinreddit.models.RefreshToken
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -17,23 +17,36 @@ const val TAG = "com.example.zen.kotlinreddit"
 class App : Application() {
 
 	companion object {
-		var access: String? = null
+		var accessToken: String? = null
+		var refreshToken: String? = null
 		var db: DB? = null
 	}
 
 	override fun onCreate() {
-		LeakCanary.install(this)
+		Reddit.init(this, cacheDir)
 		db = DB(this)
 		EventBus.getDefault().register(this)
-		access = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
+		accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
+		refreshToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onAccessToken(access: AccessToken) {
-		Log.d("EVENTBUS", access.token)
+		Log.d("EVENTBUS", "onAccessToken: $access.token")
+		accessToken = access.token
 		editPreferences {
 			editablePreferences ->
 			editablePreferences.putString("ACCESS_TOKEN", access.token)
+		}
+	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	fun onRefreshToken(refresh: RefreshToken) {
+		Log.d("EVENTBUS", "onRefreshToken: $refresh.token")
+		refreshToken = refresh.token
+		editPreferences {
+			editablePreferences ->
+			editablePreferences.putString("REFRESH_TOKEN", refresh.token)
 		}
 	}
 

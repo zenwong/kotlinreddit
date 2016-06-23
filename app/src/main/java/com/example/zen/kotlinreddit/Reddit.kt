@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import com.example.zen.kotlinreddit.models.*
+import com.example.zen.kotlinreddit.network.RedditOauthAuthenticator
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
@@ -19,12 +20,16 @@ object Reddit {
 	val REDDIT_AUTH_TOKEN = "https://ssl.reddit.com/api/v1/access_token"
 	val REDDIT_FRONT = "https://oauth.reddit.com"
 	val BASIC_AUTH = Base64.encodeToString("$CLIENTID:".toByteArray(), Base64.URL_SAFE or Base64.NO_WRAP)
-	lateinit var context: Context
 	val jsonFactory = JsonFactory()
-	val client = OkHttpClient()
+	lateinit var cache : Cache
+	lateinit var client : OkHttpClient
+	lateinit var ctx: Context
 
-	fun init(ctx: Context) {
-		context = ctx
+	fun init(context: Context, cacheDir: File) {
+		ctx = context
+		cache = Cache(cacheDir, 1024L * 1024L * 100L)
+		client = OkHttpClient.Builder().authenticator(RedditOauthAuthenticator()).cache(cache).build()
+		//client = OkHttpClient.Builder().cache(cache).build()
 	}
 
 	fun getAuthUrl(clientid: String = CLIENTID, state: String = "NONCE", redirect: String = "http://zreddit", scope: String = "read identity"): String {
@@ -48,6 +53,8 @@ object Reddit {
 				override fun onResponse(call: Call?, response: Response) {
 					val jp = jsonFactory.createParser(response.body().string())
 
+					println(response.body().string())
+
 					while(jp.nextToken() != JsonToken.END_OBJECT) {
 						when(jp.currentName) {
 							"access_token" -> {
@@ -59,6 +66,7 @@ object Reddit {
 							}
 							"refresh_token" -> {
 								jp.nextToken()
+								EventBus.getDefault().post(RefreshToken(jp.valueAsString))
 							}
 						}
 					}
@@ -68,7 +76,14 @@ object Reddit {
 
 	}
 
-	fun get(accessToken: String? = App.access, url: String) {
+	fun refreshAccessToken() : String {
+		val token = ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
+		val body = FormBody.Builder().add("grant_type", "refresh_token").add("refresh_token", token).build()
+		val req = Request.Builder().url(REDDIT_AUTH_TOKEN).addHeader("Authorization", "Basic $BASIC_AUTH").post(body).build()
+		return client.newCall(req).execute().body().string()
+	}
+
+	fun get(accessToken: String? = App.accessToken, url: String) {
 		client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer $accessToken").build()).enqueue(object: Callback {
 			override fun onFailure(call: Call?, e: IOException?) {
 			}
