@@ -3,6 +3,7 @@ package com.example.zen.kotlinreddit
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
+import com.example.zen.kotlinreddit.fragments.RedditPostsFragment
 import com.example.zen.kotlinreddit.models.Navigation
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -33,29 +34,31 @@ class MainActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-//		if(App.access == null) {
-//			val ft = supportFragmentManager.beginTransaction()
-//			ft.replace(R.id.content, BrowserFragment())
-//			ft.commit()
-//		} else {
-//			Reddit.get(App.access, Reddit.REDDIT_FRONT)
-//			val ft = supportFragmentManager.beginTransaction()
-//			ft.replace(R.id.content, RedditPostsFragment())
-//			ft.commit()
-//		}
+		if(App.access == null) {
+			val ft = supportFragmentManager.beginTransaction()
+			ft.replace(R.id.content, BrowserFragment())
+			ft.commit()
+		} else {
+			Reddit.get(App.access, Reddit.REDDIT_FRONT)
+			val ft = supportFragmentManager.beginTransaction()
+			ft.replace(R.id.content, RedditPostsFragment())
+			ft.commit()
+		}
 
-		Reddit.get(App.access, Reddit.REDDIT_FRONT)
-		val ft = supportFragmentManager.beginTransaction()
-		ft.replace(R.id.content, BrowserFragment())
-		ft.commit()
+//		Reddit.get(App.access, Reddit.REDDIT_FRONT)
+//		val ft = supportFragmentManager.beginTransaction()
+//		ft.replace(R.id.content, BrowserFragment())
+//		ft.commit()
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onNav(nav: Navigation) {
+		val ft = supportFragmentManager.beginTransaction()
 		when(nav.fragment) {
-			FRONT -> println("front")
+			FRONT -> ft.replace(R.id.content, RedditPostsFragment())
 			COMMENTS -> println("comments")
 			MESSAGES -> println("messages")
 		}
+		ft.commit()
 	}
 }

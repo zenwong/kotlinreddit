@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.example.zen.kotlinreddit.models.AccessToken
 import com.example.zen.kotlinreddit.models.RedditPost
+import com.squareup.leakcanary.LeakCanary
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -21,6 +22,7 @@ class App : Application() {
 	}
 
 	override fun onCreate() {
+		LeakCanary.install(this)
 		db = DB(this)
 		EventBus.getDefault().register(this)
 		access = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)

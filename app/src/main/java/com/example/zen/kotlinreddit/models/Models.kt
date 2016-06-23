@@ -25,6 +25,7 @@ data class RedditPost(val domain: String) {
 		val values = ContentValues().apply {
 			put("rid", rid)
 			put("url", url)
+			put("title", title)
 			put("author", author)
 			put("score", score)
 			put("comments", comments)
@@ -36,6 +37,7 @@ data class RedditPost(val domain: String) {
 			put("permalink", permalink)
 			put("posthint", posthint)
 			put("clicked", clicked)
+			put("created", created)
 		}
 
 		return values

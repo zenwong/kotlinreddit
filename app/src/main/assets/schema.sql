@@ -4,6 +4,7 @@ create table if not exists posts (
 	title text,
 	url text,
 	author text,
+	subreddit text,
 	media_title text,
 	media_preview text,
 	preview text,

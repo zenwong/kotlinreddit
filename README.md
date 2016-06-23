@@ -1,1 +1,1 @@
-Kotlin reddit client
+Kotlin android reddit client
