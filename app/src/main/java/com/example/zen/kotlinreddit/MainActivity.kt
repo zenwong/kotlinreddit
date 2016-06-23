@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 			ft.replace(R.id.content, BrowserFragment())
 			ft.commit()
 		} else {
+			Reddit.get(App.access, Reddit.REDDIT_FRONT)
 			val ft = supportFragmentManager.beginTransaction()
 			ft.replace(R.id.content, RedditPostsFragment())
 			ft.commit()

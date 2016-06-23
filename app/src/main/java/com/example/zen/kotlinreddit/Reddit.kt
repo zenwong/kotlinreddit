@@ -79,7 +79,7 @@ object Reddit {
 		})
 	}
 
-	fun parseFrontPage(json: String) {
+	fun parseFrontPage(json: String) : List<RedditPost> {
 		val jp = jsonFactory.createParser(json)
 		val list = ArrayList<RedditPost>()
 
@@ -98,7 +98,7 @@ object Reddit {
 					if("user_reports".equals(jp.currentName)) jp.skipChildren()
 					if("id".equals(jp.currentName)) {
 						jp.nextToken()
-						post.id = jp.valueAsString
+						post.rid = jp.valueAsString
 					}
 					if("author".equals(jp.currentName)) {
 						jp.nextToken()
@@ -149,8 +149,10 @@ object Reddit {
 			}
 		}
 
+		EventBus.getDefault().post(list)
+
 		list.sortByDescending { it.preview }
-		//list.forEach { println(it) }
+		return list
 	}
 
 	fun parseMedia(jp: JsonParser, post: RedditPost) {
