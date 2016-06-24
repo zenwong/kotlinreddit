@@ -10,6 +10,9 @@ import com.example.zen.kotlinreddit.models.RefreshToken
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import java.util.*
 
 const val TAG = "com.example.zen.kotlinreddit"
@@ -26,13 +29,21 @@ class App : Application() {
 		Reddit.init(this, cacheDir)
 		db = DB(this)
 		EventBus.getDefault().register(this)
-		accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
-		refreshToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
+		//accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
+		//refreshToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
+
+		Observable.fromCallable { db?.getPosts() }
+			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+			.subscribe {
+				it?.forEach {
+					println(it.url)
+				}
+			}
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onAccessToken(access: AccessToken) {
-		Log.d("EVENTBUS", "onAccessToken: $access.token")
+		Log.d("EVENTBUS", "onAccessToken: ${access.token}")
 		accessToken = access.token
 		editPreferences {
 			editablePreferences ->
@@ -42,7 +53,7 @@ class App : Application() {
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onRefreshToken(refresh: RefreshToken) {
-		Log.d("EVENTBUS", "onRefreshToken: $refresh.token")
+		Log.d("EVENTBUS", "onRefreshToken: ${refresh.token}")
 		refreshToken = refresh.token
 		editPreferences {
 			editablePreferences ->
@@ -52,14 +63,12 @@ class App : Application() {
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onPosts(posts: ArrayList<RedditPost>) {
-		db?.insertPosts(posts)
-
-		db?.let {
-			println("getting posts from sqlite")
-			it.getPosts().forEach {
-				println(it.rid)
+		Observable.fromCallable { db?.insertPosts(posts) }
+			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+			.subscribe {
+				println("onPOSTS after subscribe")
 			}
-		}
+
 	}
 
 }
