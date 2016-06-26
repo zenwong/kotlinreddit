@@ -1,8 +1,10 @@
 package com.example.zen.kotlinreddit.models
 
 import android.content.ContentValues
+import android.database.Cursor
+import rx.functions.Func1
 
-data class RedditPost(val domain: String) {
+class RedditPost() {
 	var subreddit: String? = null
 	var rid: String? = null
 	var clicked: Boolean? = null
@@ -18,8 +20,29 @@ data class RedditPost(val domain: String) {
 	var created: Int? = null
 	var url: String? = null
 	var title: String? = null
+	var domain: String? = null
 
-	val projection = arrayOf("rid", "title", "url", "author", "score", "comments")
+	companion object {
+		val MAPPER = Func1<Cursor, RedditPost> { c ->
+			val post = RedditPost().apply {
+				rid = c.getString(1)
+				title = c.getString(2)
+				url = c.getString(3)
+				author = c.getString(4)
+				subreddit = c.getString(5)
+				media_title = c.getString(6)
+				media_preview = c.getString(7)
+				preview = c.getString(8)
+				thumbnail = c.getString(9)
+				posthint = c.getString(10)
+				permalink = c.getString(11)
+				comments = c.getInt(12)
+				score = c.getInt(13)
+				created = c.getInt(14)
+			}
+			post
+		}
+	}
 
 	fun getValues() : ContentValues {
 		val values = ContentValues().apply {

@@ -104,7 +104,8 @@ object Reddit {
 		while(jp.nextToken() !== null) {
 			if("domain".equals(jp.currentName)) {
 				jp.nextToken()
-				val post = RedditPost(jp.valueAsString)
+				val post = RedditPost()
+				post.domain = jp.valueAsString
 
 				while(jp.nextToken() != JsonToken.END_OBJECT) {
 					if("media_embed".equals(jp.currentName)) jp.skipChildren()

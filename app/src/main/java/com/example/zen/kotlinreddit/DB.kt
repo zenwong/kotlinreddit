@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.zen.kotlinreddit.models.RedditPost
 import java.util.*
 
-class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
+class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	lateinit var db: SQLiteDatabase
 
 	fun insertPosts(posts: List<RedditPost>) {
@@ -24,7 +24,7 @@ class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 		val c = db.rawQuery("select * from posts", null)
 		if(c.moveToFirst()) {
 			do {
-				val post = RedditPost("reddit.com")
+				val post = RedditPost()
 				post.rid = c.getString(1)
 				post.title = c.getString(2)
 				post.url = c.getString(3)

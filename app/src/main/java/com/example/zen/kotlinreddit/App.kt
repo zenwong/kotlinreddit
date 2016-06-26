@@ -7,6 +7,7 @@ import android.util.Log
 import com.example.zen.kotlinreddit.models.AccessToken
 import com.example.zen.kotlinreddit.models.RedditPost
 import com.example.zen.kotlinreddit.models.RefreshToken
+import com.squareup.sqlbrite.SqlBrite
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -22,23 +23,26 @@ class App : Application() {
 	companion object {
 		var accessToken: String? = null
 		var refreshToken: String? = null
-		var db: DB? = null
+		lateinit var db: DB
+		lateinit var sqlBrite : SqlBrite
 	}
 
 	override fun onCreate() {
+		sqlBrite = SqlBrite.create()
 		Reddit.init(this, cacheDir)
 		db = DB(this)
+		db.writableDatabase
 		EventBus.getDefault().register(this)
 		//accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
 		//refreshToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
 
-		Observable.fromCallable { db?.getPosts() }
-			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-			.subscribe {
-				it?.forEach {
-					println(it.url)
-				}
-			}
+//		Observable.fromCallable { db.getPosts() }
+//			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+//			.subscribe {
+//				it?.forEach {
+//					println(it.url)
+//				}
+//			}
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
@@ -63,7 +67,7 @@ class App : Application() {
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onPosts(posts: ArrayList<RedditPost>) {
-		Observable.fromCallable { db?.insertPosts(posts) }
+		Observable.fromCallable { db.insertPosts(posts) }
 			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
 			.subscribe {
 				println("onPOSTS after subscribe")
