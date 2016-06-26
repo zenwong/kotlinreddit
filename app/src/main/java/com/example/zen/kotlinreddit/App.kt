@@ -14,11 +14,13 @@ import org.greenrobot.eventbus.ThreadMode
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import rx.subscriptions.CompositeSubscription
 import java.util.*
 
 const val TAG = "com.example.zen.kotlinreddit"
 
 class App : Application() {
+	val subs = CompositeSubscription()
 
 	companion object {
 		var accessToken: String? = null
@@ -45,6 +47,11 @@ class App : Application() {
 //			}
 	}
 
+	override fun onTerminate() {
+		super.onTerminate()
+		subs.unsubscribe()
+	}
+
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onAccessToken(access: AccessToken) {
 		Log.d("EVENTBUS", "onAccessToken: ${access.token}")
@@ -67,13 +74,14 @@ class App : Application() {
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onPosts(posts: ArrayList<RedditPost>) {
-		Observable.fromCallable { db.insertPosts(posts) }
+		subs.add(Observable.fromCallable { db.insertPosts(posts) }
 			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
 			.subscribe {
 				println("onPOSTS after subscribe")
-			}
+			})
 
 	}
+
 
 }
 

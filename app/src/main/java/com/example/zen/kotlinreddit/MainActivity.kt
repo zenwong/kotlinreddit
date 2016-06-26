@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 		val ft = supportFragmentManager.beginTransaction()
 		when(nav.fragment) {
 			FRONT -> ft.replace(R.id.content, RedditPostsFragment())
-			COMMENTS -> ft.replace(R.id.content, CommentsFragment.newInstance(nav.id))
+			COMMENTS -> ft.replace(R.id.content, CommentsFragment.newInstance(nav.id!!))
 			MESSAGES -> println("messages")
 		}
 		ft.commit()

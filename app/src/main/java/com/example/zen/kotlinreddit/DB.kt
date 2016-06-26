@@ -3,6 +3,7 @@ package com.example.zen.kotlinreddit
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.zen.kotlinreddit.models.Comment
 import com.example.zen.kotlinreddit.models.RedditPost
 import java.util.*
 
@@ -11,14 +12,20 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 
 	fun insertPosts(posts: List<RedditPost>) {
 		db = writableDatabase
-
 		posts.forEach {
 			db.insert("posts", null, it.getValues())
 		}
 	}
 
-	fun getPosts() : List<RedditPost> {
+	fun insertComments(comments: List<Comment>) {
 		db = writableDatabase
+		comments.forEach {
+			db.insert("comments", null, it.getValues())
+		}
+	}
+
+	fun getPosts() : List<RedditPost> {
+		db = readableDatabase
 
 		val posts = ArrayList<RedditPost>()
 		val c = db.rawQuery("select * from posts", null)

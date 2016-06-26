@@ -14,6 +14,7 @@ import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.models.Comment
 import com.squareup.sqlbrite.BriteDatabase
 import kotlinx.android.synthetic.main.front_page.*
+import kotlinx.android.synthetic.main.row_comment.view.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
 import rx.schedulers.Schedulers
@@ -24,16 +25,16 @@ class CommentsFragment : Fragment() {
 	val subscriptions = CompositeSubscription()
 	lateinit var db : BriteDatabase
 	val table = "comments"
-	val select = "select * from comments where pid = ?"
+	val select = "select * from comments where parent = ?"
 	lateinit var adapter: CommentsAdapter
 	val layout = LinearLayoutManager(context)
-	var pid : Int = 0
+	var pid : String? = null
 
 	companion object {
-		fun newInstance(postId: Int) : CommentsFragment {
+		fun newInstance(postId: String) : CommentsFragment {
 			val frag = CommentsFragment()
 			val bundle = Bundle()
-			bundle.putInt("pid", postId)
+			bundle.putString("pid", postId)
 			frag.arguments = bundle
 			return frag
 		}
@@ -42,7 +43,7 @@ class CommentsFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
 		//savedInstanceState?.let {	pid = it.getInt("pid") }
-		pid = arguments.getInt("pid")
+		pid = arguments.getString("pid")
 		println("pid: $pid")
 
 		adapter = CommentsAdapter(context)
@@ -50,14 +51,14 @@ class CommentsFragment : Fragment() {
 		rv.layoutManager = layout
 		rv.adapter = adapter
 
-		db.createQuery(table, select, pid.toString())
-			.mapToList(Comment.MAPPER)
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe({ comments ->
-				comments.forEach {
-					println("pid: ${it.pid}, _id: ${it.id}, author: ${it.author}\nbody: ${it.body}\n")
-				}
-			})
+//		db.createQuery(table, select, pid.toString())
+//			.mapToList(Comment.MAPPER)
+//			.observeOn(AndroidSchedulers.mainThread())
+//			.subscribe({ comments ->
+//				comments.forEach {
+//					println("pid: ${it.pid}, _id: ${it.id}, author: ${it.author}\nbody: ${it.body}\n")
+//				}
+//			})
 
 		subscriptions.add(db.createQuery(table, select, pid.toString())
 			.mapToList(Comment.MAPPER)
@@ -87,8 +88,9 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 		return items.size
 	}
 
-	override fun onBindViewHolder(holder: CommentsViewHolder?, position: Int) {
-
+	override fun onBindViewHolder(holder: CommentsViewHolder, idx: Int) {
+		holder.txtAuthor.text = items[idx].author
+		holder.txtBody.text = items[idx].body
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder? {
@@ -98,5 +100,6 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 }
 
 class CommentsViewHolder(iv: View): RecyclerView.ViewHolder(iv) {
-
+	val txtAuthor = iv.txtAuthor
+	val txtBody = iv.txtBody
 }

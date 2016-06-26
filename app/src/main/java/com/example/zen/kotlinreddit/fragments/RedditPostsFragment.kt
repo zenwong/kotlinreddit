@@ -36,14 +36,14 @@ class RedditPostsFragment: Fragment() {
 		rv.layoutManager = layout
 		rv.adapter = adapter
 
-		db.createQuery("posts", select)
-			.mapToList(RedditPost.MAPPER)
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe({ posts ->
-				posts.forEach {
-					println("title: ${it.title}\npreview: ${it.preview}\nthumb: ${it.thumbnail}\n")
-				}
-			})
+//		db.createQuery("posts", select)
+//			.mapToList(RedditPost.MAPPER)
+//			.observeOn(AndroidSchedulers.mainThread())
+//			.subscribe({ posts ->
+//				posts.forEach {
+//					println("title: ${it.title}\npreview: ${it.preview}\nthumb: ${it.thumbnail}\n")
+//				}
+//			})
 
 		subscriptions.add(db.createQuery("posts", select)
 			.mapToList(RedditPost.MAPPER)
@@ -98,7 +98,7 @@ class PostsAdapter(val context: Context): RecyclerView.Adapter<PostsAdapter.Post
 
 			txtComments.setOnClickListener {
 				val nav = Navigation(COMMENTS)
-				nav.id = adapterPosition
+				nav.id = "t3_${posts[adapterPosition].rid}"
 				EventBus.getDefault().post(nav)
 				println("comments adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}

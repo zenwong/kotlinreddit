@@ -10,6 +10,9 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import okhttp3.*
 import org.greenrobot.eventbus.EventBus
+import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -21,8 +24,8 @@ object Reddit {
 	val REDDIT_FRONT = "https://oauth.reddit.com"
 	val BASIC_AUTH = Base64.encodeToString("$CLIENTID:".toByteArray(), Base64.URL_SAFE or Base64.NO_WRAP)
 	val jsonFactory = JsonFactory()
-	lateinit var cache : Cache
-	lateinit var client : OkHttpClient
+	lateinit var cache: Cache
+	lateinit var client: OkHttpClient
 	lateinit var ctx: Context
 
 	fun init(context: Context, cacheDir: File) {
@@ -39,7 +42,7 @@ object Reddit {
 	fun getAccessToken(url: String) {
 		val uri = Uri.parse(url)
 		val error = uri.getQueryParameter("error")
-		if(error !== null) {
+		if (error !== null) {
 			println(error)
 		} else {
 			val code = uri.getQueryParameter("code")
@@ -55,8 +58,8 @@ object Reddit {
 
 					println(response.body().string())
 
-					while(jp.nextToken() != JsonToken.END_OBJECT) {
-						when(jp.currentName) {
+					while (jp.nextToken() != JsonToken.END_OBJECT) {
+						when (jp.currentName) {
 							"access_token" -> {
 								jp.nextToken()
 								val access = jp.valueAsString
@@ -77,7 +80,7 @@ object Reddit {
 
 	}
 
-	fun refreshAccessToken() : String {
+	fun refreshAccessToken(): String {
 		val token = ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
 		val body = FormBody.Builder().add("grant_type", "refresh_token").add("refresh_token", token).build()
 		val req = Request.Builder().url(REDDIT_AUTH_TOKEN).addHeader("Authorization", "Basic $BASIC_AUTH").post(body).build()
@@ -85,12 +88,12 @@ object Reddit {
 	}
 
 	fun get(accessToken: String? = App.accessToken, url: String) {
-		client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer $accessToken").build()).enqueue(object: Callback {
+		client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer $accessToken").build()).enqueue(object : Callback {
 			override fun onFailure(call: Call?, e: IOException?) {
 			}
 
 			override fun onResponse(call: Call?, response: Response) {
-				if(response.isSuccessful) parseFrontPage(response.body().string())
+				if (response.isSuccessful) parseFrontPage(response.body().string())
 				else {
 					println("onResponse not successful " + response.code())
 				}
@@ -99,79 +102,80 @@ object Reddit {
 	}
 
 	fun getComments(url: String) {
-		client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).enqueue(object: Callback {
-			override fun onFailure(call: Call?, e: IOException?) {}
+		client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).enqueue(object : Callback {
+			override fun onFailure(call: Call?, e: IOException?) {
+			}
 
 			override fun onResponse(call: Call?, response: Response) {
-				if(response.isSuccessful) parseComments(response.body().string())
+				if (response.isSuccessful) parseComments(response.body().string())
 			}
 		})
 	}
 
-	fun parseFrontPage(json: String) : List<RedditPost> {
+	fun parseFrontPage(json: String): List<RedditPost> {
 		val jp = jsonFactory.createParser(json)
 		val list = ArrayList<RedditPost>()
 
-		while(jp.nextToken() !== null) {
-			if("domain".equals(jp.currentName)) {
+		while (jp.nextToken() !== null) {
+			if ("domain".equals(jp.currentName)) {
 				jp.nextToken()
 				val post = RedditPost()
 				post.domain = jp.valueAsString
 
-				while(jp.nextToken() != JsonToken.END_OBJECT) {
-					if("media_embed".equals(jp.currentName)) jp.skipChildren()
-					if("subreddit".equals(jp.currentName)) {
+				while (jp.nextToken() != JsonToken.END_OBJECT) {
+					if ("media_embed".equals(jp.currentName)) jp.skipChildren()
+					if ("subreddit".equals(jp.currentName)) {
 						jp.nextToken()
 						post.subreddit = jp.valueAsString
 					}
-					if("secure_media".equals(jp.currentName)) jp.skipChildren()
-					if("user_reports".equals(jp.currentName)) jp.skipChildren()
-					if("id".equals(jp.currentName)) {
+					if ("secure_media".equals(jp.currentName)) jp.skipChildren()
+					if ("user_reports".equals(jp.currentName)) jp.skipChildren()
+					if ("id".equals(jp.currentName)) {
 						jp.nextToken()
 						post.rid = jp.valueAsString
 					}
-					if("author".equals(jp.currentName)) {
+					if ("author".equals(jp.currentName)) {
 						jp.nextToken()
 						post.author = jp.valueAsString
 					}
-					if("media".equals(jp.currentName)) {
+					if ("media".equals(jp.currentName)) {
 						//jp.skipChildren()
-						if(jp.nextToken() !== JsonToken.VALUE_NULL) parseMedia(jp, post)
+						if (jp.nextToken() !== JsonToken.VALUE_NULL) parseMedia(jp, post)
 					}
-					if("score".equals(jp.currentName)) {
+					if ("score".equals(jp.currentName)) {
 						jp.nextToken()
 						post.score = jp.valueAsInt
 					}
-					if("preview".equals(jp.currentName)) {
+					if ("preview".equals(jp.currentName)) {
 						parsePreview(jp, post)
 					}
-					if("num_comments".equals(jp.currentName)) {
+					if ("num_comments".equals(jp.currentName)) {
 						jp.nextToken()
 						post.comments = jp.valueAsInt
 					}
-					if("thumbnail".equals(jp.currentName)) {
+					if ("thumbnail".equals(jp.currentName)) {
 						jp.nextToken()
 						post.thumbnail = jp.valueAsString
 					}
-					if("secure_media_embed".equals(jp.currentName)) jp.skipChildren()
-					if("permalink".equals(jp.currentName)) {
+					if ("secure_media_embed".equals(jp.currentName)) jp.skipChildren()
+					if ("permalink".equals(jp.currentName)) {
 						jp.nextToken()
 						post.permalink = jp.valueAsString
 					}
-					if("created".equals(jp.currentName)) {
+					if ("created".equals(jp.currentName)) {
 						jp.nextToken()
 						post.created = jp.valueAsInt
 					}
-					if("url".equals(jp.currentName)) {
+					if ("url".equals(jp.currentName)) {
 						jp.nextToken()
 						post.url = jp.valueAsString
 					}
-					if("title".equals(jp.currentName)) {
+					if ("title".equals(jp.currentName)) {
 						jp.nextToken()
 						post.title = jp.valueAsString
 					}
 
-					if("mod_reports".equals(jp.currentName)) jp.skipChildren()
+					if ("mod_reports".equals(jp.currentName)) jp.skipChildren()
 				}
 
 				//println(post)
@@ -186,13 +190,13 @@ object Reddit {
 	}
 
 	fun parseMedia(jp: JsonParser, post: RedditPost) {
-		while(jp.nextToken() !== JsonToken.END_OBJECT) {
-			if("title".equals(jp.currentName)) {
+		while (jp.nextToken() !== JsonToken.END_OBJECT) {
+			if ("title".equals(jp.currentName)) {
 				jp.nextToken()
 				post.media_title = jp.valueAsString
 			}
 
-			if("thumbnail_url".equals(jp.currentName)) {
+			if ("thumbnail_url".equals(jp.currentName)) {
 				jp.nextToken()
 				post.media_preview = jp.valueAsString
 			}
@@ -206,20 +210,20 @@ object Reddit {
 	}
 
 	fun parsePreview(jp: JsonParser, post: RedditPost) {
-		while(jp.nextToken() !== null) {
-			if("source".equals(jp.currentName)) jp.skipChildren()
+		while (jp.nextToken() !== null) {
+			if ("source".equals(jp.currentName)) jp.skipChildren()
 
-			if("url".equals(jp.currentName)) {
+			if ("url".equals(jp.currentName)) {
 				jp.nextToken()
 				val preview = jp.valueAsString
-				if(preview.contains("w=320")) {
+				if (preview.contains("w=320")) {
 					post.preview = preview.replace("amp;", "")
 				}
 			}
 
-			if("variants".equals(jp.currentName)) jp.skipChildren()
+			if ("variants".equals(jp.currentName)) jp.skipChildren()
 
-			if("id".equals(jp.currentName)) break
+			if ("id".equals(jp.currentName)) break
 		}
 		jp.nextToken()
 		jp.nextToken()
@@ -232,7 +236,7 @@ object Reddit {
 		val list = ArrayList<Comment>()
 		val jp = jsonFactory.createParser(json)
 
-		while(jp.nextToken() !== null) {
+		while (jp.nextToken() !== null) {
 			/* if("children".equals(jp.currentName)) {
 				 jp.nextToken()
 				 println("kind: " + jp.valueAsString)
@@ -240,33 +244,33 @@ object Reddit {
 
 			//if("replies".equals(jp.currentName)) jp.skipChildren()
 
-			if("id".equals(jp.currentName)) {
+			if ("id".equals(jp.currentName)) {
 				jp.nextToken()
 				val comment = Comment()
 				comment.id = jp.valueAsString
 
-				while(jp.nextToken() != JsonToken.END_OBJECT) {
-					if("author".equals(jp.currentName)) {
+				while (jp.nextToken() != JsonToken.END_OBJECT) {
+					if ("author".equals(jp.currentName)) {
 						jp.nextToken()
 						comment.author = jp.valueAsString
 					}
 
-					if("parent_id".equals(jp.currentName)) {
+					if ("parent_id".equals(jp.currentName)) {
 						jp.nextToken()
 						comment.parent = jp.valueAsString
 					}
 
-					if("score".equals(jp.currentName)) {
+					if ("score".equals(jp.currentName)) {
 						jp.nextToken()
 						comment.score = jp.valueAsInt
 					}
 
-					if("body".equals(jp.currentName)) {
+					if ("body".equals(jp.currentName)) {
 						jp.nextToken()
 						comment.body = jp.valueAsString
 					}
 
-					if("created".equals(jp.currentName)) {
+					if ("created".equals(jp.currentName)) {
 						jp.nextToken()
 						comment.created = jp.valueAsInt
 					}
@@ -279,51 +283,52 @@ object Reddit {
 
 		}
 
+		Observable.fromCallable {
+			App.db.insertComments(list)
+		}.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe()
+
 		//list.sortByDescending { it.score }
-		list.groupBy { it.parent }.forEach {
-			println(it)
-		}
-/*  list.forEach {
-    println(it)
-  }*/
+//		list.groupBy { it.parent }.forEach {
+//			println(it)
+//		}
 	}
 
 	fun parseMessages() {
 		val jp = jsonFactory.createParser(File("/home/zen/reddit/messages.json"))
 
-		while(jp.nextToken() !== null) {
+		while (jp.nextToken() !== null) {
 
-			if("body".equals(jp.currentName)) {
+			if ("body".equals(jp.currentName)) {
 				jp.nextToken()
 				val msg = Message(jp.valueAsString)
 
-				while(jp.nextToken() !== JsonToken.END_OBJECT) {
-					if("link_title".equals(jp.currentName)) {
+				while (jp.nextToken() !== JsonToken.END_OBJECT) {
+					if ("link_title".equals(jp.currentName)) {
 						jp.nextToken()
 						msg.title = jp.valueAsString
 					}
 
-					if("created".equals(jp.currentName)) {
+					if ("created".equals(jp.currentName)) {
 						jp.nextToken()
 						msg.created = jp.valueAsInt
 					}
 
-					if("dest".equals(jp.currentName)) {
+					if ("dest".equals(jp.currentName)) {
 						jp.nextToken()
 						msg.dest = jp.valueAsString
 					}
 
-					if("author".equals(jp.currentName)) {
+					if ("author".equals(jp.currentName)) {
 						jp.nextToken()
 						msg.author = jp.valueAsString
 					}
 
-					if("parent_id".equals(jp.currentName)) {
+					if ("parent_id".equals(jp.currentName)) {
 						jp.nextToken()
 						msg.parent = jp.valueAsString
 					}
 
-					if("id".equals(jp.currentName)) {
+					if ("id".equals(jp.currentName)) {
 						jp.nextToken()
 						msg.id = jp.valueAsString
 					}

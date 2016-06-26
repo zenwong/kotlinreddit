@@ -98,6 +98,18 @@ class Comment() {
 		}
 	}
 
+	fun getValues() : ContentValues {
+		val values = ContentValues().apply {
+			put("pid", pid)
+			put("author", author)
+			put("body", body)
+			put("created", created)
+			put("score", score)
+			put("parent", parent)
+		}
+		return values
+	}
+
 	override fun toString(): String {
 		return "id: $id, parent: $parent, author: $author, score: $score, created: $created\nbody: $body\n"
 	}
@@ -118,7 +130,7 @@ data class Message(val message: String) {
 }
 
 data class Navigation(val fragment: Int) {
-	var id: Int = 0
+	var id: String? = null
 }
 data class AccessToken(val token: String)
 data class RefreshToken(val token: String)
