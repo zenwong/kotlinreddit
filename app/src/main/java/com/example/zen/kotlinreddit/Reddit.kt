@@ -202,7 +202,7 @@ object Reddit {
 				jp.nextToken()
 				val preview = jp.valueAsString
 				if(preview.contains("w=320")) {
-					post.preview = preview
+					post.preview = preview.replace("amp;", "")
 				}
 			}
 
@@ -231,7 +231,8 @@ object Reddit {
 
 			if("id".equals(jp.currentName)) {
 				jp.nextToken()
-				val comment = Comment(jp.valueAsString)
+				val comment = Comment()
+				comment.id = jp.valueAsString
 
 				while(jp.nextToken() != JsonToken.END_OBJECT) {
 					if("author".equals(jp.currentName)) {

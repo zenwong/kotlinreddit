@@ -34,6 +34,8 @@ class MainActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
+		Reddit.get(App.accessToken, Reddit.REDDIT_FRONT)
+
 		if(App.accessToken == null) {
 			val ft = supportFragmentManager.beginTransaction()
 			ft.replace(R.id.content, BrowserFragment())
@@ -45,7 +47,6 @@ class MainActivity : AppCompatActivity() {
 			ft.commit()
 		}
 
-		//Reddit.get(App.accessToken, Reddit.REDDIT_FRONT)
 //		val ft = supportFragmentManager.beginTransaction()
 //		ft.replace(R.id.content, BrowserFragment())
 //		ft.commit()

@@ -51,6 +51,11 @@ class RedditPostsFragment: Fragment() {
 			.subscribe(adapter))
 	}
 
+	override fun onPause() {
+		super.onPause()
+		subscriptions.unsubscribe()
+	}
+
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 		return inflater.inflate(R.layout.front_page, container, false)
 	}
@@ -72,7 +77,7 @@ class PostsAdapter(val context: Context): RecyclerView.Adapter<PostsAdapter.Post
 		holder.txtTitle.text = posts[idx].title
 		holder.txtComments.text = "Comments: ${posts[idx].comments}"
 		holder.txtSubreddit.text = "Subreddit: ${posts[idx].subreddit}"
-		Picasso.with(context).load(posts[idx].thumbnail).into(holder.imgPreviw)
+		Picasso.with(context).load(posts[idx].preview).into(holder.imgPreviw)
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsViewHolder {

@@ -5,6 +5,7 @@ import android.database.Cursor
 import rx.functions.Func1
 
 class RedditPost() {
+	var _id: Int? = null
 	var subreddit: String? = null
 	var rid: String? = null
 	var clicked: Boolean? = null
@@ -25,6 +26,7 @@ class RedditPost() {
 	companion object {
 		val MAPPER = Func1<Cursor, RedditPost> { c ->
 			val post = RedditPost().apply {
+				_id = c.getInt(0)
 				rid = c.getString(1)
 				title = c.getString(2)
 				url = c.getString(3)
@@ -72,12 +74,29 @@ class RedditPost() {
 	}
 }
 
-data class Comment(val id: String) {
+class Comment() {
+	var pid: Int? = null
+	var id: String? = null
 	var parent: String? = null
 	var author: String? = null
 	var body: String? = null
 	var score: Int? = null
 	var created: Int? = null
+
+	companion object {
+		val MAPPER = Func1<Cursor, Comment> { c ->
+			val comment = Comment().apply {
+				pid = c.getInt(1)
+				id = c.getString(2)
+				parent = c.getString(3)
+				author = c.getString(4)
+				body = c.getString(5)
+				score = c.getInt(6)
+				created = c.getInt(7)
+			}
+			comment
+		}
+	}
 
 	override fun toString(): String {
 		return "id: $id, parent: $parent, author: $author, score: $score, created: $created\nbody: $body\n"
