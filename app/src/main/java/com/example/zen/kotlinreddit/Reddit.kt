@@ -60,6 +60,7 @@ object Reddit {
 							"access_token" -> {
 								jp.nextToken()
 								val access = jp.valueAsString
+								App.accessToken = access
 								get(access, REDDIT_FRONT)
 								EventBus.getDefault().post(AccessToken(access))
 								EventBus.getDefault().post(Navigation(FRONT))
@@ -93,6 +94,16 @@ object Reddit {
 				else {
 					println("onResponse not successful " + response.code())
 				}
+			}
+		})
+	}
+
+	fun getComments(url: String) {
+		client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).enqueue(object: Callback {
+			override fun onFailure(call: Call?, e: IOException?) {}
+
+			override fun onResponse(call: Call?, response: Response) {
+				if(response.isSuccessful) parseComments(response.body().string())
 			}
 		})
 	}
@@ -217,9 +228,9 @@ object Reddit {
 		//info(jp)
 	}
 
-	fun parseComments() {
+	fun parseComments(json: String) {
 		val list = ArrayList<Comment>()
-		val jp = jsonFactory.createParser(File("/home/zen/reddit/comments.json"))
+		val jp = jsonFactory.createParser(json)
 
 		while(jp.nextToken() !== null) {
 			/* if("children".equals(jp.currentName)) {

@@ -8,10 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.zen.kotlinreddit.App
-import com.example.zen.kotlinreddit.COMMENTS
-import com.example.zen.kotlinreddit.DB
-import com.example.zen.kotlinreddit.R
+import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.models.Navigation
 import com.example.zen.kotlinreddit.models.RedditPost
 import com.squareup.picasso.Picasso
@@ -81,6 +78,8 @@ class PostsAdapter(val context: Context): RecyclerView.Adapter<PostsAdapter.Post
 		holder.txtComments.text = "Comments: ${posts[idx].comments}"
 		holder.txtSubreddit.text = "Subreddit: ${posts[idx].subreddit}"
 		Picasso.with(context).load(posts[idx].preview).into(holder.imgPreviw)
+		val url = "${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json"
+		Reddit.getComments(url)
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsViewHolder {

@@ -50,6 +50,15 @@ class CommentsFragment : Fragment() {
 		rv.layoutManager = layout
 		rv.adapter = adapter
 
+		db.createQuery(table, select, pid.toString())
+			.mapToList(Comment.MAPPER)
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe({ comments ->
+				comments.forEach {
+					println("pid: ${it.pid}, _id: ${it.id}, author: ${it.author}\nbody: ${it.body}\n")
+				}
+			})
+
 		subscriptions.add(db.createQuery(table, select, pid.toString())
 			.mapToList(Comment.MAPPER)
 			.observeOn(AndroidSchedulers.mainThread())
