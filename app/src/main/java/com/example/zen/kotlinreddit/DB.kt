@@ -21,7 +21,7 @@ class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 		db = writableDatabase
 
 		val posts = ArrayList<RedditPost>()
-		val c = db.rawQuery("select * from posts", null)
+		val c = db.rawQuery("select * from posts order by preview desc", null)
 		if(c.moveToFirst()) {
 			do {
 				val post = RedditPost("reddit.com")
@@ -32,13 +32,21 @@ class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 				post.subreddit = c.getString(5)
 				post.media_title = c.getString(6)
 				post.media_preview = c.getString(7)
-				post.preview = c.getString(8)
+				//post.preview = c.getString(8)
 				post.thumbnail = c.getString(9)
 				post.posthint = c.getString(10)
 				post.permalink = c.getString(11)
 				post.comments = c.getInt(12)
 				post.score = c.getInt(13)
 				post.created = c.getInt(14)
+
+				val preview = c.getString(8)
+				if(preview == null) {
+					post.preview = c.getString(7)
+				} else {
+					post.preview = preview
+				}
+
 				posts.add(post)
 			} while(c.moveToNext())
 		}

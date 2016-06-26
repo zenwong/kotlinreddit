@@ -36,7 +36,7 @@ class App : Application() {
 			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
 			.subscribe {
 				it?.forEach {
-					println(it.url)
+					println(it.preview)
 				}
 			}
 	}
