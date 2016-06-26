@@ -117,6 +117,8 @@ data class Message(val message: String) {
 	}
 }
 
-data class Navigation(val fragment: Int)
+data class Navigation(val fragment: Int) {
+	var id: Int = 0
+}
 data class AccessToken(val token: String)
 data class RefreshToken(val token: String)

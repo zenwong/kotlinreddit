@@ -9,13 +9,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.zen.kotlinreddit.App
+import com.example.zen.kotlinreddit.COMMENTS
 import com.example.zen.kotlinreddit.DB
 import com.example.zen.kotlinreddit.R
+import com.example.zen.kotlinreddit.models.Navigation
 import com.example.zen.kotlinreddit.models.RedditPost
 import com.squareup.picasso.Picasso
 import com.squareup.sqlbrite.BriteDatabase
 import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.row_post.view.*
+import org.greenrobot.eventbus.EventBus
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
 import rx.schedulers.Schedulers
@@ -84,7 +87,6 @@ class PostsAdapter(val context: Context): RecyclerView.Adapter<PostsAdapter.Post
 		return PostsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_post, parent, false))
 	}
 
-
 	inner class PostsViewHolder(iv: View) : RecyclerView.ViewHolder(iv) {
 		val card = iv.card
 		val txtTitle = iv.txtPostTitle
@@ -94,6 +96,17 @@ class PostsAdapter(val context: Context): RecyclerView.Adapter<PostsAdapter.Post
 
 		init {
 			card.useCompatPadding
+
+			txtComments.setOnClickListener {
+				val nav = Navigation(COMMENTS)
+				nav.id = adapterPosition
+				EventBus.getDefault().post(nav)
+				println("comments adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
+			}
+
+			txtSubreddit.setOnClickListener {
+				println("subreddit adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
+			}
 		}
 	}
 }

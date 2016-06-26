@@ -3,6 +3,7 @@ package com.example.zen.kotlinreddit
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
+import com.example.zen.kotlinreddit.fragments.CommentsFragment
 import com.example.zen.kotlinreddit.fragments.RedditPostsFragment
 import com.example.zen.kotlinreddit.models.Navigation
 import org.greenrobot.eventbus.EventBus
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 		val ft = supportFragmentManager.beginTransaction()
 		when(nav.fragment) {
 			FRONT -> ft.replace(R.id.content, RedditPostsFragment())
-			COMMENTS -> println("comments")
+			COMMENTS -> ft.replace(R.id.content, CommentsFragment.newInstance(nav.id))
 			MESSAGES -> println("messages")
 		}
 		ft.commit()

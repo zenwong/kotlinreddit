@@ -12,6 +12,7 @@ import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.DB
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.models.Comment
+import com.squareup.sqlbrite.BriteDatabase
 import kotlinx.android.synthetic.main.front_page.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
@@ -21,21 +22,42 @@ import java.util.*
 
 class CommentsFragment : Fragment() {
 	val subscriptions = CompositeSubscription()
-	val db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
+	lateinit var db : BriteDatabase
 	val table = "comments"
 	val select = "select * from comments where pid = ?"
-	val adapter = CommentsAdapter(context)
+	lateinit var adapter: CommentsAdapter
 	val layout = LinearLayoutManager(context)
+	var pid : Int = 0
+
+	companion object {
+		fun newInstance(postId: Int) : CommentsFragment {
+			val frag = CommentsFragment()
+			val bundle = Bundle()
+			bundle.putInt("pid", postId)
+			frag.arguments = bundle
+			return frag
+		}
+	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
+		//savedInstanceState?.let {	pid = it.getInt("pid") }
+		pid = arguments.getInt("pid")
+		println("pid: $pid")
+
+		adapter = CommentsAdapter(context)
 		rv.setHasFixedSize(true)
 		rv.layoutManager = layout
 		rv.adapter = adapter
 
-		subscriptions.add(db.createQuery(table, select)
+		subscriptions.add(db.createQuery(table, select, pid.toString())
 			.mapToList(Comment.MAPPER)
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
+	}
+
+	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+		return inflater.inflate(R.layout.front_page, container, false)
 	}
 
 	override fun onPause() {
