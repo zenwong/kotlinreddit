@@ -80,6 +80,7 @@ class Comment() {
 	var parent: String? = null
 	var author: String? = null
 	var body: String? = null
+	var html: String? = null
 	var score: Int? = null
 	var created: Int? = null
 
@@ -91,8 +92,9 @@ class Comment() {
 				parent = c.getString(3)
 				author = c.getString(4)
 				body = c.getString(5)
-				score = c.getInt(6)
-				created = c.getInt(7)
+				html = c.getString(6)
+				score = c.getInt(7)
+				created = c.getInt(8)
 			}
 			comment
 		}
@@ -103,6 +105,7 @@ class Comment() {
 			put("pid", pid)
 			put("author", author)
 			put("body", body)
+			put("html", html)
 			put("created", created)
 			put("score", score)
 			put("parent", parent)

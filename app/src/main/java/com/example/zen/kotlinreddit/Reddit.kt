@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import com.example.zen.kotlinreddit.models.*
-import com.example.zen.kotlinreddit.network.RedditOauthAuthenticator
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
@@ -31,8 +30,8 @@ object Reddit {
 	fun init(context: Context, cacheDir: File) {
 		ctx = context
 		cache = Cache(cacheDir, 1024L * 1024L * 100L)
-		client = OkHttpClient.Builder().authenticator(RedditOauthAuthenticator()).cache(cache).build()
-		//client = OkHttpClient.Builder().cache(cache).build()
+		//client = OkHttpClient.Builder().authenticator(RedditOauthAuthenticator()).cache(cache).build()
+		client = OkHttpClient.Builder().cache(cache).build()
 	}
 
 	fun getAuthUrl(clientid: String = CLIENTID, state: String = "NONCE", redirect: String = "http://zreddit", scope: String = "read identity"): String {
@@ -268,6 +267,11 @@ object Reddit {
 					if ("body".equals(jp.currentName)) {
 						jp.nextToken()
 						comment.body = jp.valueAsString
+					}
+
+					if("body_html".equals(jp.currentName)) {
+						jp.nextToken()
+						comment.html = jp.valueAsString
 					}
 
 					if ("created".equals(jp.currentName)) {

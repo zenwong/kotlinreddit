@@ -89,6 +89,7 @@ val commentsSchema = """create table if not exists comments (
 	parent text,
 	author text,
 	body text,
+	html text,
 	score integer,
 	created integer,
 	foreign key(pid) references posts(_id) on delete cascade,
