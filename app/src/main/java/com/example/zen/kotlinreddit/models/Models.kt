@@ -44,6 +44,7 @@ class RedditPost() {
 			}
 			post
 		}
+
 	}
 
 	fun getValues() : ContentValues {

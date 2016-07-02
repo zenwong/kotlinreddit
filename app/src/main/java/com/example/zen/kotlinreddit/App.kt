@@ -23,8 +23,8 @@ class App : Application() {
 	val subs = CompositeSubscription()
 
 	companion object {
-		var accessToken: String? = null
-		var refreshToken: String? = null
+		lateinit var accessToken: String
+		lateinit var refreshToken: String
 		lateinit var db: DB
 		lateinit var sqlBrite : SqlBrite
 	}
@@ -35,7 +35,7 @@ class App : Application() {
 		db = DB(this)
 		db.writableDatabase
 		EventBus.getDefault().register(this)
-		//accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
+		accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
 		//refreshToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
 
 //		Observable.fromCallable { db.getPosts() }

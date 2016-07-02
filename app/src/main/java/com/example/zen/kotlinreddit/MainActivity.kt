@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		Reddit.get(App.accessToken, Reddit.REDDIT_FRONT)
+		//Reddit.get(App.accessToken, Reddit.REDDIT_FRONT)
 
 		if(App.accessToken == null) {
 			val ft = supportFragmentManager.beginTransaction()
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
 			//Reddit.get(App.accessToken, Reddit.REDDIT_FRONT)
 			val ft = supportFragmentManager.beginTransaction()
 			ft.replace(R.id.content, RedditPostsFragment())
+			ft.addToBackStack("PostsFragment")
 			ft.commit()
 		}
 
@@ -57,8 +58,14 @@ class MainActivity : AppCompatActivity() {
 	fun onNav(nav: Navigation) {
 		val ft = supportFragmentManager.beginTransaction()
 		when(nav.fragment) {
-			FRONT -> ft.replace(R.id.content, RedditPostsFragment())
-			COMMENTS -> ft.replace(R.id.content, CommentsFragment.newInstance(nav.id!!))
+			FRONT ->  {
+				ft.replace(R.id.content, RedditPostsFragment())
+				ft.addToBackStack("PostsFragment")
+			}
+			COMMENTS -> {
+				ft.replace(R.id.content, CommentsFragment.newInstance(nav.id!!))
+				ft.addToBackStack("CommentsFragment")
+			}
 			MESSAGES -> println("messages")
 		}
 		ft.commit()

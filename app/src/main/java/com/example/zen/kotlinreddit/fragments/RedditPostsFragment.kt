@@ -16,6 +16,7 @@ import com.squareup.sqlbrite.BriteDatabase
 import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.row_post.view.*
 import org.greenrobot.eventbus.EventBus
+import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
 import rx.schedulers.Schedulers
@@ -23,17 +24,15 @@ import rx.subscriptions.CompositeSubscription
 import java.util.*
 
 class RedditPostsFragment: Fragment() {
-	val select = "select * from posts order by created"
-	val layout = LinearLayoutManager(context)
+	val select = "select * from posts order by created desc, preview desc"
 	val subscriptions = CompositeSubscription()
-	var adapter: PostsAdapter? = null
 	lateinit var db: BriteDatabase
 
-	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
-		adapter = PostsAdapter(context)
+		val adapter = PostsAdapter(context)
 		rv.setHasFixedSize(true)
-		rv.layoutManager = layout
+		rv.layoutManager = LinearLayoutManager(context)
 		rv.adapter = adapter
 
 //		db.createQuery("posts", select)
@@ -49,6 +48,12 @@ class RedditPostsFragment: Fragment() {
 			.mapToList(RedditPost.MAPPER)
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
+
+    subscriptions.add(Observable.fromCallable { Reddit.getNewPosts() }
+    .subscribeOn(Schedulers.newThread())
+    .subscribe {
+      println("onParsePosts")
+    })
 	}
 
 	override fun onPause() {
@@ -77,7 +82,11 @@ class PostsAdapter(val context: Context): RecyclerView.Adapter<PostsAdapter.Post
 		holder.txtTitle.text = posts[idx].title
 		holder.txtComments.text = "Comments: ${posts[idx].comments}"
 		holder.txtSubreddit.text = "Subreddit: ${posts[idx].subreddit}"
-		Picasso.with(context).load(posts[idx].preview).into(holder.imgPreviw)
+		Picasso.with(context).load(posts[idx].preview)
+      //.resize(holder.imgPreviw.measuredWidth, 0)
+      .fit()
+      .centerCrop()
+      .into(holder.imgPreviw)
 		val url = "${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json"
 		Reddit.getComments(url)
 	}
