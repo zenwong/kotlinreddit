@@ -23,7 +23,7 @@ import rx.subscriptions.CompositeSubscription
 import java.util.*
 
 class RedditPostsFragment: Fragment() {
-	val select = "select * from posts order by preview desc"
+	val select = "select * from posts order by created"
 	val layout = LinearLayoutManager(context)
 	val subscriptions = CompositeSubscription()
 	var adapter: PostsAdapter? = null

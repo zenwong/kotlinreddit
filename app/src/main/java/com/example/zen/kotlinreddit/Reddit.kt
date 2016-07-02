@@ -100,6 +100,21 @@ object Reddit {
 		})
 	}
 
+	fun getCb(url: String, callback: (resp: String) -> Unit) {
+		client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).enqueue(object : Callback {
+			override fun onFailure(call: Call?, e: IOException?) {
+			}
+
+			override fun onResponse(call: Call?, response: Response) {
+				if (response.isSuccessful) callback(response.body().string())
+			}
+		})
+	}
+
+	fun parseNewPosts(json: String) {
+
+	}
+
 	fun getComments(url: String) {
 		client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).enqueue(object : Callback {
 			override fun onFailure(call: Call?, e: IOException?) {
