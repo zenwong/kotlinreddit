@@ -104,6 +104,7 @@ class Comment() {
 	fun getValues() : ContentValues {
 		val values = ContentValues().apply {
 			put("pid", pid)
+			put("cid", id)
 			put("author", author)
 			put("body", body)
 			put("html", html)
@@ -135,6 +136,8 @@ data class Message(val message: String) {
 
 data class Navigation(val fragment: Int) {
 	var id: String? = null
+	var pid: Int? = null
 }
+data class CommentsRequest(val url: String, val pid: Int)
 data class AccessToken(val token: String)
 data class RefreshToken(val token: String)

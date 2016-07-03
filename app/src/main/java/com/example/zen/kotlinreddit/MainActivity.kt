@@ -5,19 +5,26 @@ import android.support.v7.app.AppCompatActivity
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
 import com.example.zen.kotlinreddit.fragments.CommentsFragment
 import com.example.zen.kotlinreddit.fragments.RedditPostsFragment
+import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
+import rx.subscriptions.CompositeSubscription
 
 const val FRONT = 1
 const val COMMENTS = 2
 const val MESSAGES = 3
 
 class MainActivity : AppCompatActivity() {
+	lateinit var subscriptions: CompositeSubscription
 
 	override fun onStart() {
 		super.onStart()
+		subscriptions = CompositeSubscription()
 		EventBus.getDefault().register(this)
 	}
 
@@ -28,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
 	override fun onStop() {
 		EventBus.getDefault().unregister(this)
+		subscriptions.unsubscribe()
 		super.onStop()
 	}
 
@@ -63,11 +71,24 @@ class MainActivity : AppCompatActivity() {
 				ft.addToBackStack("PostsFragment")
 			}
 			COMMENTS -> {
-				ft.replace(R.id.content, CommentsFragment.newInstance(nav.id!!))
+				//ft.replace(R.id.content, CommentsFragment.newInstance(nav.id!!))
+				ft.replace(R.id.content, CommentsFragment.newInstance(nav.pid!!))
 				ft.addToBackStack("CommentsFragment")
 			}
 			MESSAGES -> println("messages")
 		}
+		ft.commit()
+	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	fun onCommentsRequest(req: CommentsRequest) {
+
+		subscriptions.add(Observable.fromCallable { Reddit.getComments(req.url, req.pid) }
+		.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+
+		val ft = supportFragmentManager.beginTransaction()
+		ft.replace(R.id.content, CommentsFragment.Companion.newInstance(req.pid))
+		ft.addToBackStack("CommentsFragment")
 		ft.commit()
 	}
 }

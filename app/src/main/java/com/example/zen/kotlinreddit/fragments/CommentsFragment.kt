@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,10 +25,11 @@ class CommentsFragment : Fragment() {
 	val subscriptions = CompositeSubscription()
 	lateinit var db : BriteDatabase
 	val table = "comments"
-	val select = "select * from comments where parent = ?"
-	lateinit var adapter: CommentsAdapter
+	val select = "select * from comments where pid = ?"
+	//lateinit var adapter: CommentsAdapter
 	val layout = LinearLayoutManager(context)
-	var pid : String? = null
+	//var pid : String? = null
+	var pid: Int? = null
 
 	companion object {
 		fun newInstance(postId: String) : CommentsFragment {
@@ -39,15 +39,24 @@ class CommentsFragment : Fragment() {
 			frag.arguments = bundle
 			return frag
 		}
+
+		fun newInstance(pid: Int) : CommentsFragment {
+			val frag = CommentsFragment()
+			val bundle = Bundle()
+			bundle.putInt("pid", pid)
+			frag.arguments = bundle
+			return frag
+		}
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
 		//savedInstanceState?.let {	pid = it.getInt("pid") }
-		pid = arguments.getString("pid")
+		//pid = arguments.getString("pid")
+		pid = arguments.getInt("pid")
 		println("pid: $pid")
 
-		adapter = CommentsAdapter(context)
+		val adapter = CommentsAdapter(context)
 		rv.setHasFixedSize(true)
 		rv.layoutManager = layout
 		rv.adapter = adapter
@@ -91,7 +100,7 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 
 	override fun onBindViewHolder(holder: CommentsViewHolder, idx: Int) {
 		holder.txtAuthor.text = items[idx].author
-		holder.txtBody.text = Html.fromHtml(items[idx].body)
+		holder.txtBody.text = items[idx].body
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder? {

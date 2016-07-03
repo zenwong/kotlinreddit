@@ -8,8 +8,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.zen.kotlinreddit.*
-import com.example.zen.kotlinreddit.models.Navigation
+import com.example.zen.kotlinreddit.App
+import com.example.zen.kotlinreddit.DB
+import com.example.zen.kotlinreddit.R
+import com.example.zen.kotlinreddit.Reddit
+import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.RedditPost
 import com.squareup.picasso.Picasso
 import com.squareup.sqlbrite.BriteDatabase
@@ -46,11 +49,10 @@ class RedditPostsFragment : Fragment() {
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
 
-		subscriptions.add(Observable.fromCallable { Reddit.getNewPosts() }
+		subscriptions.add(Observable.fromCallable { Reddit.getHotPosts() }
 			.subscribeOn(Schedulers.newThread())
-			.subscribe {
-				println("onParsePosts")
-			})
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe())
 	}
 
 	override fun onDestroy() {
@@ -80,12 +82,11 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 		holder.txtComments.text = "Comments: ${posts[idx].comments}"
 		holder.txtSubreddit.text = "Subreddit: ${posts[idx].subreddit}"
 		Picasso.with(context).load(posts[idx].preview)
-			//.resize(holder.imgPreviw.measuredWidth, 0)
 			.fit()
 			.centerCrop()
 			.into(holder.imgPreviw)
-		val url = "${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json"
-		Reddit.getComments(url)
+		//val url = "${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json"
+		//Reddit.getComments(url)
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsViewHolder {
@@ -103,9 +104,14 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 			card.useCompatPadding
 
 			txtComments.setOnClickListener {
-				val nav = Navigation(COMMENTS)
-				nav.id = "t3_${posts[adapterPosition].rid}"
-				EventBus.getDefault().post(nav)
+//				val nav = Navigation(COMMENTS)
+//				nav.id = "t3_${posts[adapterPosition].rid}"
+//				nav.pid = posts[adapterPosition]._id
+//				EventBus.getDefault().post(nav)
+
+			val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
+			val req = CommentsRequest(url, posts[adapterPosition]._id!!)
+				EventBus.getDefault().post(req)
 				println("comments adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}
 
