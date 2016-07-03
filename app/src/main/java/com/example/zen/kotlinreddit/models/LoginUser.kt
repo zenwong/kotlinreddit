@@ -4,7 +4,7 @@ import android.databinding.BaseObservable
 import android.util.Log
 import android.view.View
 
-class User(var username: String, var password: String) : BaseObservable() {
+class LoginUser(var username: String, var password: String) : BaseObservable() {
 	//var username: String? = null
 	//var password: String? = null
 

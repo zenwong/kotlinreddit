@@ -1,7 +1,9 @@
 package com.example.zen.kotlinreddit
 
 import android.os.Bundle
+import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
 import com.example.zen.kotlinreddit.fragments.CommentsFragment
 import com.example.zen.kotlinreddit.fragments.RedditPostsFragment
@@ -37,6 +39,16 @@ class MainActivity : AppCompatActivity() {
 		EventBus.getDefault().unregister(this)
 		subscriptions.unsubscribe()
 		super.onStop()
+	}
+
+	override fun onCreateOptionsMenu(menu: Menu): Boolean {
+		val item = menu.add("sync").setOnMenuItemClickListener {
+			println("sync clicked")
+			true
+		}
+
+		MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM)
+		return super.onCreateOptionsMenu(menu)
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {

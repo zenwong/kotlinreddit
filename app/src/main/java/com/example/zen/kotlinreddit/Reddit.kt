@@ -255,7 +255,7 @@ object Reddit {
 		}
 	}
 
-	fun parseFrontPage(json: String): List<RedditPost> {
+	fun parseFrontPage(json: String): ArrayList<RedditPost> {
 		val jp = jsonFactory.createParser(json)
 		val list = ArrayList<RedditPost>()
 

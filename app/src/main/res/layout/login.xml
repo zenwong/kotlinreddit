@@ -3,8 +3,8 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.example.zen.kotlinreddit.models.User"/>
-        <variable name="user" type="User"/>
+        <import type="com.example.zen.kotlinreddit.models.LoginUser"/>
+        <variable name="loginUser" type="LoginUser"/>
     </data>
 
     <LinearLayout
@@ -29,7 +29,7 @@
             android:ems="10"
             android:hint="Username"
             android:inputType="textPersonName"
-            android:text="@={user.username}"/>
+            android:text="@={loginUser.username}"/>
 
         <TextView
             android:id="@+id/textView2"
@@ -46,14 +46,14 @@
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword"
-            android:text="@={user.password}"/>
+            android:text="@={loginUser.password}"/>
 
         <Button
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login"
-            android:onClick="@{user.onLogin}"/>
+            android:onClick="@{loginUser.onLogin}"/>
     </LinearLayout>
 
 </layout>

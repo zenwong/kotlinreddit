@@ -28,36 +28,40 @@ import java.util.*
 
 class RedditPostsFragment : Fragment() {
 	val select = "select * from posts order by preview desc, created desc"
-	lateinit var subscriptions: CompositeSubscription
+	var subscriptions = CompositeSubscription()
 	lateinit var db: BriteDatabase
+	lateinit var adapter: PostsAdapter
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
+	override fun onResume() {
+		super.onResume()
 		subscriptions = CompositeSubscription()
-	}
-
-	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
-		val adapter = PostsAdapter(context)
-		rv.setHasFixedSize(true)
-		rv.layoutManager = LinearLayoutManager(context)
-		rv.adapter = adapter
-
-		subscriptions.add(db.createQuery("posts", select)
-			.mapToList(RedditPost.MAPPER)
-			.subscribeOn(Schedulers.newThread())
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(adapter))
 
 		subscriptions.add(Observable.fromCallable { Reddit.getHotPosts() }
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe())
+
+		subscriptions.add(db.createQuery("posts", select)
+			.mapToList(RedditPost.MAPPER)
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(adapter))
 	}
 
-	override fun onDestroy() {
-		super.onDestroy()
-		subscriptions.unsubscribe()
+	override fun onAttach(context: Context) {
+		super.onAttach(context)
+		adapter = PostsAdapter(context)
+	}
+
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
+		rv.setHasFixedSize(true)
+		rv.layoutManager = LinearLayoutManager(context)
+		rv.adapter = adapter
+	}
+
+	override fun onPause() {
+		super.onPause()
+		subscriptions.clear()
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -66,10 +70,11 @@ class RedditPostsFragment : Fragment() {
 }
 
 class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.PostsViewHolder>(), Action1<List<RedditPost>> {
-	val posts = ArrayList<RedditPost>()
+	var posts: List<RedditPost> = ArrayList()
 
 	override fun call(list: List<RedditPost>) {
-		posts.addAll(list)
+		//posts.addAll(list)
+		posts = list
 		notifyDataSetChanged()
 	}
 
