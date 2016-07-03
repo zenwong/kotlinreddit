@@ -18,7 +18,7 @@ class RedditPost() {
 	var thumbnail: String? = null
 	var posthint: String? = null
 	var permalink: String? = null
-	var created: Int? = null
+	var created: Long? = null
 	var url: String? = null
 	var title: String? = null
 	var domain: String? = null
@@ -40,7 +40,7 @@ class RedditPost() {
 				permalink = c.getString(11)
 				comments = c.getInt(12)
 				score = c.getInt(13)
-				created = c.getInt(14)
+				created = c.getLong(14)
 			}
 			post
 		}
@@ -83,7 +83,7 @@ class Comment() {
 	var body: String? = null
 	var html: String? = null
 	var score: Int? = null
-	var created: Int? = null
+	var created: Long? = null
 
 	companion object {
 		val MAPPER = Func1<Cursor, Comment> { c ->
@@ -95,7 +95,7 @@ class Comment() {
 				body = c.getString(5)
 				html = c.getString(6)
 				score = c.getInt(7)
-				created = c.getInt(8)
+				created = c.getLong(8)
 			}
 			comment
 		}
@@ -127,7 +127,7 @@ data class Message(val message: String) {
 	var id: String? = null
 	var parent: String? = null
 
-	var created: Int? = null
+	var created: Long? = null
 
 	override fun toString() : String {
 		return "id: $id, parent: $parent, author: $author, created: $created\nmessage: $message\n"

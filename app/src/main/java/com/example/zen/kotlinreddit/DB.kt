@@ -45,7 +45,7 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 				post.permalink = c.getString(11)
 				post.comments = c.getInt(12)
 				post.score = c.getInt(13)
-				post.created = c.getInt(14)
+				post.created = c.getLong(14)
 				posts.add(post)
 			} while(c.moveToNext())
 		}

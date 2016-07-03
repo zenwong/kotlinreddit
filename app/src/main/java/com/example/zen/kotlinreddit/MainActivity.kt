@@ -9,6 +9,8 @@ import com.example.zen.kotlinreddit.fragments.CommentsFragment
 import com.example.zen.kotlinreddit.fragments.RedditPostsFragment
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
+import com.joanzapata.iconify.IconDrawable
+import com.joanzapata.iconify.fonts.FontAwesomeIcons
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -46,6 +48,8 @@ class MainActivity : AppCompatActivity() {
 			println("sync clicked")
 			true
 		}
+
+		item.icon = IconDrawable(this, FontAwesomeIcons.fa_upload).colorRes(R.color.colorAccent).actionBarSize()
 
 		MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM)
 		return super.onCreateOptionsMenu(menu)

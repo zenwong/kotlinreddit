@@ -164,7 +164,8 @@ object Reddit {
 						}
 						if ("created".equals(jp.currentName)) {
 							jp.nextToken()
-							post.created = jp.valueAsInt
+							post.created = jp.valueAsLong
+							println("Reddit parsePosts ${post.created}")
 						}
 						if ("url".equals(jp.currentName)) {
 							jp.nextToken()
@@ -239,7 +240,7 @@ object Reddit {
 
 						if ("created".equals(jp.currentName)) {
 							jp.nextToken()
-							comment.created = jp.valueAsInt
+							comment.created = jp.valueAsLong
 						}
 					}
 
@@ -307,7 +308,7 @@ object Reddit {
 					}
 					if ("created".equals(jp.currentName)) {
 						jp.nextToken()
-						post.created = jp.valueAsInt
+						post.created = jp.valueAsLong
 					}
 					if ("url".equals(jp.currentName)) {
 						jp.nextToken()
@@ -414,7 +415,7 @@ object Reddit {
 
 						if ("created".equals(jp.currentName)) {
 							jp.nextToken()
-							comment.created = jp.valueAsInt
+							comment.created = jp.valueAsLong
 						}
 					}
 
@@ -448,7 +449,7 @@ object Reddit {
 
 					if ("created".equals(jp.currentName)) {
 						jp.nextToken()
-						msg.created = jp.valueAsInt
+						msg.created = jp.valueAsLong
 					}
 
 					if ("dest".equals(jp.currentName)) {

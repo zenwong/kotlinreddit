@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
+import java.text.SimpleDateFormat
 import java.util.*
 
 class RedditPostsFragment : Fragment() {
@@ -70,6 +72,8 @@ class RedditPostsFragment : Fragment() {
 }
 
 class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.PostsViewHolder>(), Action1<List<RedditPost>> {
+	val now = System.currentTimeMillis()
+	val DATE_FORMAT = SimpleDateFormat("EEE, dd MMM yy HH:mm:ss Z")
 	var posts: List<RedditPost> = ArrayList()
 
 	override fun call(list: List<RedditPost>) {
@@ -84,8 +88,12 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 
 	override fun onBindViewHolder(holder: PostsViewHolder, idx: Int) {
 		holder.txtTitle.text = posts[idx].title
-		holder.txtComments.text = "Comments: ${posts[idx].comments}"
-		holder.txtSubreddit.text = "Subreddit: ${posts[idx].subreddit}"
+		holder.txtComments.text = "${posts[idx].comments} {fa-comments}"
+		holder.txtSubreddit.text = "${posts[idx].subreddit} {fa-reddit}"
+		holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"
+		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!!,	Date().time, DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE)
+		//holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!!, now, DateUtils.HOUR_IN_MILLIS)
+
 		Picasso.with(context).load(posts[idx].preview)
 			.fit()
 			.centerCrop()
@@ -102,6 +110,8 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 		val card = iv.card
 		val txtTitle = iv.txtPostTitle
 		val txtSubreddit = iv.txtSubreddit
+		val txtCreated = iv.txtCreated
+		val txtScore = iv.txtScore
 		val txtComments = iv.txtComments
 		val imgPreviw = iv.imgPreview
 

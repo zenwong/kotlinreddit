@@ -7,6 +7,8 @@ import android.util.Log
 import com.example.zen.kotlinreddit.models.AccessToken
 import com.example.zen.kotlinreddit.models.RedditPost
 import com.example.zen.kotlinreddit.models.RefreshToken
+import com.joanzapata.iconify.Iconify
+import com.joanzapata.iconify.fonts.FontAwesomeModule
 import com.squareup.sqlbrite.SqlBrite
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -32,10 +34,11 @@ class App : Application() {
 	override fun onCreate() {
 		sqlBrite = SqlBrite.create()
 		Reddit.init(this, cacheDir)
+		Iconify.with(FontAwesomeModule())
 		db = DB(this)
 		db.writableDatabase
 		EventBus.getDefault().register(this)
-		//accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
+		accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
 		//refreshToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
 
 //		Observable.fromCallable { db.getPosts() }
