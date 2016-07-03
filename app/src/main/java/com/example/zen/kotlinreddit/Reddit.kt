@@ -7,10 +7,8 @@ import com.example.zen.kotlinreddit.models.*
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
-import com.squareup.sqlbrite.BriteDatabase
 import okhttp3.*
 import org.greenrobot.eventbus.EventBus
-import rx.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -25,14 +23,14 @@ object Reddit {
 	lateinit var cache: Cache
 	lateinit var client: OkHttpClient
 	lateinit var ctx: Context
-	lateinit var db: BriteDatabase
+	//lateinit var db: BriteDatabase
 
 	fun init(context: Context, cacheDir: File) {
 		ctx = context
 		cache = Cache(cacheDir, 1024L * 1024L * 100L)
 		//client = OkHttpClient.Builder().authenticator(RedditOauthAuthenticator()).cache(cache).build()
 		client = OkHttpClient.Builder().cache(cache).build()
-		db = App.sqlBrite.wrapDatabaseHelper(DB(ctx), Schedulers.io())
+		//db = App.sqlBrite.wrapDatabaseHelper(DB(ctx), Schedulers.io())
 	}
 
 	fun getAuthUrl(clientid: String = CLIENTID, state: String = "NONCE", redirect: String = "http://zreddit", scope: String = "read identity"): String {
@@ -115,7 +113,7 @@ object Reddit {
 	fun parsePosts(json: String) {
 		val jp = jsonFactory.createParser(json)
 
-		val tr = db.newTransaction()
+		val tr = App.sdb.newTransaction()
 		try {
 			while (jp.nextToken() !== null) {
 				if ("domain".equals(jp.currentName)) {
@@ -179,7 +177,7 @@ object Reddit {
 						if ("mod_reports".equals(jp.currentName)) jp.skipChildren()
 					}
 
-					db.insert("posts", post.getValues())
+					App.sdb.insert("posts", post.getValues())
 				}
 			}
 			tr.markSuccessful()
@@ -203,7 +201,7 @@ object Reddit {
 
 		val jp = jsonFactory.createParser(json)
 
-		val tr = db.newTransaction()
+		val tr = App.sdb.newTransaction()
 		try {
 			while (jp.nextToken() !== null) {
 				if ("id".equals(jp.currentName)) {
@@ -245,7 +243,7 @@ object Reddit {
 					}
 
 					//println(comment)
-					db.insert("comments", comment.getValues())
+					App.sdb.insert("comments", comment.getValues())
 				}
 
 			}
@@ -379,7 +377,7 @@ object Reddit {
 	fun parseComments(json: String) {
 		val jp = jsonFactory.createParser(json)
 
-		val tr = db.newTransaction()
+		val tr = App.sdb.newTransaction()
 		try {
 			while (jp.nextToken() !== null) {
 				if ("id".equals(jp.currentName)) {
@@ -420,7 +418,7 @@ object Reddit {
 					}
 
 					println(comment)
-					db.insert("comments", comment.getValues())
+					App.sdb.insert("comments", comment.getValues())
 				}
 
 			}

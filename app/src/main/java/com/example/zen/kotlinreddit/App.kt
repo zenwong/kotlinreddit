@@ -9,6 +9,7 @@ import com.example.zen.kotlinreddit.models.RedditPost
 import com.example.zen.kotlinreddit.models.RefreshToken
 import com.joanzapata.iconify.Iconify
 import com.joanzapata.iconify.fonts.FontAwesomeModule
+import com.squareup.sqlbrite.BriteDatabase
 import com.squareup.sqlbrite.SqlBrite
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -29,10 +30,14 @@ class App : Application() {
 		var refreshToken: String? = null
 		lateinit var db: DB
 		lateinit var sqlBrite : SqlBrite
+		lateinit var sdb: BriteDatabase
 	}
 
 	override fun onCreate() {
 		sqlBrite = SqlBrite.create()
+		sdb = sqlBrite.wrapDatabaseHelper(DB(this), Schedulers.io())
+		sdb.setLoggingEnabled(true)
+
 		Reddit.init(this, cacheDir)
 		Iconify.with(FontAwesomeModule())
 		db = DB(this)

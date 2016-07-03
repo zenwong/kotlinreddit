@@ -11,11 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.zen.kotlinreddit.App
-import com.example.zen.kotlinreddit.DB
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.models.Comment
 import com.example.zen.kotlinreddit.views.DividerItemDecoration
-import com.squareup.sqlbrite.BriteDatabase
 import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.row_comment.view.*
 import rx.android.schedulers.AndroidSchedulers
@@ -26,7 +24,7 @@ import java.util.*
 
 class CommentsFragment : Fragment() {
 	var subscriptions = CompositeSubscription()
-	lateinit var db : BriteDatabase
+	//lateinit var db : BriteDatabase
 	val table = "comments"
 	val select = "select * from comments where pid = ?"
 	//lateinit var adapter: CommentsAdapter
@@ -59,7 +57,7 @@ class CommentsFragment : Fragment() {
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
+		//db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
 		//savedInstanceState?.let {	pid = it.getInt("pid") }
 		//pid = arguments.getString("pid")
 		pid = arguments.getInt("pid")
@@ -67,7 +65,7 @@ class CommentsFragment : Fragment() {
 
 		val adapter = CommentsAdapter(context)
 
-		subscriptions.add(db.createQuery(table, select, pid.toString())
+		subscriptions.add(App.sdb.createQuery(table, select, pid.toString())
 			.mapToList(Comment.MAPPER)
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
