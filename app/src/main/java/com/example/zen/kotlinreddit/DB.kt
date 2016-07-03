@@ -3,28 +3,35 @@ package com.example.zen.kotlinreddit
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.zen.kotlinreddit.models.Comment
 import com.example.zen.kotlinreddit.models.RedditPost
 import java.util.*
 
-class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
+class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	lateinit var db: SQLiteDatabase
 
 	fun insertPosts(posts: List<RedditPost>) {
 		db = writableDatabase
-
 		posts.forEach {
 			db.insert("posts", null, it.getValues())
 		}
 	}
 
-	fun getPosts() : List<RedditPost> {
+	fun insertComments(comments: List<Comment>) {
 		db = writableDatabase
+		comments.forEach {
+			db.insert("comments", null, it.getValues())
+		}
+	}
+
+	fun getPosts() : List<RedditPost> {
+		db = readableDatabase
 
 		val posts = ArrayList<RedditPost>()
 		val c = db.rawQuery("select * from posts order by preview desc", null)
 		if(c.moveToFirst()) {
 			do {
-				val post = RedditPost("reddit.com")
+				val post = RedditPost()
 				post.rid = c.getString(1)
 				post.title = c.getString(2)
 				post.url = c.getString(3)
@@ -38,7 +45,6 @@ class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 				post.permalink = c.getString(11)
 				post.comments = c.getInt(12)
 				post.score = c.getInt(13)
-				post.created = c.getInt(14)
 
 				val preview = c.getString(8)
 				if(preview == null) {
@@ -47,6 +53,7 @@ class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 					post.preview = preview
 				}
 
+				post.created = c.getLong(14)
 				posts.add(post)
 			} while(c.moveToNext())
 		}
@@ -60,8 +67,16 @@ class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 		db.execSQL(messagesSchema)
 	}
 
+	fun clearTables() {
+		db = writableDatabase
+		db.execSQL(clearSQL)
+		onCreate(db)
+	}
+
 	override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 	}
+
+	val clearSQL = "delete from posts; delete from comments; delete from messages;"
 
 	val postsSchema = """create table if not exists posts (
 	_id integer primary key autoincrement,
@@ -70,7 +85,7 @@ class DB(val ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	url text,
 	author text,
 	subreddit text,
-  media_title text,
+	media_title text,
 	media_preview text,
 	preview text,
 	thumbnail text,
@@ -90,10 +105,11 @@ val commentsSchema = """create table if not exists comments (
 	parent text,
 	author text,
 	body text,
+	html text,
 	score integer,
 	created integer,
 	foreign key(pid) references posts(_id) on delete cascade,
-	unique(cid) on conflict ignore
+	unique(cid) on conflict replace
 );"""
 
 val messagesSchema = """create table if not exists messages (
@@ -102,8 +118,6 @@ val messagesSchema = """create table if not exists messages (
 	title text,
 	dest text,
 	author text,
-	parent text,
-	created integer,
-	unique(mid) on conflict ignore
+	parent text,created integer,unique(mid) on conflict ignore
 );"""
 }

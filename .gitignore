@@ -6,6 +6,9 @@ bin/
 /out/
 .idea_modules/
 atlassian-ide-plugin.xml
+local.properties
+db
+schema.sql
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
