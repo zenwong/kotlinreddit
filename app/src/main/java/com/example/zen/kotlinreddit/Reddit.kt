@@ -165,7 +165,7 @@ object Reddit {
 						if ("created".equals(jp.currentName)) {
 							jp.nextToken()
 							post.created = jp.valueAsLong
-							println("Reddit parsePosts ${post.created}")
+							//println("Reddit parsePosts ${post.created}")
 						}
 						if ("url".equals(jp.currentName)) {
 							jp.nextToken()
@@ -244,7 +244,7 @@ object Reddit {
 						}
 					}
 
-					println(comment)
+					//println(comment)
 					db.insert("comments", comment.getValues())
 				}
 

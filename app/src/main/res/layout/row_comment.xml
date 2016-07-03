@@ -12,6 +12,7 @@
 		android:layout_alignParentLeft="true"
 		android:text="author"
 		android:textStyle="bold"
+		android:textSize="@dimen/small_text_size"
 		android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
 	<com.joanzapata.iconify.widget.IconTextView
@@ -22,6 +23,7 @@
 		android:layout_alignParentRight="true"
 		android:text="created"
 		android:textStyle="bold"
+		android:textSize="@dimen/small_text_size"
 		android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
 	<com.joanzapata.iconify.widget.IconTextView

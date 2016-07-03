@@ -59,8 +59,16 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 		db.execSQL(messagesSchema)
 	}
 
+	fun clearTables() {
+		db = writableDatabase
+		db.execSQL(clearSQL)
+		onCreate(db)
+	}
+
 	override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 	}
+
+	val clearSQL = "delete from posts; delete from comments; delete from messages;"
 
 	val postsSchema = """create table if not exists posts (
 	_id integer primary key autoincrement,
@@ -79,7 +87,7 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	score integer,
 	created integer,
 	clicked integer,
-	unique(rid) on conflict replace
+	unique(rid) on conflict ignore
 );"""
 
 val commentsSchema = """create table if not exists comments (

@@ -25,7 +25,7 @@ import rx.subscriptions.CompositeSubscription
 import java.util.*
 
 class CommentsFragment : Fragment() {
-	val subscriptions = CompositeSubscription()
+	var subscriptions = CompositeSubscription()
 	lateinit var db : BriteDatabase
 	val table = "comments"
 	val select = "select * from comments where pid = ?"
@@ -55,10 +55,7 @@ class CommentsFragment : Fragment() {
 
 	override fun onResume() {
 		super.onResume()
-
-		//adapter = CommentsAdapter(context)
-
-
+		subscriptions = CompositeSubscription()
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -88,12 +85,13 @@ class CommentsFragment : Fragment() {
 
 	override fun onPause() {
 		super.onPause()
-		subscriptions.unsubscribe()
+		subscriptions.clear()
 	}
 }
 
 class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHolder>(), Action1<List<Comment>> {
 	val items = ArrayList<Comment>()
+	val now = System.currentTimeMillis()
 
 	override fun call(t: List<Comment>) {
 		items.addAll(t)
@@ -107,7 +105,7 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 	override fun onBindViewHolder(holder: CommentsViewHolder, idx: Int) {
 		holder.txtAuthor.text = items[idx].author
 		holder.txtBody.text = items[idx].body
-		holder.txtCreated.text = DateUtils.getRelativeDateTimeString(context, items[idx].created!!, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS,  0)
+		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(items[idx].created!!, now,  DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE)
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder? {

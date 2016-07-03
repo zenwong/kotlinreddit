@@ -24,7 +24,7 @@ const val COMMENTS = 2
 const val MESSAGES = 3
 
 class MainActivity : AppCompatActivity() {
-	lateinit var subscriptions: CompositeSubscription
+	var subscriptions =  CompositeSubscription()
 
 	override fun onStart() {
 		super.onStart()
@@ -39,13 +39,13 @@ class MainActivity : AppCompatActivity() {
 
 	override fun onStop() {
 		EventBus.getDefault().unregister(this)
-		subscriptions.unsubscribe()
+		subscriptions.clear()
 		super.onStop()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		val item = menu.add("sync").setOnMenuItemClickListener {
-			println("sync clicked")
+			subscriptions.add(Observable.fromCallable { DB(this).clearTables() }.subscribeOn(Schedulers.newThread()).subscribe())
 			true
 		}
 
