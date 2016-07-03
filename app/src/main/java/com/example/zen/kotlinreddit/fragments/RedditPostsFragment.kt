@@ -89,7 +89,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 	override fun onBindViewHolder(holder: PostsViewHolder, idx: Int) {
 		holder.txtTitle.text = posts[idx].title
 		holder.txtComments.text = "${posts[idx].comments} {fa-comments}"
-		holder.txtSubreddit.text = "${posts[idx].subreddit} {fa-reddit}"
+		holder.txtSubreddit.text = "{fa-reddit} ${posts[idx].subreddit}"
 		holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!!,	Date().time, DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE)
 		//holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!!, now, DateUtils.HOUR_IN_MILLIS)

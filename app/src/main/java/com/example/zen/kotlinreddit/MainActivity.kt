@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 			true
 		}
 
-		item.icon = IconDrawable(this, FontAwesomeIcons.fa_upload).colorRes(R.color.colorAccent).actionBarSize()
+		item.icon = IconDrawable(this, FontAwesomeIcons.fa_refresh).colorRes(R.color.button_material_light).actionBarSize()
 
 		MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM)
 		return super.onCreateOptionsMenu(menu)

@@ -79,7 +79,7 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	score integer,
 	created integer,
 	clicked integer,
-	unique(rid) on conflict ignore
+	unique(rid) on conflict replace
 );"""
 
 val commentsSchema = """create table if not exists comments (
@@ -93,7 +93,7 @@ val commentsSchema = """create table if not exists comments (
 	score integer,
 	created integer,
 	foreign key(pid) references posts(_id) on delete cascade,
-	unique(cid) on conflict ignore
+	unique(cid) on conflict replace
 );"""
 
 val messagesSchema = """create table if not exists messages (

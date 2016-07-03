@@ -3,8 +3,10 @@ package com.example.zen.kotlinreddit.fragments
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.DB
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.models.Comment
+import com.example.zen.kotlinreddit.views.DividerItemDecoration
 import com.squareup.sqlbrite.BriteDatabase
 import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.row_comment.view.*
@@ -27,6 +30,7 @@ class CommentsFragment : Fragment() {
 	val table = "comments"
 	val select = "select * from comments where pid = ?"
 	//lateinit var adapter: CommentsAdapter
+	//var adapter : CommentsAdapter? = null
 	val layout = LinearLayoutManager(context)
 	//var pid : String? = null
 	var pid: Int? = null
@@ -49,6 +53,14 @@ class CommentsFragment : Fragment() {
 		}
 	}
 
+	override fun onResume() {
+		super.onResume()
+
+		//adapter = CommentsAdapter(context)
+
+
+	}
+
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
 		//savedInstanceState?.let {	pid = it.getInt("pid") }
@@ -57,23 +69,17 @@ class CommentsFragment : Fragment() {
 		println("pid: $pid")
 
 		val adapter = CommentsAdapter(context)
-		rv.setHasFixedSize(true)
-		rv.layoutManager = layout
-		rv.adapter = adapter
-
-//		db.createQuery(table, select, pid.toString())
-//			.mapToList(Comment.MAPPER)
-//			.observeOn(AndroidSchedulers.mainThread())
-//			.subscribe({ comments ->
-//				comments.forEach {
-//					println("pid: ${it.pid}, _id: ${it.id}, author: ${it.author}\nbody: ${it.body}\n")
-//				}
-//			})
 
 		subscriptions.add(db.createQuery(table, select, pid.toString())
 			.mapToList(Comment.MAPPER)
+			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
+
+		rv.setHasFixedSize(true)
+		rv.layoutManager = layout
+		rv.addItemDecoration(DividerItemDecoration(ResourcesCompat.getDrawable(resources, R.drawable.abc_list_divider_mtrl_alpha, null)!!))
+		rv.adapter = adapter
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -101,6 +107,7 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 	override fun onBindViewHolder(holder: CommentsViewHolder, idx: Int) {
 		holder.txtAuthor.text = items[idx].author
 		holder.txtBody.text = items[idx].body
+		holder.txtCreated.text = DateUtils.getRelativeDateTimeString(context, items[idx].created!!, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS,  0)
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder? {
@@ -112,4 +119,5 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 class CommentsViewHolder(iv: View): RecyclerView.ViewHolder(iv) {
 	val txtAuthor = iv.txtAuthor
 	val txtBody = iv.txtBody
+	val txtCreated = iv.txtCommentCreated
 }

@@ -5,72 +5,72 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="2dp">
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="5dp">
 
-        <com.joanzapata.iconify.widget.IconTextView
-            android:id="@+id/txtSubreddit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:text="Subreddit"
-            android:textSize="@dimen/small_text_size"
-            />
+		<com.joanzapata.iconify.widget.IconTextView
+			android:id="@+id/txtSubreddit"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentTop="true"
+			android:layout_marginTop="10dp"
+			android:text="Subreddit"
+			android:textSize="@dimen/small_text_size"
+		/>
 
-        <com.joanzapata.iconify.widget.IconTextView
-          android:id="@+id/txtCreated"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentRight="true"
-          android:layout_alignParentTop="true"
-          android:text="Created"
-          android:textSize="@dimen/small_text_size"
-        />
+		<com.joanzapata.iconify.widget.IconTextView
+			android:id="@+id/txtCreated"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentTop="true"
+			android:layout_marginTop="10dp"
+			android:text="Created"
+			android:textSize="@dimen/small_text_size"
+		/>
 
-        <TextView
-            android:id="@+id/txtPostTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/txtSubreddit"
-            android:layout_marginTop="2dp"
-            android:textStyle="bold"
-            android:text="Post Title"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+		<TextView
+			android:id="@+id/txtPostTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/txtSubreddit"
+			android:layout_marginTop="10dp"
+			android:textStyle="bold"
+			android:text="Post Title"
+			android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
-        <ImageView
-            android:id="@+id/imgPreview"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/txtPostTitle"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            app:srcCompat="@color/cardview_light_background"/>
+		<ImageView
+			android:id="@+id/imgPreview"
+			android:layout_width="match_parent"
+			android:layout_height="220dp"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:layout_below="@+id/txtPostTitle"
+			android:layout_marginTop="10dp"
+			android:layout_marginBottom="10dp"
+			app:srcCompat="@color/cardview_light_background"/>
 
-        <com.joanzapata.iconify.widget.IconTextView
-            android:id="@+id/txtScore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/imgPreview"
-            android:layout_marginLeft="5dp"
-            android:textSize="@dimen/small_text_size"
-            />
+		<com.joanzapata.iconify.widget.IconTextView
+			android:id="@+id/txtScore"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:layout_below="@+id/imgPreview"
+			android:textSize="@dimen/small_text_size"
+		/>
 
-        <com.joanzapata.iconify.widget.IconTextView
-            android:id="@+id/txtComments"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/imgPreview"
-            android:layout_marginRight="5dp"
-            android:textSize="@dimen/small_text_size"
-        />
-    </RelativeLayout>
+		<com.joanzapata.iconify.widget.IconTextView
+			android:id="@+id/txtComments"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentRight="true"
+			android:layout_below="@+id/imgPreview"
+			android:textSize="@dimen/small_text_size"
+		/>
+	</RelativeLayout>
 </android.support.v7.widget.CardView>
