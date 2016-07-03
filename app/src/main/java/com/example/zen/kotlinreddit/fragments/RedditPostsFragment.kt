@@ -10,13 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.zen.kotlinreddit.App
-import com.example.zen.kotlinreddit.DB
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.RedditPost
 import com.squareup.picasso.Picasso
-import com.squareup.sqlbrite.BriteDatabase
 import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.row_post.view.*
 import org.greenrobot.eventbus.EventBus
@@ -30,48 +28,35 @@ import java.util.*
 class RedditPostsFragment : Fragment() {
 	val select = "select * from posts order by preview desc, created desc"
 	var subscriptions = CompositeSubscription()
-	lateinit var db: BriteDatabase
 	var adapter: PostsAdapter? = null
+
+	override fun onAttach(context: Context) {
+		super.onAttach(context)
+		adapter = PostsAdapter(context)
+	}
 
 	override fun onResume() {
 		super.onResume()
 		println("PostsFragment onResume")
 		subscriptions = CompositeSubscription()
-
-//		subscriptions.add(Observable.fromCallable { Reddit.getHotPosts() }
-//			.subscribeOn(Schedulers.newThread())
-//			.observeOn(AndroidSchedulers.mainThread())
-//			.subscribe())
-
-//		val sqlite = db.createQuery("posts", select).mapToList(RedditPost.MAPPER)
-//		val network = Observable.fromCallable { Reddit.getHotPosts() }
-//		Observable.concat(sqlite, network).first()
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		println("PostsFragment onViewCreated")
-		adapter = PostsAdapter(context)
-		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
 		rv.setHasFixedSize(true)
 		rv.layoutManager = LinearLayoutManager(context)
 		rv.adapter = adapter
 
-//		subscriptions.add(db.createQuery("posts", select)
-//			.mapToList(RedditPost.MAPPER)
-//			.subscribeOn(Schedulers.newThread())
-//			.observeOn(AndroidSchedulers.mainThread())
-//			.subscribe(adapter))
-
-		Observable.fromCallable { Reddit.getHotPosts() }
+		subscriptions.add(Observable.fromCallable { Reddit.getHotPosts() }
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe()
+			.subscribe())
 
-		App.sdb.createQuery("posts", select)
+		subscriptions.add(App.sdb.createQuery("posts", select)
 			.mapToList(RedditPost.MAPPER)
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(adapter)
+			.subscribe(adapter))
 	}
 
 	override fun onPause() {
