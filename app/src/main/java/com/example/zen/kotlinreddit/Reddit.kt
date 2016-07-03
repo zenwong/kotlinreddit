@@ -66,7 +66,7 @@ object Reddit {
                 jp.nextToken()
                 val access = jp.valueAsString
                 App.accessToken = access
-                get(access, REDDIT_FRONT)
+                //get(access, REDDIT_FRONT)
                 EventBus.getDefault().post(AccessToken(access))
                 EventBus.getDefault().post(Navigation(FRONT))
               }
@@ -89,19 +89,19 @@ object Reddit {
     return client.newCall(req).execute().body().string()
   }
 
-  fun get(accessToken: String? = App.accessToken, url: String) {
-    client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer $accessToken").build()).enqueue(object : Callback {
-      override fun onFailure(call: Call?, e: IOException?) {
-      }
-
-      override fun onResponse(call: Call?, response: Response) {
-        if (response.isSuccessful) parseFrontPage(response.body().string())
-        else {
-          println("onResponse not successful " + response.code())
-        }
-      }
-    })
-  }
+//  fun get(accessToken: String? = App.accessToken, url: String) {
+//    client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer $accessToken").build()).enqueue(object : Callback {
+//      override fun onFailure(call: Call?, e: IOException?) {
+//      }
+//
+//      override fun onResponse(call: Call?, response: Response) {
+//        if (response.isSuccessful) parseFrontPage(response.body().string())
+//        else {
+//          println("onResponse not successful " + response.code())
+//        }
+//      }
+//    })
+//  }
 
   fun getObs(url: String): String {
     return client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute().body().string()
@@ -269,7 +269,7 @@ object Reddit {
       }
     }
 
-    EventBus.getDefault().post(list)
+    //EventBus.getDefault().post(list)
 
     list.sortByDescending { it.preview }
     return list

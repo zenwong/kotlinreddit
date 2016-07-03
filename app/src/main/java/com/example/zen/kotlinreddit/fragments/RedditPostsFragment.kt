@@ -24,7 +24,7 @@ import rx.subscriptions.CompositeSubscription
 import java.util.*
 
 class RedditPostsFragment: Fragment() {
-	val select = "select * from posts order by created desc, preview desc"
+	val select = "select * from posts order by preview desc, created desc"
 	val subscriptions = CompositeSubscription()
 	lateinit var db: BriteDatabase
 

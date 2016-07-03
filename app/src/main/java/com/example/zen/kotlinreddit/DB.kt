@@ -54,56 +54,37 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	}
 
 	override fun onCreate(db: SQLiteDatabase) {
-		db.execSQL(postsSchema)
-		db.execSQL(commentsSchema)
-		db.execSQL(messagesSchema)
+    println("DB onCreate")
+    db.execSQL(testSchema)
+//		db.execSQL(postsSchema)
+//		db.execSQL(commentsSchema)
+//		db.execSQL(messagesSchema)
 	}
 
 	override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 	}
 
+  val testSchema = """create table if not exists test (cid text);"""
+
 	val postsSchema = """create table if not exists posts (
 	_id integer primary key autoincrement,
-	rid text,
-	title text,
-	url text,
-	author text,
-	subreddit text,
-  media_title text,
-	media_preview text,
-	preview text,
-	thumbnail text,
-	posthint text,
-	permalink text,
-	comments integer,
-	score integer,
-	created integer,
-	clicked integer,
+	rid text,title text,url text,author text,subreddit text,media_title text,
+	media_preview text,preview text,thumbnail text,posthint text,permalink text,
+	comments integer,score integer,created integer,clicked integer,
 	unique(rid) on conflict ignore
 );"""
 
 val commentsSchema = """create table if not exists comments (
 	_id integer primary key autoincrement,
-	pid integer,
-	cid text,
-	parent text,
-	author text,
-	body text,
-	html text,
-	score integer,
-	created integer,
+	pid integer,cid text,parent text,author text,body text,
+	html text,score integer,created integer,
 	foreign key(pid) references posts(_id) on delete cascade,
 	unique(cid) on conflict ignore
 );"""
 
 val messagesSchema = """create table if not exists messages (
 	_id integer primary key autoincrement,
-	mid text,
-	title text,
-	dest text,
-	author text,
-	parent text,
-	created integer,
-	unique(mid) on conflict ignore
+	mid text,title text,dest text,author text,
+	parent text,created integer,unique(mid) on conflict ignore
 );"""
 }
