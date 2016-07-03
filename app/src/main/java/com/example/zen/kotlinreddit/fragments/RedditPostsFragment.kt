@@ -34,7 +34,6 @@ class RedditPostsFragment : Fragment() {
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-		println("RedditPostsFragment onViewCreated")
 		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
 		val adapter = PostsAdapter(context)
 		rv.setHasFixedSize(true)
@@ -54,9 +53,9 @@ class RedditPostsFragment : Fragment() {
 			})
 	}
 
-	override fun onPause() {
-		super.onPause()
-		//subscriptions.unsubscribe()
+	override fun onDestroy() {
+		super.onDestroy()
+		subscriptions.unsubscribe()
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
