@@ -23,42 +23,40 @@ import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import java.util.*
 
-class RedditPostsFragment: Fragment() {
+class RedditPostsFragment : Fragment() {
 	val select = "select * from posts order by preview desc, created desc"
-	val subscriptions = CompositeSubscription()
+	lateinit var subscriptions: CompositeSubscription
 	lateinit var db: BriteDatabase
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		subscriptions = CompositeSubscription()
+	}
+
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		println("RedditPostsFragment onViewCreated")
 		db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
 		val adapter = PostsAdapter(context)
 		rv.setHasFixedSize(true)
 		rv.layoutManager = LinearLayoutManager(context)
 		rv.adapter = adapter
 
-//		db.createQuery("posts", select)
-//			.mapToList(RedditPost.MAPPER)
-//			.observeOn(AndroidSchedulers.mainThread())
-//			.subscribe({ posts ->
-//				posts.forEach {
-//					println("title: ${it.title}\npreview: ${it.preview}\nthumb: ${it.thumbnail}\n")
-//				}
-//			})
-
 		subscriptions.add(db.createQuery("posts", select)
 			.mapToList(RedditPost.MAPPER)
+			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
 
-    subscriptions.add(Observable.fromCallable { Reddit.getNewPosts() }
-    .subscribeOn(Schedulers.newThread())
-    .subscribe {
-      println("onParsePosts")
-    })
+		subscriptions.add(Observable.fromCallable { Reddit.getNewPosts() }
+			.subscribeOn(Schedulers.newThread())
+			.subscribe {
+				println("onParsePosts")
+			})
 	}
 
 	override fun onPause() {
 		super.onPause()
-		subscriptions.unsubscribe()
+		//subscriptions.unsubscribe()
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -66,7 +64,7 @@ class RedditPostsFragment: Fragment() {
 	}
 }
 
-class PostsAdapter(val context: Context): RecyclerView.Adapter<PostsAdapter.PostsViewHolder>(), Action1<List<RedditPost>> {
+class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.PostsViewHolder>(), Action1<List<RedditPost>> {
 	val posts = ArrayList<RedditPost>()
 
 	override fun call(list: List<RedditPost>) {
@@ -83,10 +81,10 @@ class PostsAdapter(val context: Context): RecyclerView.Adapter<PostsAdapter.Post
 		holder.txtComments.text = "Comments: ${posts[idx].comments}"
 		holder.txtSubreddit.text = "Subreddit: ${posts[idx].subreddit}"
 		Picasso.with(context).load(posts[idx].preview)
-      //.resize(holder.imgPreviw.measuredWidth, 0)
-      .fit()
-      .centerCrop()
-      .into(holder.imgPreviw)
+			//.resize(holder.imgPreviw.measuredWidth, 0)
+			.fit()
+			.centerCrop()
+			.into(holder.imgPreviw)
 		val url = "${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json"
 		Reddit.getComments(url)
 	}
