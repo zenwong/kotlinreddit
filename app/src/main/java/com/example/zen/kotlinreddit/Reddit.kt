@@ -354,12 +354,13 @@ object Reddit {
 				"title" -> media.title = jp.nextTextValue()
 				"html" -> media.html = jp.nextTextValue()
 				"provider_name" -> media.provider = jp.nextTextValue()
-				"thumbnail" -> media.thumbnail = jp.nextTextValue()
+				"thumbnail_url" -> media.thumbnail = jp.nextTextValue()
 			}
 		}
 		jp.nextToken()
 		jp.nextToken()
 		jp.nextToken()
+		println("parseMedia ${jp.currentName}")
 	}
 
 	fun parsePreview(jp: JsonParser, post: RedditPost) {
@@ -401,9 +402,11 @@ object Reddit {
 						when (key) {
 							"user_reports" -> jp.skipChildren()
 							"secure_media" -> {
-								val media = Media()
-								parseMedia(jp, media)
-								println("MEDIA: $media")
+								if(jp.nextToken() == JsonToken.START_OBJECT) {
+									val media = Media()
+									parseMedia(jp, media)
+									println("MEDIA: $media")
+								}
 							}
 							"id" -> header.id = jp.nextTextValue()
 							"author" -> header.author = jp.nextTextValue()
