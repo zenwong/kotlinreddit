@@ -196,6 +196,17 @@ class Preview {
 	}
 }
 
+class Media {
+	var provider: String? = null
+	var title: String? = null
+	var html: String? = null
+	var thumbnail: String? = null
+
+	override fun toString(): String {
+		return "title: $title\nthumbnail: $thumbnail\nhtml: $html\n"
+	}
+}
+
 class Comment() {
 	var id: String? = null
 	var parent: String? = null

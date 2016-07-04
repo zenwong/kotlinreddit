@@ -347,6 +347,21 @@ object Reddit {
 		//info(jp)
 	}
 
+	fun parseMedia(jp: JsonParser, media: Media) {
+		while (jp.nextToken() !== JsonToken.END_OBJECT) {
+			val key = jp.currentName
+			when(key) {
+				"title" -> media.title = jp.nextTextValue()
+				"html" -> media.html = jp.nextTextValue()
+				"provider_name" -> media.provider = jp.nextTextValue()
+				"thumbnail" -> media.thumbnail = jp.nextTextValue()
+			}
+		}
+		jp.nextToken()
+		jp.nextToken()
+		jp.nextToken()
+	}
+
 	fun parsePreview(jp: JsonParser, post: RedditPost) {
 		while (jp.nextToken() !== null) {
 			if ("source".equals(jp.currentName)) jp.skipChildren()
@@ -376,7 +391,6 @@ object Reddit {
 		val tr = App.sdb.newTransaction()
 		try {
 			while (jp.nextToken() !== null) {
-
 				if ("selftext".equals(jp.currentName)) {
 					val header = CommentHeader()
 					header.parent = parent
@@ -385,8 +399,14 @@ object Reddit {
 					loop@ while (jp.nextToken() != JsonToken.END_OBJECT) {
 						val key = jp.currentName
 						when (key) {
+							"secure_media" -> {
+								val media = Media()
+								parseMedia(jp, media)
+								println("MEDIA: $media")
+							}
 							"id" -> header.id = jp.nextTextValue()
 							"author" -> header.author = jp.nextTextValue()
+							"media" -> jp.skipChildren()
 							"score" -> header.score = jp.nextIntValue(0)
 							"preview" -> {
 								val preview = Preview()
@@ -438,6 +458,7 @@ object Reddit {
 
 	fun parsePreview(jp: JsonParser, preview: Preview, width: Int = 320) {
 		val thumbWidth = "w=$width"
+		var selectedPreview: String? = null
 		while (jp.nextToken() !== JsonToken.END_OBJECT) {
 			val key = jp.currentName
 
@@ -453,6 +474,7 @@ object Reddit {
 					while (jp.nextToken() != JsonToken.END_ARRAY) {
 						if ("url".equals(jp.currentName)) {
 							val thumb = jp.nextTextValue()
+							selectedPreview = thumb
 							if (thumb.contains(thumbWidth)) {
 								preview.thumb = thumb.replace("amp;", "")
 							}
@@ -494,11 +516,12 @@ object Reddit {
 					jp.nextToken()
 					jp.nextToken()
 					jp.nextToken()
-					jp.nextToken()
 				}
 			}
 
 		}
+		// if desired preview width not available select next best width
+		if(preview.thumb == null) preview.thumb = selectedPreview
 	}
 
 	fun parseMessages() {

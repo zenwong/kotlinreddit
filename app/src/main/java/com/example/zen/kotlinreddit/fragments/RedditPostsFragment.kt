@@ -91,8 +91,8 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 		holder.txtSubreddit.text = "{fa-reddit} ${posts[idx].subreddit}"
 		holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"
 
-		println("PostAdapter onBindViewHolder created: ${posts[idx].created} now: $now")
-		println("PostAdapter display: ${posts[idx].display}")
+		//println("PostAdapter onBindViewHolder created: ${posts[idx].created} now: $now")
+		//println("PostAdapter display: ${posts[idx].display}")
 
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!! * 1000L,	now, DateUtils.MINUTE_IN_MILLIS)
 		//holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!!, now, DateUtils.HOUR_IN_MILLIS)
@@ -126,6 +126,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 //				EventBus.getDefault().post(nav)
 
 			val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
+			println(url)
 			val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
 				EventBus.getDefault().post(req)
 				println("comments adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
