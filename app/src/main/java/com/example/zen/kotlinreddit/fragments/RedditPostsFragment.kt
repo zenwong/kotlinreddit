@@ -89,7 +89,10 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 		holder.txtComments.text = "${posts[idx].comments} {fa-comments}"
 		holder.txtSubreddit.text = "{fa-reddit} ${posts[idx].subreddit}"
 		holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"
-		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!!,	now, DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE)
+
+		println("PostAdapter onBindViewHolder created: ${posts[idx].created} now: $now")
+
+		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!! * 1000L,	now, DateUtils.MINUTE_IN_MILLIS)
 		//holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!!, now, DateUtils.HOUR_IN_MILLIS)
 
 		Picasso.with(context).load(posts[idx].preview)

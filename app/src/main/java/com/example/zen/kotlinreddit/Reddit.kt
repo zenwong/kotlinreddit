@@ -304,10 +304,10 @@ object Reddit {
 						jp.nextToken()
 						post.permalink = jp.valueAsString
 					}
-					if ("created".equals(jp.currentName)) {
-						jp.nextToken()
-						post.created = jp.valueAsLong
-					}
+//					if ("created".equals(jp.currentName)) {
+//						jp.nextToken()
+//						post.created = jp.valueAsLong
+//					}
 					if ("url".equals(jp.currentName)) {
 						jp.nextToken()
 						post.url = jp.valueAsString
@@ -315,6 +315,10 @@ object Reddit {
 					if ("title".equals(jp.currentName)) {
 						jp.nextToken()
 						post.title = jp.valueAsString
+					}
+					if ("created_utc".equals(jp.currentName)) {
+						jp.nextToken()
+						post.created = jp.valueAsLong
 					}
 
 					if ("mod_reports".equals(jp.currentName)) jp.skipChildren()
