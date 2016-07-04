@@ -97,6 +97,7 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	score integer,
 	created integer,
 	clicked integer,
+	display text,
 	unique(rid) on conflict ignore
 );"""
 

@@ -13,7 +13,7 @@ import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.models.CommentsRequest
-import com.example.zen.kotlinreddit.models.RedditPost
+import com.example.zen.kotlinreddit.models.Post
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.row_post.view.*
@@ -26,7 +26,8 @@ import rx.subscriptions.CompositeSubscription
 import java.util.*
 
 class RedditPostsFragment : Fragment() {
-	val select = "select * from posts order by preview desc, created desc"
+	//val select = "select * from posts order by display desc, created desc"
+	val select = "select * from posts order by display desc"
 	var subscriptions = CompositeSubscription()
 	var adapter: PostsAdapter? = null
 
@@ -53,7 +54,7 @@ class RedditPostsFragment : Fragment() {
 			.subscribe())
 
 		subscriptions.add(App.sdb.createQuery("posts", select)
-			.mapToList(RedditPost.MAPPER)
+			.mapToList(Post.MAPPER)
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
@@ -69,11 +70,11 @@ class RedditPostsFragment : Fragment() {
 	}
 }
 
-class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.PostsViewHolder>(), Action1<List<RedditPost>> {
+class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.PostsViewHolder>(), Action1<List<Post>> {
 	val now = System.currentTimeMillis()
-	var posts: List<RedditPost> = ArrayList()
+	var posts: List<Post> = ArrayList()
 
-	override fun call(list: List<RedditPost>) {
+	override fun call(list: List<Post>) {
 		//posts.addAll(list)
 		println("PostsAdapter call")
 		posts = list
@@ -91,11 +92,12 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 		holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"
 
 		println("PostAdapter onBindViewHolder created: ${posts[idx].created} now: $now")
+		println("PostAdapter display: ${posts[idx].display}")
 
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!! * 1000L,	now, DateUtils.MINUTE_IN_MILLIS)
 		//holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!!, now, DateUtils.HOUR_IN_MILLIS)
 
-		Picasso.with(context).load(posts[idx].preview)
+		Picasso.with(context).load(posts[idx].display)
 			.fit()
 			.centerCrop()
 			.into(holder.imgPreviw)
