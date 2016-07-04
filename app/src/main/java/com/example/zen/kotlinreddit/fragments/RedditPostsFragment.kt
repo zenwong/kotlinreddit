@@ -126,7 +126,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 //				EventBus.getDefault().post(nav)
 
 			val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
-			val req = CommentsRequest(url, posts[adapterPosition]._id!!)
+			val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
 				EventBus.getDefault().post(req)
 				println("comments adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}

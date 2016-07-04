@@ -24,14 +24,11 @@ import java.util.*
 
 class CommentsFragment : Fragment() {
 	var subscriptions = CompositeSubscription()
-	//lateinit var db : BriteDatabase
 	val table = "comments"
-	val select = "select * from comments where pid = ?"
-	//lateinit var adapter: CommentsAdapter
-	//var adapter : CommentsAdapter? = null
+	val select = "select * from comments where parent = ?"
 	val layout = LinearLayoutManager(context)
-	//var pid : String? = null
-	var pid: Int? = null
+	var pid : String? = null
+	//var pid: Int? = null
 
 	companion object {
 		fun newInstance(postId: String) : CommentsFragment {
@@ -57,11 +54,9 @@ class CommentsFragment : Fragment() {
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-		//db = App.sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
-		//savedInstanceState?.let {	pid = it.getInt("pid") }
-		//pid = arguments.getString("pid")
-		pid = arguments.getInt("pid")
-		println("pid: $pid")
+		pid = arguments.getString("pid")
+		//pid = arguments.getInt("pid")
+		println("parent: $pid")
 
 		val adapter = CommentsAdapter(context)
 
@@ -103,7 +98,7 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 	override fun onBindViewHolder(holder: CommentsViewHolder, idx: Int) {
 		holder.txtAuthor.text = items[idx].author
 		holder.txtBody.text = items[idx].body
-		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(items[idx].created!!, now,  DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE)
+		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(items[idx].created!! * 1000L,	now, DateUtils.MINUTE_IN_MILLIS)
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder? {

@@ -68,6 +68,7 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	override fun onCreate(db: SQLiteDatabase) {
 		db.execSQL(postsSchema)
 		db.execSQL(commentsSchema)
+		db.execSQL(commentHeaderSchema)
 		db.execSQL(messagesSchema)
 	}
 
@@ -98,12 +99,28 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	created integer,
 	clicked integer,
 	display text,
-	unique(rid) on conflict ignore
+	unique(rid) on conflict replace
+);"""
+
+val commentHeaderSchema = """create table if not exists comment_headers (
+	_id integer primary key autoincrement,
+	parent text,
+	selftext text,
+	id text,
+	author text,
+	media text,
+  score integer,
+	url text,
+	title text,
+	created integer,
+	comments integer,
+	preview text,
+	foreign key(parent) references posts(rid) on delete cascade,
+	unique(id) on conflict replace
 );"""
 
 val commentsSchema = """create table if not exists comments (
 	_id integer primary key autoincrement,
-	pid integer,
 	cid text,
 	parent text,
 	author text,
@@ -111,7 +128,8 @@ val commentsSchema = """create table if not exists comments (
 	html text,
 	score integer,
 	created integer,
-	foreign key(pid) references posts(_id) on delete cascade,
+	comment_parent text,
+	foreign key(parent) references posts(rid) on delete cascade,
 	unique(cid) on conflict replace
 );"""
 

@@ -146,8 +146,57 @@ class RedditPost() {
 	}
 }
 
+class CommentHeader {
+	var parent: String? = null
+	var selftext: String? = null
+	var id: String? = null
+	var author: String? = null
+	var media: String? = null
+	var score: Int = 0
+	var url: String? = null
+	var title: String? = null
+	var created: Long = 0L
+	var comments: Int = 0
+	var preview: Preview? = null
+
+	fun getValues() : ContentValues {
+		val values = ContentValues().apply {
+			put("parent", parent)
+			put("selftext", selftext)
+			put("id", id)
+			put("author", author)
+			put("media", media)
+			put("score", score)
+			put("url", url)
+			put("title", title)
+			put("created", created)
+			put("comments", comments)
+			put("preview", selectPreview())
+		}
+		return values
+	}
+
+	fun selectPreview() : String? {
+		return preview?.gif
+	}
+
+	override fun toString(): String {
+		return "id: $id, author: $author, score: $score, created: $created\nselftext: $selftext\n$preview\n"
+	}
+}
+
+class Preview {
+	var source: String? = null
+	var thumb: String? = null
+	var gif: String? = null
+	var mp4: String? = null
+
+	override fun toString(): String {
+		return "source: $source\nthumbnail: $thumb\ngif: $gif\nmp4: $mp4\n"
+	}
+}
+
 class Comment() {
-	var pid: Int? = null
 	var id: String? = null
 	var parent: String? = null
 	var author: String? = null
@@ -155,18 +204,19 @@ class Comment() {
 	var html: String? = null
 	var score: Int? = null
 	var created: Long? = null
+	var comment_parent: String? = null
 
 	companion object {
 		val MAPPER = Func1<Cursor, Comment> { c ->
 			val comment = Comment().apply {
-				pid = c.getInt(1)
-				id = c.getString(2)
-				parent = c.getString(3)
-				author = c.getString(4)
-				body = c.getString(5)
-				html = c.getString(6)
-				score = c.getInt(7)
-				created = c.getLong(8)
+				id = c.getString(1)
+				parent = c.getString(2)
+				author = c.getString(3)
+				body = c.getString(4)
+				html = c.getString(5)
+				score = c.getInt(6)
+				created = c.getLong(7)
+				comment_parent = c.getString(8)
 			}
 			comment
 		}
@@ -174,7 +224,6 @@ class Comment() {
 
 	fun getValues() : ContentValues {
 		val values = ContentValues().apply {
-			put("pid", pid)
 			put("cid", id)
 			put("author", author)
 			put("body", body)
@@ -182,6 +231,7 @@ class Comment() {
 			put("created", created)
 			put("score", score)
 			put("parent", parent)
+			put("comment_parent", comment_parent)
 		}
 		return values
 	}
@@ -209,6 +259,6 @@ data class Navigation(val fragment: Int) {
 	var id: String? = null
 	var pid: Int? = null
 }
-data class CommentsRequest(val url: String, val pid: Int)
+data class CommentsRequest(val url: String, val pid: Int, val parent: String)
 data class AccessToken(val token: String)
 data class RefreshToken(val token: String)
