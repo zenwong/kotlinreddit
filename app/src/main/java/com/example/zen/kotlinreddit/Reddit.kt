@@ -399,6 +399,7 @@ object Reddit {
 					loop@ while (jp.nextToken() != JsonToken.END_OBJECT) {
 						val key = jp.currentName
 						when (key) {
+							"user_reports" -> jp.skipChildren()
 							"secure_media" -> {
 								val media = Media()
 								parseMedia(jp, media)
@@ -418,6 +419,10 @@ object Reddit {
 							"created_utc" -> {
 								jp.nextToken()
 								header.created = jp.getValueAsLong(0L)
+							}
+							"before" -> {
+								println("inside before")
+								break@loop
 							}
 						}
 					}
@@ -512,10 +517,12 @@ object Reddit {
 					}
 				}
 				"id" -> {
+					println("inside id")
 					jp.skipChildren()
 					jp.nextToken()
 					jp.nextToken()
 					jp.nextToken()
+					println(jp.currentName)
 				}
 			}
 
