@@ -1,6 +1,7 @@
 package com.example.zen.kotlinreddit
 
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.util.Base64
 import com.example.zen.kotlinreddit.models.*
@@ -178,7 +179,7 @@ object Reddit {
 						post.display = post.preview
 					}
 
-					App.sdb.insert("posts", post.getValues())
+					App.sdb.insert("posts", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 
 			}
@@ -235,7 +236,7 @@ object Reddit {
 					}
 
 					//println(comment)
-					App.sdb.insert("comments", comment.getValues())
+					App.sdb.insert("comments", comment.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 
 			}
@@ -430,7 +431,7 @@ object Reddit {
 						}
 					}
 
-					App.sdb.insert("comment_headers", header.getValues())
+					App.sdb.insert("comment_headers", header.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 					//println(header)
 				}
 
@@ -453,7 +454,7 @@ object Reddit {
 						}
 					}
 
-					App.sdb.insert("comments", comment.getValues())
+					App.sdb.insert("comments", comment.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 					println("COMMENT: $comment")
 				}
 			}
