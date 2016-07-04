@@ -45,7 +45,14 @@ class MainActivity : AppCompatActivity() {
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		val item = menu.add("sync").setOnMenuItemClickListener {
-			subscriptions.add(Observable.fromCallable { DB(this).clearTables() }.subscribeOn(Schedulers.newThread()).subscribe())
+			val clearSub = Observable.fromCallable {
+				App.sdb.delete("posts", null)
+				App.sdb.delete("comments", null)
+				App.sdb.delete("messages", null)
+				App.sdb.delete("sqlite_sequence", null)
+			}
+			val postsSub = Observable.fromCallable { Reddit.getHotPosts() }
+			subscriptions.add(Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe())
 			true
 		}
 

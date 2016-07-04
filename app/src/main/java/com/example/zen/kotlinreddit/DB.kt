@@ -10,6 +10,10 @@ import java.util.*
 class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	lateinit var db: SQLiteDatabase
 
+	companion object {
+		const val clearSQL = "delete from posts; delete from comments; delete from messages; delete from sqlite_sequence"
+	}
+
 	fun insertPosts(posts: List<RedditPost>) {
 		db = writableDatabase
 		posts.forEach {
@@ -75,8 +79,6 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 
 	override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 	}
-
-	val clearSQL = "delete from posts; delete from comments; delete from messages;"
 
 	val postsSchema = """create table if not exists posts (
 	_id integer primary key autoincrement,
