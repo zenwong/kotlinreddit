@@ -377,9 +377,9 @@ object Reddit {
 		try {
 			while (jp.nextToken() !== null) {
 
-
 				if ("selftext".equals(jp.currentName)) {
 					val header = CommentHeader()
+					header.parent = parent
 					header.selftext = jp.nextTextValue()
 
 					loop@ while (jp.nextToken() != JsonToken.END_OBJECT) {
