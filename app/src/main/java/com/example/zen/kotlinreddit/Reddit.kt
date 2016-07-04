@@ -494,6 +494,7 @@ object Reddit {
 					jp.nextToken()
 					jp.nextToken()
 					jp.nextToken()
+					jp.nextToken()
 				}
 			}
 

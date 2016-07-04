@@ -73,7 +73,7 @@ class CommentsFragment : Fragment() {
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-		return inflater.inflate(R.layout.front_page, container, false)
+		return inflater.inflate(R.layout.comments, container, false)
 	}
 
 	override fun onPause() {
@@ -97,7 +97,7 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 
 	override fun onBindViewHolder(holder: CommentsViewHolder, idx: Int) {
 		holder.txtAuthor.text = items[idx].author
-		holder.txtBody.text = items[idx].body
+		holder.txtBody.loadMarkdown(items[idx].body)
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(items[idx].created!! * 1000L,	now, DateUtils.MINUTE_IN_MILLIS)
 	}
 
