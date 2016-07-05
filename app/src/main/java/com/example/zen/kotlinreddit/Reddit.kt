@@ -98,6 +98,10 @@ object Reddit {
 		parsePosts(getObs("https://oauth.reddit.com/hot"))
 	}
 
+	fun getPostsAfter(limit: Int = 5) {
+		parsePosts(getObs("$REDDIT_FRONT?limit=$limit&after=${App.postAfter}"))
+	}
+
 	fun parsePosts(json: String) {
 		val jp = jsonFactory.createParser(json)
 		val tr = App.sdb.newTransaction()
@@ -163,6 +167,10 @@ object Reddit {
 							"title" -> post.title = jp.nextTextValue()
 							"created_utc" -> post.created = jp.getValueAsLong(0L)
 							"mod_reports" -> jp.skipChildren()
+							"after" -> {
+								App.postAfter = jp.nextTextValue()
+								println("AFTER: ${App.postAfter}")
+							}
 						}
 					}
 

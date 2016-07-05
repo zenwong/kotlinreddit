@@ -51,7 +51,10 @@ class MainActivity : AppCompatActivity() {
 				App.sdb.delete("messages", null)
 				App.sdb.delete("sqlite_sequence", null)
 			}
-			val postsSub = Observable.fromCallable { Reddit.getHotPosts() }
+
+			//val postsSub = Observable.fromCallable { Reddit.getHotPosts() }
+			val postsSub = Observable.fromCallable { Reddit.getPostsAfter() }
+
 			subscriptions.add(Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe())
 			true
 		}

@@ -28,6 +28,7 @@ class App : Application() {
 	companion object {
 		var accessToken: String? = null
 		var refreshToken: String? = null
+		var postAfter: String? = null
 		lateinit var db: DB
 		lateinit var sqlBrite : SqlBrite
 		lateinit var sdb: BriteDatabase
