@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_main)
+		setContentView(R.layout.main)
 
 		if(App.accessToken == null) {
 			val ft = supportFragmentManager.beginTransaction()
@@ -79,6 +79,7 @@ class MainActivity : AppCompatActivity() {
 			ft.addToBackStack("PostsFragment")
 			ft.commit()
 		}
+
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)

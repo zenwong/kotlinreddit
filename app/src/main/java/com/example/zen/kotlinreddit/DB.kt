@@ -99,7 +99,7 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	created integer,
 	clicked integer,
 	display text,
-	unique(rid) on conflict ignore
+	unique(rid) on conflict replace
 );"""
 
 val commentHeaderSchema = """create table if not exists comment_headers (

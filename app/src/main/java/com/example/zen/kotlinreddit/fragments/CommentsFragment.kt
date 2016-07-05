@@ -61,6 +61,11 @@ class CommentsFragment : Fragment() {
 		var test = ArrayList<Comment>()
 		val adapter = ParallaxCommentAdapter(context, test)
 		adapter.setParallaxHeader(headerView, list)
+//		adapter.setOnParallaxScroll { percentage, offset, view ->
+//			val c = activity.toolbar.background
+//			c.alpha = Math.round(percentage * 255)
+//			activity.toolbar.background = c
+//		}
 
 		list.setHasFixedSize(true)
 		list.layoutManager = layout

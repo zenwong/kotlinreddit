@@ -4,10 +4,18 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </FrameLayout>
+	<android.support.v7.widget.Toolbar
+		android:id="@+id/ttoolbar"
+		android:minHeight="?attr/actionBarSize"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="?attr/colorPrimary">
+	</android.support.v7.widget.Toolbar>
+
+	<FrameLayout
+		android:id="@+id/tcontent"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+	</FrameLayout>
 
 </LinearLayout>

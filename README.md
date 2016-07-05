@@ -15,3 +15,4 @@ TODO
 - [ ] sort posts by preview / score / comments / subreddit
 - [ ] sort comments by score / author / created
 - [ ] nested comments?
+- [ ] improve markdown performance for comments MarkDownView too slow?

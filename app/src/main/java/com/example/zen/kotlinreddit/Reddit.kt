@@ -457,18 +457,18 @@ object Reddit {
 					App.sdb.insert("comment_headers", header.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 
-				if ("id".equals(jp.currentName)) {
+				if ("author".equals(jp.currentName)) {
 					val comment = Comment()
-					comment.id = jp.nextTextValue()
+					comment.author = jp.nextTextValue()
 					comment.parent = parent
 
 					while (jp.nextToken() != JsonToken.END_OBJECT) {
 						val key = jp.currentName
 						when (key) {
-							"author" -> comment.author = jp.nextTextValue()
 							"parent_id" -> comment.comment_parent = jp.nextTextValue()
 							"score" -> comment.score = jp.nextIntValue(0)
 							"body" -> comment.body = jp.nextTextValue()
+							"name" -> comment.id = jp.nextTextValue().replace("t1_", "")
 							"created_utc" -> {
 								jp.nextToken()
 								comment.created = jp.valueAsLong
