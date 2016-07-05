@@ -80,11 +80,9 @@ object Reddit {
 	}
 
 	fun refreshAccessToken() : String {
-		//val token = ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
 		val body = FormBody.Builder().add("grant_type", "refresh_token").add("refresh_token", App.refreshToken).build()
 		val req = Request.Builder().url(REDDIT_AUTH_TOKEN).addHeader("Authorization", "Basic $BASIC_AUTH").post(body).build()
 		val json = client.newCall(req).execute().body().string()
-		println("RRR refreshAccessToken: $json")
 		val jp = jsonFactory.createParser(json)
 
 		var accessToken = ""

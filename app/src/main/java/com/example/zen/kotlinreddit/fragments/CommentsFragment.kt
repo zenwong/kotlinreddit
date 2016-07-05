@@ -7,7 +7,6 @@ import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.format.DateUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,8 @@ import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.models.Comment
 import com.example.zen.kotlinreddit.models.CommentHeader
 import com.example.zen.kotlinreddit.views.DividerItemDecoration
+import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter
+import kotlinx.android.synthetic.main.comment_header.*
 import kotlinx.android.synthetic.main.comments.*
 import kotlinx.android.synthetic.main.row_comment.view.*
 import rx.android.schedulers.AndroidSchedulers
@@ -30,6 +31,7 @@ class CommentsFragment : Fragment() {
 	val select = "select * from comments where parent = ?"
 	val layout = LinearLayoutManager(context)
 	var pid: String? = null
+	var headerView: View? = null
 	//var pid: Int? = null
 
 	companion object {
@@ -55,7 +57,15 @@ class CommentsFragment : Fragment() {
 		//pid = arguments.getInt("pid")
 		println("parent: $pid")
 
-		val adapter = CommentsAdapter(context)
+		//val adapter = CommentsAdapter(context)
+		var test = ArrayList<Comment>()
+		val adapter = ParallaxCommentAdapter(context, test)
+		adapter.setParallaxHeader(headerView, list)
+
+		list.setHasFixedSize(true)
+		list.layoutManager = layout
+		list.addItemDecoration(DividerItemDecoration(ResourcesCompat.getDrawable(resources, R.drawable.abc_list_divider_mtrl_alpha, null)!!))
+		list.adapter = adapter
 
 		subscriptions.add(App.sdb.createQuery(table, select, pid.toString())
 			.mapToList(Comment.MAPPER)
@@ -65,7 +75,7 @@ class CommentsFragment : Fragment() {
 
 		subscriptions.add(App.sdb.createQuery("comment_headers", "select * from comment_headers where parent = ? limit 1", pid)
 			.mapToOne(CommentHeader.MAPPER)
-			//.subscribeOn(Schedulers.newThread())
+			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe {
 				println("TTT: ${it.title}")
@@ -73,35 +83,10 @@ class CommentsFragment : Fragment() {
 				txtCommentHeaderAuthor.text = it.author
 				txtCommentHeaderSelfText.text = it.selftext
 			})
-
-		list.setHasFixedSize(true)
-		list.layoutManager = layout
-		list.addItemDecoration(DividerItemDecoration(ResourcesCompat.getDrawable(resources, R.drawable.abc_list_divider_mtrl_alpha, null)!!))
-		list.adapter = adapter
-
-		var firstVisibleInListview = layout.findFirstVisibleItemPosition()
-		list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-			override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-				super.onScrolled(recyclerView, dx, dy)
-
-				val currentFirstVisible = layout.findFirstVisibleItemPosition()
-
-				if (currentFirstVisible > firstVisibleInListview)
-					Log.i("RecyclerView scrolled: ", "scroll up!")
-				else
-					Log.i("RecyclerView scrolled: ", "scroll down!")
-
-				firstVisibleInListview = currentFirstVisible
-			}
-
-			override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-				super.onScrollStateChanged(recyclerView, newState)
-			}
-
-		})
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+		headerView = inflater.inflate(R.layout.comment_header, container, false)
 		return inflater.inflate(R.layout.comments, container, false)
 	}
 
@@ -109,6 +94,31 @@ class CommentsFragment : Fragment() {
 		super.onPause()
 		subscriptions.unsubscribe()
 	}
+}
+
+class ParallaxCommentAdapter(val context: Context, list: List<Comment>?) : ParallaxRecyclerAdapter<Comment>(list), Action1<List<Comment>> {
+	val now = System.currentTimeMillis()
+
+	override fun call(t: List<Comment>) {
+		data.addAll(t)
+		notifyDataSetChanged()
+	}
+
+	override fun getItemCountImpl(p0: ParallaxRecyclerAdapter<Comment>?): Int {
+		return data.size
+	}
+
+	override fun onBindViewHolderImpl(vh: RecyclerView.ViewHolder, adapter: ParallaxRecyclerAdapter<Comment>, idx: Int) {
+		val holder: CommentsViewHolder = vh as CommentsViewHolder
+		holder.txtAuthor.text = data[idx].author
+		holder.txtBody.loadMarkdown(data[idx].body)
+		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(data[idx].created!! * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
+	}
+
+	override fun onCreateViewHolderImpl(parent: ViewGroup, p1: ParallaxRecyclerAdapter<Comment>?, p2: Int): RecyclerView.ViewHolder {
+		return CommentsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_comment, parent, false))
+	}
+
 }
 
 class CommentsAdapter(val context: Context) : RecyclerView.Adapter<CommentsViewHolder>(), Action1<List<Comment>> {
