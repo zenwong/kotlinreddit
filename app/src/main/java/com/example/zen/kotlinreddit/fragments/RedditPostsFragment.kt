@@ -129,7 +129,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 			println(url)
 			val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
 				EventBus.getDefault().post(req)
-				println("comments adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
+				//println("comments adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}
 
 			txtSubreddit.setOnClickListener {

@@ -36,7 +36,7 @@ class App : Application() {
 	override fun onCreate() {
 		sqlBrite = SqlBrite.create()
 		sdb = sqlBrite.wrapDatabaseHelper(DB(this), Schedulers.io())
-		//sdb.setLoggingEnabled(true)
+		sdb.setLoggingEnabled(true)
 
 		Reddit.init(this, cacheDir)
 		Iconify.with(FontAwesomeModule())
@@ -44,8 +44,7 @@ class App : Application() {
 		db.writableDatabase
 		EventBus.getDefault().register(this)
 		accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
-		//refreshToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
-
+		refreshToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
 	}
 
 	override fun onTerminate() {

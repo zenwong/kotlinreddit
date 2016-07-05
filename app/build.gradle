@@ -44,6 +44,8 @@ dependencies {
 
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.2.2' // (v4.5)
     compile 'us.feras.mdv:markdownview:1.1.0'
+    //compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v1.8.5'
+    compile 'com.github.kanytu:android-parallax-recyclerview:v1.7'
 
     compile 'com.squareup.okhttp3:okhttp:3.3.0'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
@@ -63,6 +65,7 @@ dependencies {
 }
 repositories {
     mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 kapt {
     generateStubs = true

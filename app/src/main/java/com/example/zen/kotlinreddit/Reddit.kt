@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.util.Base64
 import com.example.zen.kotlinreddit.models.*
+import com.example.zen.kotlinreddit.network.RedditOauthAuthenticator
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
@@ -29,8 +30,8 @@ object Reddit {
 	fun init(context: Context, cacheDir: File) {
 		ctx = context
 		cache = Cache(cacheDir, 1024L * 1024L * 100L)
-		//client = OkHttpClient.Builder().authenticator(RedditOauthAuthenticator()).cache(cache).build()
-		client = OkHttpClient.Builder().cache(cache).build()
+		client = OkHttpClient.Builder().authenticator(RedditOauthAuthenticator()).cache(cache).build()
+		//client = OkHttpClient.Builder().cache(cache).build()
 		//db = App.sqlBrite.wrapDatabaseHelper(DB(ctx), Schedulers.io())
 	}
 
@@ -420,6 +421,8 @@ object Reddit {
 							}
 							"mod_reports" -> jp.skipChildren()
 							"secure_media_embed" -> jp.skipChildren()
+							"url" -> header.url = jp.nextTextValue()
+							"title" -> header.title = jp.nextTextValue()
 							"created_utc" -> {
 								jp.nextToken()
 								header.created = jp.getValueAsLong(0L)
@@ -431,8 +434,8 @@ object Reddit {
 						}
 					}
 
+					println("COMMENT HEADER: $header")
 					App.sdb.insert("comment_headers", header.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
-					//println(header)
 				}
 
 				if ("id".equals(jp.currentName)) {
@@ -455,7 +458,7 @@ object Reddit {
 					}
 
 					App.sdb.insert("comments", comment.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
-					println("COMMENT: $comment")
+					//println("COMMENT: $comment")
 				}
 			}
 

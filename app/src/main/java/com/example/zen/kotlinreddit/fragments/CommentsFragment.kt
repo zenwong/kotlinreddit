@@ -7,14 +7,16 @@ import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.format.DateUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.models.Comment
+import com.example.zen.kotlinreddit.models.CommentHeader
 import com.example.zen.kotlinreddit.views.DividerItemDecoration
-import kotlinx.android.synthetic.main.front_page.*
+import kotlinx.android.synthetic.main.comments.*
 import kotlinx.android.synthetic.main.row_comment.view.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
@@ -23,15 +25,15 @@ import rx.subscriptions.CompositeSubscription
 import java.util.*
 
 class CommentsFragment : Fragment() {
-	var subscriptions = CompositeSubscription()
+	val subscriptions = CompositeSubscription()
 	val table = "comments"
 	val select = "select * from comments where parent = ?"
 	val layout = LinearLayoutManager(context)
-	var pid : String? = null
+	var pid: String? = null
 	//var pid: Int? = null
 
 	companion object {
-		fun newInstance(postId: String) : CommentsFragment {
+		fun newInstance(postId: String): CommentsFragment {
 			val frag = CommentsFragment()
 			val bundle = Bundle()
 			bundle.putString("pid", postId)
@@ -39,18 +41,13 @@ class CommentsFragment : Fragment() {
 			return frag
 		}
 
-		fun newInstance(pid: Int) : CommentsFragment {
+		fun newInstance(pid: Int): CommentsFragment {
 			val frag = CommentsFragment()
 			val bundle = Bundle()
 			bundle.putInt("pid", pid)
 			frag.arguments = bundle
 			return frag
 		}
-	}
-
-	override fun onResume() {
-		super.onResume()
-		subscriptions = CompositeSubscription()
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,10 +63,42 @@ class CommentsFragment : Fragment() {
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
 
-		rv.setHasFixedSize(true)
-		rv.layoutManager = layout
-		rv.addItemDecoration(DividerItemDecoration(ResourcesCompat.getDrawable(resources, R.drawable.abc_list_divider_mtrl_alpha, null)!!))
-		rv.adapter = adapter
+		subscriptions.add(App.sdb.createQuery("comment_headers", "select * from comment_headers where parent = ? limit 1", pid)
+			.mapToOne(CommentHeader.MAPPER)
+			//.subscribeOn(Schedulers.newThread())
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe {
+				println("TTT: ${it.title}")
+				txtCommentHeaderTitle.text = it.title
+				txtCommentHeaderAuthor.text = it.author
+				txtCommentHeaderSelfText.text = it.selftext
+			})
+
+		list.setHasFixedSize(true)
+		list.layoutManager = layout
+		list.addItemDecoration(DividerItemDecoration(ResourcesCompat.getDrawable(resources, R.drawable.abc_list_divider_mtrl_alpha, null)!!))
+		list.adapter = adapter
+
+		var firstVisibleInListview = layout.findFirstVisibleItemPosition()
+		list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+			override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+				super.onScrolled(recyclerView, dx, dy)
+
+				val currentFirstVisible = layout.findFirstVisibleItemPosition()
+
+				if (currentFirstVisible > firstVisibleInListview)
+					Log.i("RecyclerView scrolled: ", "scroll up!")
+				else
+					Log.i("RecyclerView scrolled: ", "scroll down!")
+
+				firstVisibleInListview = currentFirstVisible
+			}
+
+			override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+				super.onScrollStateChanged(recyclerView, newState)
+			}
+
+		})
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -78,11 +107,11 @@ class CommentsFragment : Fragment() {
 
 	override fun onPause() {
 		super.onPause()
-		subscriptions.clear()
+		subscriptions.unsubscribe()
 	}
 }
 
-class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHolder>(), Action1<List<Comment>> {
+class CommentsAdapter(val context: Context) : RecyclerView.Adapter<CommentsViewHolder>(), Action1<List<Comment>> {
 	val items = ArrayList<Comment>()
 	val now = System.currentTimeMillis()
 
@@ -98,7 +127,7 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 	override fun onBindViewHolder(holder: CommentsViewHolder, idx: Int) {
 		holder.txtAuthor.text = items[idx].author
 		holder.txtBody.loadMarkdown(items[idx].body)
-		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(items[idx].created!! * 1000L,	now, DateUtils.MINUTE_IN_MILLIS)
+		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(items[idx].created!! * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder? {
@@ -107,7 +136,7 @@ class CommentsAdapter(val context: Context): RecyclerView.Adapter<CommentsViewHo
 
 }
 
-class CommentsViewHolder(iv: View): RecyclerView.ViewHolder(iv) {
+class CommentsViewHolder(iv: View) : RecyclerView.ViewHolder(iv) {
 	val txtAuthor = iv.txtAuthor
 	val txtBody = iv.txtBody
 	val txtCreated = iv.txtCommentCreated

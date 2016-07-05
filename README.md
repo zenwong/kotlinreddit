@@ -2,8 +2,9 @@ Kotlin android reddit client
 
 TODO
 - [ ] fix refresh access token
-- [X] fix comment preview parsing 
+- [X] fix comment preview parsing
 - [ ] fix created timestamp for posts and comments
+- [ ] add load more to posts and comments
 - [ ] add comment header and preview
 - [ ] add different view types for post listing
 - [ ] add reddit api for posting new posts

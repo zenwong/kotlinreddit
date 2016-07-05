@@ -159,6 +159,24 @@ class CommentHeader {
 	var comments: Int = 0
 	var preview: Preview? = null
 
+	companion object {
+		val MAPPER = Func1<Cursor, CommentHeader> { c ->
+			val comment = CommentHeader().apply {
+				parent = c.getString(1)
+				selftext = c.getString(2)
+				id = c.getString(3)
+				author = c.getString(4)
+				media = c.getString(5)
+				score = c.getInt(6)
+				url = c.getString(7)
+				title = c.getString(8)
+				created = c.getLong(9)
+				comments = c.getInt(10)
+			}
+			comment
+		}
+	}
+
 	fun getValues() : ContentValues {
 		val values = ContentValues().apply {
 			put("parent", parent)
@@ -181,7 +199,7 @@ class CommentHeader {
 	}
 
 	override fun toString(): String {
-		return "id: $id, author: $author, score: $score, created: $created\nselftext: $selftext\n$preview\n"
+		return "id: $id, author: $author, score: $score, created: $created selftext: $selftext title: $title url: $url"
 	}
 }
 
