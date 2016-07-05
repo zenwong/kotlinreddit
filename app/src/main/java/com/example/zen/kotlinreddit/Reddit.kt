@@ -167,10 +167,6 @@ object Reddit {
 							"title" -> post.title = jp.nextTextValue()
 							"created_utc" -> post.created = jp.getValueAsLong(0L)
 							"mod_reports" -> jp.skipChildren()
-							"after" -> {
-								App.postAfter = jp.nextTextValue()
-								println("AFTER: ${App.postAfter}")
-							}
 						}
 					}
 
@@ -191,6 +187,10 @@ object Reddit {
 					App.sdb.insert("posts", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 
+				if ("after".equals(jp.currentName)) {
+					App.postAfter = jp.nextTextValue()
+					println("AFTER: ${App.postAfter}")
+				}
 			}
 
 			tr.markSuccessful()
@@ -360,7 +360,7 @@ object Reddit {
 	fun parseMedia(jp: JsonParser, media: Media) {
 		while (jp.nextToken() !== JsonToken.END_OBJECT) {
 			val key = jp.currentName
-			when(key) {
+			when (key) {
 				"title" -> media.title = jp.nextTextValue()
 				"html" -> media.html = jp.nextTextValue()
 				"provider_name" -> media.provider = jp.nextTextValue()
@@ -412,7 +412,7 @@ object Reddit {
 						when (key) {
 							"user_reports" -> jp.skipChildren()
 							"secure_media" -> {
-								if(jp.nextToken() == JsonToken.START_OBJECT) {
+								if (jp.nextToken() == JsonToken.START_OBJECT) {
 									val media = Media()
 									parseMedia(jp, media)
 									println("MEDIA: $media")
@@ -543,7 +543,7 @@ object Reddit {
 
 		}
 		// if desired preview width not available select next best width
-		if(preview.thumb == null) preview.thumb = selectedPreview
+		if (preview.thumb == null) preview.thumb = selectedPreview
 	}
 
 	fun parseMessages() {
