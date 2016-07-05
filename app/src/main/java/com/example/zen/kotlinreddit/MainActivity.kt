@@ -1,7 +1,6 @@
 package com.example.zen.kotlinreddit
 
 import android.os.Bundle
-import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
@@ -9,8 +8,7 @@ import com.example.zen.kotlinreddit.fragments.CommentsFragment
 import com.example.zen.kotlinreddit.fragments.RedditPostsFragment
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.FontAwesomeIcons
+import kotlinx.android.synthetic.main.main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -43,31 +41,37 @@ class MainActivity : AppCompatActivity() {
 		super.onStop()
 	}
 
+//	override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//		val item = menu.add("sync").setOnMenuItemClickListener {
+//			val clearSub = Observable.fromCallable {
+//				App.sdb.delete("posts", null)
+//				App.sdb.delete("comments", null)
+//				App.sdb.delete("messages", null)
+//				App.sdb.delete("sqlite_sequence", null)
+//			}
+//
+//			//val postsSub = Observable.fromCallable { Reddit.getHotPosts() }
+//			val postsSub = Observable.fromCallable { Reddit.getPostsAfter() }
+//
+//			subscriptions.add(Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe())
+//			true
+//		}
+//
+//		item.icon = IconDrawable(this, FontAwesomeIcons.fa_refresh).colorRes(R.color.button_material_light).actionBarSize()
+//
+//		MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM)
+//		return super.onCreateOptionsMenu(menu)
+//	}
+
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
-		val item = menu.add("sync").setOnMenuItemClickListener {
-			val clearSub = Observable.fromCallable {
-				App.sdb.delete("posts", null)
-				App.sdb.delete("comments", null)
-				App.sdb.delete("messages", null)
-				App.sdb.delete("sqlite_sequence", null)
-			}
-
-			//val postsSub = Observable.fromCallable { Reddit.getHotPosts() }
-			val postsSub = Observable.fromCallable { Reddit.getPostsAfter() }
-
-			subscriptions.add(Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe())
-			true
-		}
-
-		item.icon = IconDrawable(this, FontAwesomeIcons.fa_refresh).colorRes(R.color.button_material_light).actionBarSize()
-
-		MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM)
-		return super.onCreateOptionsMenu(menu)
+		menuInflater.inflate(R.menu.main_menu, menu)
+		return true
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.main)
+		setSupportActionBar(toolbar)
 
 		if(App.accessToken == null) {
 			val ft = supportFragmentManager.beginTransaction()
