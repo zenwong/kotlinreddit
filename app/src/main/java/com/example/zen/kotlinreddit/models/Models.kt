@@ -291,3 +291,4 @@ data class Navigation(val fragment: Int) {
 data class CommentsRequest(val url: String, val pid: Int, val parent: String)
 data class AccessToken(val token: String)
 data class RefreshToken(val token: String)
+data class Title(val title: String)

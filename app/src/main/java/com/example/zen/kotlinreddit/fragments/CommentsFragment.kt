@@ -16,6 +16,7 @@ import com.example.zen.kotlinreddit.models.Comment
 import com.example.zen.kotlinreddit.models.CommentHeader
 import com.example.zen.kotlinreddit.views.DividerItemDecoration
 import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.comment_header.*
 import kotlinx.android.synthetic.main.comments.*
 import kotlinx.android.synthetic.main.row_comment.view.*
@@ -87,6 +88,11 @@ class CommentsFragment : Fragment() {
 				txtCommentHeaderTitle.text = it.title
 				txtCommentHeaderAuthor.text = it.author
 				txtCommentHeaderSelfText.text = it.selftext
+
+				Picasso.with(context).load(it.preview?.source)
+					.fit()
+					.centerCrop()
+					.into(imgCommentHeaderPreview)
 			})
 	}
 

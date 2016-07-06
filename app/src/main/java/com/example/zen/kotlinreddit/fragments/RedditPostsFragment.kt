@@ -14,9 +14,11 @@ import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Post
+import com.example.zen.kotlinreddit.models.Title
 import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.front_page.*
+import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.row_post.view.*
 import org.greenrobot.eventbus.EventBus
 import rx.Observable
@@ -28,7 +30,8 @@ import java.util.*
 
 class RedditPostsFragment : Fragment() {
 	//val select = "select * from posts order by display desc, created desc"
-	val select = "select * from posts order by display desc"
+	//val select = "select * from posts order by display desc"
+	val select = "select * from posts"
 	var subscriptions = CompositeSubscription()
 	var adapter: PostsAdapter? = null
 
@@ -39,6 +42,7 @@ class RedditPostsFragment : Fragment() {
 
 	override fun onResume() {
 		super.onResume()
+		activity.txtToolbarTitle.text = "Front Page"
 		println("PostsFragment onResume")
 		subscriptions = CompositeSubscription()
 	}
@@ -132,16 +136,16 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 			card.useCompatPadding
 
 			txtComments.setOnClickListener {
-//				val nav = Navigation(COMMENTS)
-//				nav.id = "t3_${posts[adapterPosition].rid}"
-//				nav.pid = posts[adapterPosition]._id
-//				EventBus.getDefault().post(nav)
-
 				val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
-				println(url)
 				val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
 				EventBus.getDefault().post(req)
-				//println("comments adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
+			}
+
+			imgPreviw.setOnClickListener {
+				EventBus.getDefault().post(Title(posts[adapterPosition].title!!))
+				val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
+				val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
+				EventBus.getDefault().post(req)
 			}
 
 			txtSubreddit.setOnClickListener {

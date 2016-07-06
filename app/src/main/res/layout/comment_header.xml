@@ -3,9 +3,10 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:padding="5dp">
+>
 
-	<RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+	<RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent"
+	                android:padding="10dp">
 
 		<TextView
 			android:id="@+id/txtCommentHeaderAuthor"
@@ -13,20 +14,35 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
 			android:layout_alignParentTop="true"
-			android:text="Comment Header Author"/>
+			android:text="Comment Header Author"
+			android:textStyle="bold"
+			android:textColorHighlight="@color/colorAccent"
+		/>
 
 		<TextView
 			android:id="@+id/txtCommentHeaderTitle"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@+id/txtCommentHeaderAuthor"
-			android:text="Comment Header Title"/>
+			android:textStyle="bold"
+			android:text="Comment Header Title"
+			android:layout_marginTop="10dp"
+			android:layout_marginBottom="10dp"
+			android:textAppearance="@style/TextAppearance.AppCompat.Small"
+		/>
+
+		<ImageView
+			android:id="@+id/imgCommentHeaderPreview"
+			android:layout_width="match_parent"
+			android:layout_height="220dp"
+			android:layout_below="@+id/txtCommentHeaderTitle"
+		/>
 
 		<TextView
 			android:id="@+id/txtCommentHeaderSelfText"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_below="@+id/txtCommentHeaderTitle"
+			android:layout_below="@+id/imgCommentHeaderPreview"
 			android:text="Comment Header Selftext"/>
 	</RelativeLayout>
 
