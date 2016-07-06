@@ -115,6 +115,7 @@ val commentHeaderSchema = """create table if not exists comment_headers (
 	created integer,
 	comments integer,
 	preview text,
+	load_more text,
 	foreign key(parent) references posts(rid) on delete cascade,
 	unique(id) on conflict ignore
 );"""

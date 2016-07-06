@@ -7,7 +7,7 @@ TODO
 - [X] add load more to posts
 - [ ] add load more to comments
 - [X] add comment header
-- [X] add comment header preview
+- [ ] add comment header preview
 - [X] add comment header parallax scroll
 - [X] add different view types for post listing
 - [ ] add reddit api for posting new posts

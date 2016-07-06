@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 
+// https://androiddevx.wordpress.com/2014/12/05/recycler-view-pre-cache-views/
 class PreCachingLayoutManager : LinearLayoutManager {
 	private var extraLayoutSpace = -1
 	private var context: Context? = null

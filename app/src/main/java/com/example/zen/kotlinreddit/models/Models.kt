@@ -159,6 +159,7 @@ class CommentHeader {
 	var comments: Int = 0
 	var preview: Preview? = null
 	var best: String? = null
+	var loadMore: String? = null
 
 	companion object {
 		val MAPPER = Func1<Cursor, CommentHeader> { c ->
@@ -174,6 +175,7 @@ class CommentHeader {
 				created = c.getLong(9)
 				comments = c.getInt(10)
 				best = c.getString(11)
+				loadMore = c.getString(12)
 			}
 			comment
 		}
@@ -192,6 +194,7 @@ class CommentHeader {
 			put("created", created)
 			put("comments", comments)
 			put("preview", preview?.source)
+			put("load_more", loadMore)
 		}
 		return values
 	}
