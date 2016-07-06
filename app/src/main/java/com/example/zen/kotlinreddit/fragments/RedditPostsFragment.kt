@@ -16,6 +16,7 @@ import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Post
 import com.example.zen.kotlinreddit.models.Title
 import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
+import com.example.zen.kotlinreddit.views.PreCachingLayoutManager
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.main.*
@@ -49,12 +50,16 @@ class RedditPostsFragment : Fragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		println("PostsFragment onViewCreated")
-		val layout = LinearLayoutManager(context)
+		//val layout = LinearLayoutManager(context)
+		val layoutManager = PreCachingLayoutManager(activity)
+		layoutManager.orientation = LinearLayoutManager.VERTICAL
+		layoutManager.setExtraLayoutSpace(resources.displayMetrics.heightPixels)
+
 		rv.setHasFixedSize(true)
-		rv.layoutManager = layout
+		rv.layoutManager = layoutManager
 		rv.adapter = adapter
 
-		rv.addOnScrollListener(object : EndlessRecyclerViewScrollListener(layout) {
+		rv.addOnScrollListener(object : EndlessRecyclerViewScrollListener(layoutManager) {
 			override fun onLoadMore(page: Int, totalItemsCount: Int) {
 				println("LOADMORE: page: $page after: ${App.postAfter}")
 				subscriptions.add(Observable.fromCallable { Reddit.getPostsAfter(10) }
