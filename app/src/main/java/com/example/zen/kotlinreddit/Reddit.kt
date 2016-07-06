@@ -24,14 +24,11 @@ object Reddit {
 	lateinit var cache: Cache
 	lateinit var client: OkHttpClient
 	lateinit var ctx: Context
-	//lateinit var db: BriteDatabase
 
 	fun init(context: Context, cacheDir: File) {
 		ctx = context
 		cache = Cache(cacheDir, 1024L * 1024L * 100L)
 		client = OkHttpClient.Builder().authenticator(RedditOauthAuthenticator()).cache(cache).build()
-		//client = OkHttpClient.Builder().cache(cache).build()
-		//db = App.sqlBrite.wrapDatabaseHelper(DB(ctx), Schedulers.io())
 	}
 
 	fun getAuthUrl(clientid: String = CLIENTID, state: String = "NONCE", redirect: String = "http://zreddit", scope: String = "read identity"): String {
@@ -240,7 +237,7 @@ object Reddit {
 								val preview = Preview()
 								parsePreview(jp, preview, 320)
 								header.preview = preview
-								println("SSS preview source : ${preview.source}")
+								//println("SSS preview source : ${preview.source}")
 							}
 							"mod_reports" -> jp.skipChildren()
 							"secure_media_embed" -> jp.skipChildren()

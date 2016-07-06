@@ -92,18 +92,25 @@ class CommentsFragment : Fragment() {
 
 				val test1 = "https://archive.org/download/Popeye_forPresident/Popeye_forPresident_512kb.mp4"
 				val mp4Test = "https://g.redditmedia.com/a1_KqfCCYEwn4INgjOHIPjQ8BNxppS51Bx0GRKP1Plc.gif?fit=crop&crop=faces%2Centropy&arh=2&w=320&fm=mp4&mp4-fragmented=false&s=ccfd63d187741cf58b571428986c0c94"
-//				vidView.bringToFront()
+				//vidView.bringToFront()
 //				vidView.setOnPreparedListener {
 //					vidView.start()
 //				}
 //				vidView.setVideoURI(Uri.parse(test1))
 
-				vidView.bringToFront()
 				vidView.setUp(mp4Test, "Test 1")
 				Picasso.with(context).load(it.best)
 					.fit()
 					.centerCrop()
 					.into(vidView.thumbImageView)
+
+				println("SSS commentFragment ${it.best}")
+
+//				imgCommentHeaderPreview.bringToFront()
+//				Picasso.with(context).load(it.best)
+//					.fit()
+//					.centerCrop()
+//					.into(imgCommentHeaderPreview)
 
 //				if(it.media != null) {
 //					webCommentHeaderMedia.apply {

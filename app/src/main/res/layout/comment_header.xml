@@ -44,11 +44,11 @@
 				android:layout_height="match_parent"
 			/>
 
-			<WebView
-				android:id="@+id/webCommentHeaderMedia"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-			/>
+			<!--<WebView-->
+				<!--android:id="@+id/webCommentHeaderMedia"-->
+				<!--android:layout_width="match_parent"-->
+				<!--android:layout_height="match_parent"-->
+			<!--/>-->
 
 			<!--<com.devbrackets.android.exomedia.ui.widget.EMVideoView-->
 				<!--android:id="@+id/vidView"-->

@@ -191,14 +191,9 @@ class CommentHeader {
 			put("title", title)
 			put("created", created)
 			put("comments", comments)
-			//put("preview", selectPreview())
 			put("preview", preview?.source)
 		}
 		return values
-	}
-
-	fun selectPreview() : String? {
-		return preview?.gif
 	}
 
 	override fun toString(): String {
@@ -211,6 +206,7 @@ class Preview {
 	var thumb: String? = null
 	var gif: String? = null
 	var mp4: String? = null
+
 	val best: String by lazy {
 		when {
 			!thumb.isNullOrBlank() -> thumb!!
