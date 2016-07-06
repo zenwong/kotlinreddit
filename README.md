@@ -4,7 +4,7 @@ TODO
 - [X] fix refresh access token
 - [X] fix comment preview parsing
 - [ ] fix created timestamp for posts and comments
-- [ ] add load more to posts
+- [X] add load more to posts
 - [ ] add load more to comments
 - [X] add comment header
 - [ ] add comment header preview

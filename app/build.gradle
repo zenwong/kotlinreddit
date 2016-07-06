@@ -43,6 +43,8 @@ dependencies {
     compile 'us.feras.mdv:markdownview:1.1.0'
     //compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v1.8.5'
     compile 'com.github.kanytu:android-parallax-recyclerview:v1.7'
+    compile 'com.devbrackets.android:exomedia:3.0.1'
+    compile 'fm.jiecao:jiecaovideoplayer:3.6.2'
 
     compile 'com.squareup.okhttp3:okhttp:3.3.0'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'

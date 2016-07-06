@@ -13,7 +13,6 @@ import okhttp3.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.IOException
-import java.util.*
 
 object Reddit {
 	val CLIENTID = "f-A-UqH0oTkkeA"
@@ -79,7 +78,7 @@ object Reddit {
 
 	}
 
-	fun refreshAccessToken() : String {
+	fun refreshAccessToken(): String {
 		val body = FormBody.Builder().add("grant_type", "refresh_token").add("refresh_token", App.refreshToken).build()
 		val req = Request.Builder().url(REDDIT_AUTH_TOKEN).addHeader("Authorization", "Basic $BASIC_AUTH").post(body).build()
 		val json = client.newCall(req).execute().body().string()
@@ -211,202 +210,6 @@ object Reddit {
 
 	}
 
-	fun getComments(url: String, pid: Int) {
-		val json = client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute().body().string()
-		val jp = jsonFactory.createParser(json)
-		val tr = App.sdb.newTransaction()
-		try {
-			while (jp.nextToken() !== null) {
-				if ("id".equals(jp.currentName)) {
-					jp.nextToken()
-					val comment = Comment()
-					comment.id = jp.valueAsString
-					//comment.pid = pid
-
-					while (jp.nextToken() != JsonToken.END_OBJECT) {
-						if ("author".equals(jp.currentName)) {
-							jp.nextToken()
-							comment.author = jp.valueAsString
-						}
-
-						if ("parent_id".equals(jp.currentName)) {
-							jp.nextToken()
-							comment.parent = jp.valueAsString
-						}
-
-						if ("score".equals(jp.currentName)) {
-							jp.nextToken()
-							comment.score = jp.valueAsInt
-						}
-
-						if ("body".equals(jp.currentName)) {
-							jp.nextToken()
-							comment.body = jp.valueAsString
-						}
-
-						if ("body_html".equals(jp.currentName)) {
-							jp.nextToken()
-							comment.html = jp.valueAsString
-						}
-
-						if ("created".equals(jp.currentName)) {
-							jp.nextToken()
-							comment.created = jp.valueAsLong
-						}
-					}
-
-					//println(comment)
-					App.sdb.insert("comments", comment.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
-				}
-
-			}
-
-			tr.markSuccessful()
-		} finally {
-			tr.end()
-		}
-	}
-
-	fun parseFrontPage(json: String): ArrayList<RedditPost> {
-		val jp = jsonFactory.createParser(json)
-		val list = ArrayList<RedditPost>()
-
-		while (jp.nextToken() !== null) {
-			if ("domain".equals(jp.currentName)) {
-				jp.nextToken()
-				val post = RedditPost()
-				post.domain = jp.valueAsString
-
-				while (jp.nextToken() != JsonToken.END_OBJECT) {
-					if ("media_embed".equals(jp.currentName)) jp.skipChildren()
-					if ("subreddit".equals(jp.currentName)) {
-						jp.nextToken()
-						post.subreddit = jp.valueAsString
-					}
-					if ("secure_media".equals(jp.currentName)) jp.skipChildren()
-					if ("user_reports".equals(jp.currentName)) jp.skipChildren()
-					if ("id".equals(jp.currentName)) {
-						jp.nextToken()
-						post.rid = jp.valueAsString
-					}
-					if ("author".equals(jp.currentName)) {
-						jp.nextToken()
-						post.author = jp.valueAsString
-					}
-					if ("media".equals(jp.currentName)) {
-						//jp.skipChildren()
-						if (jp.nextToken() !== JsonToken.VALUE_NULL) parseMedia(jp, post)
-					}
-					if ("score".equals(jp.currentName)) {
-						jp.nextToken()
-						post.score = jp.valueAsInt
-					}
-					if ("preview".equals(jp.currentName)) {
-						parsePreview(jp, post)
-					}
-					if ("num_comments".equals(jp.currentName)) {
-						jp.nextToken()
-						post.comments = jp.valueAsInt
-					}
-					if ("thumbnail".equals(jp.currentName)) {
-						jp.nextToken()
-						post.thumbnail = jp.valueAsString
-					}
-					if ("secure_media_embed".equals(jp.currentName)) jp.skipChildren()
-					if ("permalink".equals(jp.currentName)) {
-						jp.nextToken()
-						post.permalink = jp.valueAsString
-					}
-//					if ("created".equals(jp.currentName)) {
-//						jp.nextToken()
-//						post.created = jp.valueAsLong
-//					}
-					if ("url".equals(jp.currentName)) {
-						jp.nextToken()
-						post.url = jp.valueAsString
-					}
-					if ("title".equals(jp.currentName)) {
-						jp.nextToken()
-						post.title = jp.valueAsString
-					}
-					if ("created_utc".equals(jp.currentName)) {
-						jp.nextToken()
-						post.created = jp.valueAsLong
-					}
-
-					if ("mod_reports".equals(jp.currentName)) jp.skipChildren()
-				}
-
-				//println(post)
-				list.add(post)
-			}
-		}
-
-		//EventBus.getDefault().post(list)
-
-		list.sortByDescending { it.preview }
-		return list
-	}
-
-	fun parseMedia(jp: JsonParser, post: RedditPost) {
-		while (jp.nextToken() !== JsonToken.END_OBJECT) {
-			if ("title".equals(jp.currentName)) {
-				jp.nextToken()
-				post.media_title = jp.valueAsString
-			}
-
-			if ("thumbnail_url".equals(jp.currentName)) {
-				jp.nextToken()
-				post.media_preview = jp.valueAsString
-			}
-
-			//if("author_url".equals(jp.currentName)) break
-		}
-		jp.nextToken()
-		jp.nextToken()
-		jp.nextToken()
-		//info(jp)
-	}
-
-	fun parseMedia(jp: JsonParser, media: Media) {
-		while (jp.nextToken() !== JsonToken.END_OBJECT) {
-			val key = jp.currentName
-			when (key) {
-				"title" -> media.title = jp.nextTextValue()
-				"html" -> media.html = jp.nextTextValue()
-				"provider_name" -> media.provider = jp.nextTextValue()
-				"thumbnail_url" -> media.thumbnail = jp.nextTextValue()
-			}
-		}
-		jp.nextToken()
-		jp.nextToken()
-		jp.nextToken()
-		println("parseMedia ${jp.currentName}")
-	}
-
-	fun parsePreview(jp: JsonParser, post: RedditPost) {
-		while (jp.nextToken() !== null) {
-			if ("source".equals(jp.currentName)) jp.skipChildren()
-
-			if ("url".equals(jp.currentName)) {
-				jp.nextToken()
-				val preview = jp.valueAsString
-				if (preview.contains("w=320")) {
-					post.preview = preview.replace("amp;", "")
-				}
-			}
-
-			if ("variants".equals(jp.currentName)) jp.skipChildren()
-
-			if ("id".equals(jp.currentName)) break
-		}
-		jp.nextToken()
-		jp.nextToken()
-		jp.nextToken()
-		jp.nextToken()
-		//info(jp)
-	}
-
 	fun parseComments(url: String, parent: String) {
 		val json = client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute().body().string()
 		val jp = jsonFactory.createParser(json)
@@ -423,10 +226,10 @@ object Reddit {
 						when (key) {
 							"user_reports" -> jp.skipChildren()
 							"secure_media" -> {
-								if (jp.nextToken() == JsonToken.START_OBJECT) {
+								if(jp.nextToken() == JsonToken.START_OBJECT) {
 									val media = Media()
 									parseMedia(jp, media)
-									println("MEDIA: $media")
+									header.media = media.html
 								}
 							}
 							"id" -> header.id = jp.nextTextValue()
@@ -437,6 +240,7 @@ object Reddit {
 								val preview = Preview()
 								parsePreview(jp, preview, 320)
 								header.preview = preview
+								println("SSS preview source : ${preview.source}")
 							}
 							"mod_reports" -> jp.skipChildren()
 							"secure_media_embed" -> jp.skipChildren()
@@ -485,6 +289,22 @@ object Reddit {
 		} finally {
 			tr.end()
 		}
+	}
+
+	fun parseMedia(jp: JsonParser, media: Media) {
+		while (jp.nextToken() !== JsonToken.END_OBJECT) {
+			val key = jp.currentName
+			when (key) {
+				"title" -> media.title = jp.nextTextValue()
+				"html" -> media.html = jp.nextTextValue()
+				"provider_name" -> media.provider = jp.nextTextValue()
+				"thumbnail_url" -> media.thumbnail = jp.nextTextValue()
+			}
+		}
+		jp.nextToken()
+		jp.nextToken()
+		jp.nextToken()
+		println("parseMedia ${jp.currentName}")
 	}
 
 	fun parsePreview(jp: JsonParser, preview: Preview, width: Int = 320) {

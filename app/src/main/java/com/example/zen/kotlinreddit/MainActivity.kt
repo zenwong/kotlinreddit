@@ -104,7 +104,15 @@ class MainActivity : AppCompatActivity() {
 		}
 
 		txtToolbarSort.setOnClickListener {
+			val clearSub = Observable.fromCallable {
+				App.sdb.delete("posts", null)
+				App.sdb.delete("comments", null)
+				App.sdb.delete("messages", null)
+				App.sdb.delete("sqlite_sequence", null)
+			}
 
+			val postsSub = Observable.fromCallable { Reddit.getNewPosts() }
+			subscriptions.add(Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe())
 		}
 
 	}

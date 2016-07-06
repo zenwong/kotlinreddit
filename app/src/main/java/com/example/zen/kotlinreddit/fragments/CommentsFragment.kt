@@ -84,15 +84,44 @@ class CommentsFragment : Fragment() {
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe {
-				println("TTT: ${it.title}")
+				println("TTT: media: ${it.media} preview: ${it.best}")
+
 				txtCommentHeaderTitle.text = it.title
 				txtCommentHeaderAuthor.text = it.author
 				txtCommentHeaderSelfText.text = it.selftext
 
-				Picasso.with(context).load(it.preview?.source)
+				val test1 = "https://archive.org/download/Popeye_forPresident/Popeye_forPresident_512kb.mp4"
+				val mp4Test = "https://g.redditmedia.com/a1_KqfCCYEwn4INgjOHIPjQ8BNxppS51Bx0GRKP1Plc.gif?fit=crop&crop=faces%2Centropy&arh=2&w=320&fm=mp4&mp4-fragmented=false&s=ccfd63d187741cf58b571428986c0c94"
+//				vidView.bringToFront()
+//				vidView.setOnPreparedListener {
+//					vidView.start()
+//				}
+//				vidView.setVideoURI(Uri.parse(test1))
+
+				vidView.bringToFront()
+				vidView.setUp(mp4Test, "Test 1")
+				Picasso.with(context).load(it.best)
 					.fit()
 					.centerCrop()
-					.into(imgCommentHeaderPreview)
+					.into(vidView.thumbImageView)
+
+//				if(it.media != null) {
+//					webCommentHeaderMedia.apply {
+//						setWebChromeClient(WebChromeClient())
+//						settings.pluginState = WebSettings.PluginState.ON
+//						settings.pluginState = WebSettings.PluginState.ON_DEMAND
+//						setWebViewClient(WebViewClient())
+//						settings.setJavaScriptEnabled(true)
+//					}
+//
+//					webCommentHeaderMedia.bringToFront()
+//					webCommentHeaderMedia.loadDataWithBaseURL("https://youtube.com", it.media, "text/html", "UTF-8", null)
+//				}
+//
+//				Picasso.with(context).load(it.best)
+//					.fit()
+//					.centerCrop()
+//					.into(imgCommentHeaderPreview)
 			})
 	}
 
@@ -104,6 +133,7 @@ class CommentsFragment : Fragment() {
 	override fun onPause() {
 		super.onPause()
 		subscriptions.unsubscribe()
+		vidView.removeAllViews()
 	}
 }
 

@@ -158,6 +158,7 @@ class CommentHeader {
 	var created: Long = 0L
 	var comments: Int = 0
 	var preview: Preview? = null
+	var best: String? = null
 
 	companion object {
 		val MAPPER = Func1<Cursor, CommentHeader> { c ->
@@ -172,6 +173,7 @@ class CommentHeader {
 				title = c.getString(8)
 				created = c.getLong(9)
 				comments = c.getInt(10)
+				best = c.getString(11)
 			}
 			comment
 		}
@@ -189,7 +191,8 @@ class CommentHeader {
 			put("title", title)
 			put("created", created)
 			put("comments", comments)
-			put("preview", selectPreview())
+			//put("preview", selectPreview())
+			put("preview", preview?.source)
 		}
 		return values
 	}
@@ -208,6 +211,15 @@ class Preview {
 	var thumb: String? = null
 	var gif: String? = null
 	var mp4: String? = null
+	val best: String by lazy {
+		when {
+			!thumb.isNullOrBlank() -> thumb!!
+			!source.isNullOrBlank() -> source!!
+			!gif.isNullOrBlank() -> gif!!
+			!mp4.isNullOrBlank() -> mp4!!
+			else -> ""
+		}
+	}
 
 	override fun toString(): String {
 		return "source: $source\nthumbnail: $thumb\ngif: $gif\nmp4: $mp4\n"

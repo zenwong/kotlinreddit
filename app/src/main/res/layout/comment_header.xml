@@ -31,18 +31,46 @@
 			android:textAppearance="@style/TextAppearance.AppCompat.Small"
 		/>
 
-		<ImageView
-			android:id="@+id/imgCommentHeaderPreview"
+		<FrameLayout
+			xmlns:EMVideoView="http://schemas.android.com/apk/res-auto"
+			android:id="@+id/frameCommentHeader"
 			android:layout_width="match_parent"
 			android:layout_height="220dp"
-			android:layout_below="@+id/txtCommentHeaderTitle"
-		/>
+			android:layout_below="@+id/txtCommentHeaderTitle">
+
+			<ImageView
+				android:id="@+id/imgCommentHeaderPreview"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+			/>
+
+			<WebView
+				android:id="@+id/webCommentHeaderMedia"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+			/>
+
+			<!--<com.devbrackets.android.exomedia.ui.widget.EMVideoView-->
+				<!--android:id="@+id/vidView"-->
+				<!--android:layout_width="match_parent"-->
+				<!--android:layout_height="match_parent"-->
+				<!--EMVideoView:useDefaultControls="true"-->
+			<!--/>-->
+
+			<fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard
+				android:id="@+id/vidView"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+			/>
+
+
+		</FrameLayout>
 
 		<TextView
 			android:id="@+id/txtCommentHeaderSelfText"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_below="@+id/imgCommentHeaderPreview"
+			android:layout_below="@+id/frameCommentHeader"
 			android:text="Comment Header Selftext"/>
 	</RelativeLayout>
 
