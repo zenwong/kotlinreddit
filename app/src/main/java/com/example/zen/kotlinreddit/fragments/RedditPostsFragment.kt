@@ -14,6 +14,7 @@ import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Post
+import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.row_post.view.*
@@ -44,9 +45,20 @@ class RedditPostsFragment : Fragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		println("PostsFragment onViewCreated")
+		val layout = LinearLayoutManager(context)
 		rv.setHasFixedSize(true)
-		rv.layoutManager = LinearLayoutManager(context)
+		rv.layoutManager = layout
 		rv.adapter = adapter
+
+		rv.addOnScrollListener(object : EndlessRecyclerViewScrollListener(layout) {
+			override fun onLoadMore(page: Int, totalItemsCount: Int) {
+				println("LOADMORE: page: $page after: ${App.postAfter}")
+				subscriptions.add(Observable.fromCallable { Reddit.getPostsAfter(10) }
+					.subscribeOn(Schedulers.newThread())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe())
+			}
+		})
 
 		subscriptions.add(Observable.fromCallable { Reddit.getHotPosts() }
 			.subscribeOn(Schedulers.newThread())
@@ -94,7 +106,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 		//println("PostAdapter onBindViewHolder created: ${posts[idx].created} now: $now")
 		//println("PostAdapter display: ${posts[idx].display}")
 
-		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!! * 1000L,	now, DateUtils.MINUTE_IN_MILLIS)
+		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!! * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 		//holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!!, now, DateUtils.HOUR_IN_MILLIS)
 
 		Picasso.with(context).load(posts[idx].display)
@@ -125,9 +137,9 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<PostsAdapter.Pos
 //				nav.pid = posts[adapterPosition]._id
 //				EventBus.getDefault().post(nav)
 
-			val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
-			println(url)
-			val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
+				val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
+				println(url)
+				val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
 				EventBus.getDefault().post(req)
 				//println("comments adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}
