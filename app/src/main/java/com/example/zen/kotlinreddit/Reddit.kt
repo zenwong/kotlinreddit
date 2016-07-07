@@ -13,7 +13,6 @@ import okhttp3.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.ConcurrentSkipListSet
 
 object Reddit {
 	val CLIENTID = "f-A-UqH0oTkkeA"
@@ -208,11 +207,9 @@ object Reddit {
 
 	}
 
-	fun parseComments(url: String, parent: String) {
+	fun parseComments(url: String, parent: String, limit: Int = 10) {
 		val json = client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute().body().string()
 		val jp = jsonFactory.createParser(json)
-		val children = ConcurrentSkipListSet<String>()
-		var parent_id = ""
 		val tr = App.sdb.newTransaction()
 		try {
 			while (jp.nextToken() !== null) {
@@ -235,7 +232,6 @@ object Reddit {
 							"id" -> header.id = jp.nextTextValue()
 							"author" -> header.author = jp.nextTextValue()
 							"media" -> jp.skipChildren()
-							"name" -> parent_id = jp.nextTextValue()
 							"score" -> header.score = jp.nextIntValue(0)
 							"preview" -> {
 								val preview = Preview()
@@ -285,30 +281,7 @@ object Reddit {
 					//println("COMMENT: $comment")
 				}
 
-				if ("kind".equals(jp.currentName)) {
-					if ("more".equals(jp.nextTextValue())) {
-						while (jp.nextToken() != JsonToken.END_OBJECT) {
-							if("parent_id".equals(jp.currentName)) {
-								if(parent_id.equals(jp.nextTextValue())) {
-									while(jp.nextToken() != JsonToken.END_ARRAY) {
-										if ("children".equals(jp.currentName)) {
-											while (jp.nextToken() != JsonToken.END_ARRAY) {
-												val child = jp.valueAsString
-												if (child != null) {
-													children.add(child)
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
 			}
-
-			//println("ZZZ children: ${children.size}")
-			println(children.joinToString(","))
 
 			tr.markSuccessful()
 		} finally {

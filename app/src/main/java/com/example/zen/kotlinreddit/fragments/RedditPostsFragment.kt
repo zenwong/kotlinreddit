@@ -38,7 +38,7 @@ class RedditPostsFragment : Fragment() {
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
-		adapter = PostsAdapter(context)
+		adapter = PostsAdapter(context, subscriptions)
 	}
 
 	override fun onResume() {
@@ -91,7 +91,7 @@ class RedditPostsFragment : Fragment() {
 	}
 }
 
-class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Action1<List<Post>> {
+class PostsAdapter(val context: Context, val subscriptions: CompositeSubscription) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Action1<List<Post>> {
 	val now = System.currentTimeMillis()
 	var posts: List<Post> = ArrayList()
 	val TEXT_ONLY_POST = 0
@@ -141,6 +141,8 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 			}
 		}
 
+		subscriptions.add(Observable.fromCallable { Reddit.parseComments("${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json", posts[idx].id!!) }
+			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
