@@ -1,22 +1,29 @@
 package com.example.zen.kotlinreddit.fragments
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Html
 import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.models.Comment
 import com.example.zen.kotlinreddit.models.CommentHeader
 import com.example.zen.kotlinreddit.views.DividerItemDecoration
+import com.hkm.ezwebview.Util.Fx9C
+import com.hkm.ezwebview.webviewclients.HClient
 import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.comment_header.*
 import kotlinx.android.synthetic.main.comments.*
 import kotlinx.android.synthetic.main.row_comment.view.*
@@ -98,13 +105,13 @@ class CommentsFragment : Fragment() {
 //				}
 //				vidView.setVideoURI(Uri.parse(test1))
 
-				vidView.setUp(mp4Test, "Test 1")
-				Picasso.with(context).load(it.best)
-					.fit()
-					.centerCrop()
-					.into(vidView.thumbImageView)
-
-				println("SSS commentFragment ${it.best}")
+//				vidView.setUp(mp4Test, "Test 1")
+//				Picasso.with(context).load(it.best)
+//					.fit()
+//					.centerCrop()
+//					.into(vidView.thumbImageView)
+//
+//				println("SSS commentFragment ${it.best}")
 
 //				imgCommentHeaderPreview.bringToFront()
 //				Picasso.with(context).load(it.best)
@@ -112,23 +119,53 @@ class CommentsFragment : Fragment() {
 //					.centerCrop()
 //					.into(imgCommentHeaderPreview)
 
-//				if(it.media != null) {
-//					webCommentHeaderMedia.apply {
-//						setWebChromeClient(WebChromeClient())
-//						settings.pluginState = WebSettings.PluginState.ON
-//						settings.pluginState = WebSettings.PluginState.ON_DEMAND
-//						setWebViewClient(WebViewClient())
-//						settings.setJavaScriptEnabled(true)
-//					}
-//
-//					webCommentHeaderMedia.bringToFront()
-//					webCommentHeaderMedia.loadDataWithBaseURL("https://youtube.com", it.media, "text/html", "UTF-8", null)
-//				}
+
+				  val youtube = Html.fromHtml("&lt;iframe width=\"600\" height=\"338\" src=\"https://www.youtube.com/embed/7D9GE3-o54o?feature=oembed\" frameborder=\"0\" allowfullscreen&gt;&lt;/iframe&gt;").toString()
+					val vimeo = Html.fromHtml("&lt;iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F173383757&amp;url=https%3A%2F%2Fvimeo.com%2F173383757&amp;image=http%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F579856595_640.jpg&amp;key=2aa3c4d5f3de4f5b9120b660ad850dc9&amp;type=text%2Fhtml&amp;schema=vimeo\" width=\"600\" height=\"338\" scrolling=\"no\" frameborder=\"0\" allowfullscreen&gt;&lt;/iframe&gt;").toString()
+					webCommentHeaderMedia.apply {
+						setWebChromeClient(WebChromeClient())
+						setWebViewClient(object: WebViewClient() {
+							override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+								view.loadUrl(url)
+								return true
+							}
+						})
+
+						settings.builtInZoomControls = true
+						//settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
+						settings.useWideViewPort = true
+						settings.loadWithOverviewMode = true
+						settings.pluginState = WebSettings.PluginState.ON
+						settings.setJavaScriptEnabled(true)
+
+					webCommentHeaderMedia.bringToFront()
+					//webCommentHeaderMedia.loadDataWithBaseURL("https://youtube.com", youtube, "text/html", "UTF-8", null)
+						webCommentHeaderMedia.loadData(youtube, "text/html", "UTF-8")
+
+					}
 //
 //				Picasso.with(context).load(it.best)
 //					.fit()
 //					.centerCrop()
 //					.into(imgCommentHeaderPreview)
+
+
+				Fx9C.setup_web_video(
+					this,
+					framevideoplayer,
+					videoplayer,
+					progressloadingbarpx,
+					vimeo,
+					object : HClient.Callback {
+						override fun overridedefaultlogic(url: String, activity: Activity): Boolean {
+							return true
+						}
+
+						override fun retrieveCookie(s: String) {
+
+						}
+					}, null)
+
 			})
 	}
 
@@ -140,7 +177,7 @@ class CommentsFragment : Fragment() {
 	override fun onPause() {
 		super.onPause()
 		subscriptions.unsubscribe()
-		vidView.removeAllViews()
+		//vidView.removeAllViews()
 	}
 }
 

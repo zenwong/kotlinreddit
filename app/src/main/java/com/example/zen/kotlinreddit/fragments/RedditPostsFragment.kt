@@ -141,6 +141,8 @@ class PostsAdapter(val context: Context, val subscriptions: CompositeSubscriptio
 			}
 		}
 
+		// optimization for pre caching top 10 comments so user sees comments immediately
+		// optional check for wifi connection or user setting before getting comments
 		subscriptions.add(Observable.fromCallable { Reddit.parseComments("${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json", posts[idx].id!!) }
 			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 	}
