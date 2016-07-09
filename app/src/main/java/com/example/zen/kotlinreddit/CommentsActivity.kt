@@ -21,7 +21,7 @@ class CommentsActivity : AppCompatActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContentView(R.layout.comments)
+		setContentView(R.layout.comments_new)
 		setSupportActionBar(toolbar)
 		pid = intent.getStringExtra("parent")
 		val adapter = CommentsAdapter(this)
