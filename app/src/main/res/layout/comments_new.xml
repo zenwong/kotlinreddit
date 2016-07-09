@@ -22,27 +22,49 @@
 			app:expandedTitleMarginEnd="64dp"
 			android:fitsSystemWindows="true">
 
-			<com.example.zen.kotlinreddit.views.VideoEnabledWebView
-				android:id="@+id/embedPlayer"
-				android:layout_width="match_parent"
-				android:layout_height="220dp"
-				android:scaleType="centerCrop"
-				android:fitsSystemWindows="true"
-				app:layout_collapseMode="parallax"/>
+			<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			                android:layout_width="match_parent"
+			                android:layout_height="220dp">
+
+				<!-- View that will be hidden when video goes fullscreen -->
+				<RelativeLayout
+					android:id="@+id/nonVideoLayout"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent">
+
+					<com.example.zen.kotlinreddit.views.VideoEnabledWebView
+						android:id="@+id/embedPlayer"
+						android:layout_width="match_parent"
+						android:layout_height="220dp"
+						android:scaleType="centerInside"
+						android:fitsSystemWindows="true"
+						app:layout_collapseMode="parallax"/>
+
+				</RelativeLayout>
+
+				<!-- View where the video will be shown when video goes fullscreen -->
+				<RelativeLayout
+					android:id="@+id/videoLayout"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent">
+
+				</RelativeLayout>
+
+			</RelativeLayout>
 
 			<android.support.v7.widget.Toolbar
 				android:id="@+id/commentsToolbar"
 				android:layout_width="match_parent"
 				android:layout_height="?attr/actionBarSize"
 				app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-				app:layout_collapseMode="pin" />
+				app:layout_collapseMode="parallax"/>
 
 		</android.support.design.widget.CollapsingToolbarLayout>
 
 	</android.support.design.widget.AppBarLayout>
 
 	<android.support.v7.widget.RecyclerView
-		android:id="@+id/list"
+		android:id="@+id/clist"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior">
