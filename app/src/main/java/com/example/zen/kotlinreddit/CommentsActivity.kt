@@ -18,23 +18,28 @@ class CommentsActivity : AppCompatActivity() {
 	val table = "comments"
 	val select = "select * from comments where parent = ?"
 	val layout = LinearLayoutManager(this)
-	var pid: String? = null
+	val link: String by lazy {
+		var ret = intent.getStringExtra("url")
+		if(ret == null) ret = "${Reddit.REDDIT_FRONT}${Uri.parse(intent.dataString).path}.json"
+		ret
+	}
+	val parent: String by lazy {
+		var ret = intent.getStringExtra("parent")
+		if(ret == null) ret = Uri.parse(intent.dataString).pathSegments[3]
+		ret
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.comments_new)
 		setSupportActionBar(toolbar)
-		pid = intent.getStringExtra("parent")
 		val adapter = CommentsAdapter(this)
 		list.setHasFixedSize(true)
 		list.layoutManager = layout
 		list.adapter = adapter
 
-		val url = intent.dataString
-		val permalink = Uri.parse(url).path
-		val link = "${Reddit.REDDIT_FRONT}$permalink.json"
-		val parent = Uri.parse(url).pathSegments[3]
-		println("ZXZ $link")
+
+		println("ZXZ $link $parent")
 
 		subscriptions.add(Observable.fromCallable { Reddit.parseComments(link, parent) }
 			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
