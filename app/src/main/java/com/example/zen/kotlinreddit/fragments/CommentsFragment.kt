@@ -155,7 +155,7 @@ class CommentsFragment : Fragment() {
 					framevideoplayer,
 					videoplayer,
 					progressloadingbarpx,
-					vimeo,
+					youtube,
 					object : HClient.Callback {
 						override fun overridedefaultlogic(url: String, activity: Activity): Boolean {
 							return true
@@ -177,6 +177,9 @@ class CommentsFragment : Fragment() {
 	override fun onPause() {
 		super.onPause()
 		subscriptions.unsubscribe()
+		println("commentsFragment onPause")
+		Fx9C.clearVideo(framevideoplayer, videoplayer)
+		Fx9C.killWebView(videoplayer)
 		//vidView.removeAllViews()
 	}
 }

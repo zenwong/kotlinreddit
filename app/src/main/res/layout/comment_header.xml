@@ -64,7 +64,8 @@
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:layout_below="@+id/txtCommentHeaderTitle"
-            android:visibility="gone">
+            android:visibility="gone"
+        >
 
             <ImageView
                 android:id="@+id/imgCommentHeaderPreview"

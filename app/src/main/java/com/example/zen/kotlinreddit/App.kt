@@ -2,9 +2,12 @@ package com.example.zen.kotlinreddit
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.support.v4.app.Fragment
 import android.util.Log
 import com.example.zen.kotlinreddit.models.AccessToken
+import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.RedditPost
 import com.example.zen.kotlinreddit.models.RefreshToken
 import com.joanzapata.iconify.Iconify
@@ -90,4 +93,11 @@ inline fun Context.editPreferences(preferenceFileName: String = TAG, block: (Sha
 	val editablePreferences = getSharedPreferences(preferenceFileName, Context.MODE_PRIVATE).edit()
 	block(editablePreferences)
 	editablePreferences.commit()
+}
+
+inline fun <reified T : Fragment> Fragment.navigate(req: CommentsRequest) {
+	val intent = Intent(this.context, T::class.java)
+	intent.putExtra("url", req.url)
+	intent.putExtra("id", req.parent)
+	this.context.startActivity(intent)
 }

@@ -1,6 +1,7 @@
 package com.example.zen.kotlinreddit.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -10,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.zen.kotlinreddit.App
+import com.example.zen.kotlinreddit.CommentsActivity
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.models.CommentsRequest
@@ -177,7 +179,13 @@ class PostsAdapter(val context: Context, val subscriptions: CompositeSubscriptio
 				EventBus.getDefault().post(Title(posts[adapterPosition].title!!))
 				val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
 				val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
-				EventBus.getDefault().post(req)
+				//EventBus.getDefault().post(req)
+				val intent = Intent(context, CommentsActivity::class.java)
+				intent.putExtra("url", req.url)
+				intent.putExtra("parent", req.parent)
+				context.startActivity(intent)
+
+				//navigate<CommentsActivity>(req)
 			}
 
 			txtSubreddit.setOnClickListener {
