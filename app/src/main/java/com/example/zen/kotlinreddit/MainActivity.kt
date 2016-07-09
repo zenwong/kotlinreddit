@@ -143,10 +143,10 @@ class MainActivity : AppCompatActivity() {
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onCommentsRequest(req: CommentsRequest) {
 
-		//subscriptions.add(Observable.fromCallable { Reddit.getComments(req.url, req.pid) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
-
-		subscriptions.add(Observable.fromCallable { Reddit.parseComments(req.url, req.parent) }
-			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+		subscriptions.add(Observable.fromCallable { Reddit.parseComments(req.url, req.parent, 500) }
+			.subscribeOn(Schedulers.newThread())
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe())
 
 		val ft = supportFragmentManager.beginTransaction()
 		ft.replace(R.id.content, CommentsFragment.Companion.newInstance(req.parent))

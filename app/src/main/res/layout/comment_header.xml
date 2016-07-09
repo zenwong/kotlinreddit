@@ -1,78 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
->
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
 
-	<RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent"
-	                android:padding="10dp">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
 
-		<TextView
-			android:id="@+id/txtCommentHeaderAuthor"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
-			android:layout_alignParentTop="true"
-			android:text="Comment Header Author"
-			android:textStyle="bold"
-			android:textColorHighlight="@color/colorAccent"
-		/>
+        <TextView
+            android:id="@+id/txtCommentHeaderAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="Comment Header Author"
+            android:textColorHighlight="@color/colorAccent"
+            android:textStyle="bold"
+            />
 
-		<TextView
-			android:id="@+id/txtCommentHeaderTitle"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@+id/txtCommentHeaderAuthor"
-			android:textStyle="bold"
-			android:text="Comment Header Title"
-			android:layout_marginTop="10dp"
-			android:layout_marginBottom="10dp"
-			android:textAppearance="@style/TextAppearance.AppCompat.Small"
-		/>
+        <TextView
+            android:id="@+id/txtCommentHeaderTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtCommentHeaderAuthor"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Comment Header Title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textStyle="bold"
+            />
 
-		<FrameLayout
-			xmlns:EMVideoView="http://schemas.android.com/apk/res-auto"
-			android:id="@+id/frameCommentHeader"
-			android:layout_width="match_parent"
-			android:layout_height="220dp"
-			android:layout_below="@+id/txtCommentHeaderTitle">
+        <RelativeLayout
+            android:id="@+id/framevideoplayer"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:padding="1dp"
+            android:visibility="gone">
 
-			<ImageView
-				android:id="@+id/imgCommentHeaderPreview"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-			/>
+            <com.hkm.ezwebview.webviewleakfix.NonLeakingWebView
+                android:id="@+id/videoplayer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="gone"/>
 
-			<!--<WebView-->
-				<!--android:id="@+id/webCommentHeaderMedia"-->
-				<!--android:layout_width="match_parent"-->
-				<!--android:layout_height="match_parent"-->
-			<!--/>-->
+            <com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar
+                xmlns:fab="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/progressloadingbarpx"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                fab:mlpb_enable_circle_background="true"
+                fab:mlpb_inner_radius="18dp"
+                fab:mlpb_show_arrow="false"/>
+        </RelativeLayout>
 
-			<!--<com.devbrackets.android.exomedia.ui.widget.EMVideoView-->
-				<!--android:id="@+id/vidView"-->
-				<!--android:layout_width="match_parent"-->
-				<!--android:layout_height="match_parent"-->
-				<!--EMVideoView:useDefaultControls="true"-->
-			<!--/>-->
+        <FrameLayout
+            xmlns:EMVideoView="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/frameCommentHeader"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_below="@+id/txtCommentHeaderTitle"
+            android:visibility="gone">
 
-			<fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard
-				android:id="@+id/vidView"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-			/>
+            <ImageView
+                android:id="@+id/imgCommentHeaderPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+            <WebView
+                android:id="@+id/webCommentHeaderMedia"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+            <!--<com.devbrackets.android.exomedia.ui.widget.EMVideoView-->
+            <!--android:id="@+id/vidView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--EMVideoView:useDefaultControls="true"-->
+            <!--/>-->
+
+            <!--<fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard-->
+            <!--android:id="@+id/vidView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--/>-->
 
 
-		</FrameLayout>
+        </FrameLayout>
 
-		<TextView
-			android:id="@+id/txtCommentHeaderSelfText"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@+id/frameCommentHeader"
-			android:text="Comment Header Selftext"/>
-	</RelativeLayout>
+        <TextView
+            android:id="@+id/txtCommentHeaderSelfText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frameCommentHeader"
+            android:text="Comment Header Selftext"/>
+    </RelativeLayout>
 
 
 </android.support.v7.widget.CardView>
