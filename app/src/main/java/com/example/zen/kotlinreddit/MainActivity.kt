@@ -1,5 +1,7 @@
 package com.example.zen.kotlinreddit
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
@@ -104,17 +106,30 @@ class MainActivity : AppCompatActivity() {
 		}
 
 		txtToolbarSort.setOnClickListener {
-			val clearSub = Observable.fromCallable {
-				App.sdb.delete("posts", null)
-				App.sdb.delete("comments", null)
-				App.sdb.delete("messages", null)
-				App.sdb.delete("sqlite_sequence", null)
-			}
+//			val clearSub = Observable.fromCallable {
+//				App.sdb.delete("posts", null)
+//				App.sdb.delete("comments", null)
+//				App.sdb.delete("messages", null)
+//				App.sdb.delete("sqlite_sequence", null)
+//			}
+//
+//			val postsSub = Observable.fromCallable { Reddit.getNewPosts() }
+//			subscriptions.add(Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe())
 
-			val postsSub = Observable.fromCallable { Reddit.getNewPosts() }
-			subscriptions.add(Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe())
+			//PostSortDialog().show(supportFragmentManager, "dialog")
+
+			showDialog(1)
 		}
 
+	}
+
+	override fun onCreateDialog(id: Int): Dialog {
+		return AlertDialog.Builder(this)
+			.setTitle("Sort Options")
+			.setItems(R.array.posts_sort_options) { dialog, which ->
+				println("clicked on $which")
+			}
+			.create()
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)

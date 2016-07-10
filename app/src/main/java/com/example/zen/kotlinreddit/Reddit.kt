@@ -196,7 +196,7 @@ object Reddit {
 
 				if ("after".equals(jp.currentName)) {
 					App.postAfter = jp.nextTextValue()
-					println("AFTER: ${App.postAfter}")
+					//println("AFTER: ${App.postAfter}")
 				}
 			}
 
@@ -254,7 +254,7 @@ object Reddit {
 						}
 					}
 
-					println("COMMENT HEADER: $header")
+					//println("COMMENT HEADER: $header")
 					App.sdb.insert("comment_headers", header.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 
@@ -361,12 +361,12 @@ object Reddit {
 					}
 				}
 				"id" -> {
-					println("inside id")
+					//println("inside id")
 					jp.skipChildren()
 					jp.nextToken()
 					jp.nextToken()
 					jp.nextToken()
-					println(jp.currentName)
+					//println(jp.currentName)
 				}
 			}
 

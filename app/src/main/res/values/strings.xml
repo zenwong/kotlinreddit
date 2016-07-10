@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">KotlinReddit</string>
+
+    <string-array name="posts_sort_options">
+        <item>Hot</item>
+        <item>New</item>
+        <item>Preview</item>
+        <item>Comments</item>
+        <item>Score</item>
+    </string-array>
+
+    <string-array name="comments_sort_options">
+        <item>New</item>
+        <item>Score</item>
+    </string-array>
+
 </resources>
