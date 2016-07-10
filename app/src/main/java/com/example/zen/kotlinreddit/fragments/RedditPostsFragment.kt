@@ -16,6 +16,7 @@ import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Post
+import com.example.zen.kotlinreddit.models.PostSort
 import com.example.zen.kotlinreddit.models.Title
 import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
 import com.example.zen.kotlinreddit.views.PreCachingLayoutManager
@@ -24,6 +25,8 @@ import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.row_post.view.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
@@ -34,9 +37,12 @@ import java.util.*
 class RedditPostsFragment : Fragment() {
 	//val select = "select * from posts order by display desc, created desc"
 	//val select = "select * from posts order by display desc"
-	val select = "select * from posts"
+	//val select = "select * from posts"
+	var sortParam = "_id"
+	val select = "select * from posts order by $sortParam desc"
 	var subscriptions = CompositeSubscription()
 	var adapter: PostsAdapter? = null
+	//var selectSub = App.sdb.createQuery("posts", select).mapToList(Post.MAPPER)
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
@@ -45,6 +51,7 @@ class RedditPostsFragment : Fragment() {
 
 	override fun onResume() {
 		super.onResume()
+		EventBus.getDefault().register(this)
 		activity.txtToolbarTitle.text = "Front Page"
 		println("PostsFragment onResume")
 		subscriptions = CompositeSubscription()
@@ -81,10 +88,26 @@ class RedditPostsFragment : Fragment() {
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
+
+		//subscriptions.add(selectSub.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
+	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	fun onPostSort(sort: PostSort) {
+		println("onPostsSort ${sort.sort}")
+		when (sort.sort) {
+			"preview" -> 	sortParam = "display"
+			"comments" -> 	sortParam = "comments"
+			"score" -> 	sortParam = "score"
+		}
+		val sortedAdapter = PostsAdapter(context, subscriptions)
+		rv.swapAdapter(sortedAdapter, true)
+		subscriptions.add(App.sdb.createQuery("posts", select).mapToList(Post.MAPPER).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(sortedAdapter))
 	}
 
 	override fun onPause() {
 		super.onPause()
+		EventBus.getDefault().unregister(this)
 		subscriptions.clear()
 	}
 
@@ -99,11 +122,10 @@ class PostsAdapter(val context: Context, val subscriptions: CompositeSubscriptio
 	val TEXT_ONLY_POST = 0
 	val IMAGE_POST = 1
 
-
 	override fun call(list: List<Post>) {
 		//posts.addAll(list)
-		println("PostsAdapter call")
 		posts = list
+		println("PostsAdapter call ${posts.size}")
 		notifyDataSetChanged()
 	}
 
@@ -145,8 +167,7 @@ class PostsAdapter(val context: Context, val subscriptions: CompositeSubscriptio
 
 		// optimization for pre caching top 10 comments so user sees comments immediately
 		// optional check for wifi connection or user setting before getting comments
-		subscriptions.add(Observable.fromCallable { Reddit.parseComments("${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json", posts[idx].id!!) }
-			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+		// subscriptions.add(Observable.fromCallable { Reddit.parseComments("${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json", posts[idx].id!!) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

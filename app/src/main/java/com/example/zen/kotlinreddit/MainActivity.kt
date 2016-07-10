@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
 import com.example.zen.kotlinreddit.fragments.CommentsFragment
+import com.example.zen.kotlinreddit.fragments.GifFragment
 import com.example.zen.kotlinreddit.fragments.RedditPostsFragment
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
+import com.example.zen.kotlinreddit.models.PostSort
 import com.example.zen.kotlinreddit.models.Title
 import kotlinx.android.synthetic.main.main.*
 import org.greenrobot.eventbus.EventBus
@@ -24,7 +26,7 @@ const val COMMENTS = 2
 const val MESSAGES = 3
 
 class MainActivity : AppCompatActivity() {
-	var subscriptions =  CompositeSubscription()
+	var subscriptions = CompositeSubscription()
 
 	override fun onStart() {
 		super.onStart()
@@ -79,16 +81,25 @@ class MainActivity : AppCompatActivity() {
 		setSupportActionBar(toolbar)
 
 
-		if(App.accessToken == null) {
+		if (App.accessToken == null) {
 			val ft = supportFragmentManager.beginTransaction()
 			ft.replace(R.id.content, BrowserFragment())
 			ft.commit()
 		} else {
-			txtToolbarTitle.text = "Front Page"
+//			txtToolbarTitle.text = "Front Page"
+//			val ft = supportFragmentManager.beginTransaction()
+//			ft.replace(R.id.content, RedditPostsFragment())
+//			ft.addToBackStack("PostsFragment")
+//			ft.commit()
+
+			txtToolbarTitle.text = "Gif Fragment"
 			val ft = supportFragmentManager.beginTransaction()
-			ft.replace(R.id.content, RedditPostsFragment())
+			ft.replace(R.id.content, GifFragment())
 			ft.addToBackStack("PostsFragment")
 			ft.commit()
+
+//			val intent = Intent(this, PostsActivity::class.java)
+//			startActivity(intent)
 		}
 
 		txtToolbarRefresh.setOnClickListener {
@@ -128,6 +139,21 @@ class MainActivity : AppCompatActivity() {
 			.setTitle("Sort Options")
 			.setItems(R.array.posts_sort_options) { dialog, which ->
 				println("clicked on $which")
+				val clearSub = Observable.fromCallable {
+					App.sdb.delete("posts", null)
+					App.sdb.delete("comments", null)
+					App.sdb.delete("comment_headers", null)
+					App.sdb.delete("messages", null)
+					App.sdb.delete("sqlite_sequence", null)
+				}
+
+				when (which) {
+					0 -> subscriptions.add(Observable.concat(clearSub, Observable.fromCallable { Reddit.getHotPosts() }).subscribeOn(Schedulers.newThread()).subscribe())
+					1 -> subscriptions.add(Observable.concat(clearSub, Observable.fromCallable { Reddit.getNewPosts() }).subscribeOn(Schedulers.newThread()).subscribe())
+					2 -> EventBus.getDefault().post(PostSort("preview"))
+					3 -> EventBus.getDefault().post(PostSort("comments"))
+					4 -> EventBus.getDefault().post(PostSort("score"))
+				}
 			}
 			.create()
 	}
@@ -135,8 +161,8 @@ class MainActivity : AppCompatActivity() {
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onNav(nav: Navigation) {
 		val ft = supportFragmentManager.beginTransaction()
-		when(nav.fragment) {
-			FRONT ->  {
+		when (nav.fragment) {
+			FRONT -> {
 				ft.replace(R.id.content, RedditPostsFragment())
 				ft.addToBackStack("PostsFragment")
 			}

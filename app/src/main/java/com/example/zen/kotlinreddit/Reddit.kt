@@ -105,6 +105,10 @@ object Reddit {
 		parsePosts(getObs("https://oauth.reddit.com/hot"))
 	}
 
+	fun getSubredditPosts(subreddit: String) {
+		parsePosts(getObs("https://oauth.reddit.com/r/$subreddit"))
+	}
+
 	fun getPostsAfter(limit: Int = 5) {
 		parsePosts(getObs("$REDDIT_FRONT?limit=$limit&after=${App.postAfter}"))
 	}
