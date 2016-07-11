@@ -51,6 +51,11 @@ dependencies {
     //compile 'au.com.gridstone.rxstore:rxstore-kotlin:5.0.2'
     //compile 'au.com.gridstone.rxstore:converter-jackson:5.0.2'
 
+
+    compile 'com.snappydb:snappydb-lib:0.5.2'
+    compile 'com.esotericsoftware.kryo:kryo:2.24.0'
+
+
     compile 'com.squareup.okhttp3:okhttp:3.3.0'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.sqlbrite:sqlbrite:0.6.3'

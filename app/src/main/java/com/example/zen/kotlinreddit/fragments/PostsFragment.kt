@@ -3,9 +3,7 @@ package com.example.zen.kotlinreddit.fragments
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
-import com.example.zen.kotlinreddit.App
-import com.example.zen.kotlinreddit.R
-import com.example.zen.kotlinreddit.Reddit
+import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.adapters.TestPostAdapter
 import com.example.zen.kotlinreddit.models.Post
 import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
@@ -30,6 +28,19 @@ class PostsFragment : BaseFragment() {
 
 	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+
+		subs.add(Observable.fromCallable { Api.getHotPosts() }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+
+		subs.add(Observable.fromCallable {
+
+			for (batch in App.snappy.allKeysIterator().byBatch(100)) {
+				for (key in batch) {
+					val p = App.snappy.getObject(key, TPost::class.java)
+					println(p.title)
+				}
+			}
+
+		}.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 
 		val query: Observable<List<Post>>
 		if (arguments == null) {
