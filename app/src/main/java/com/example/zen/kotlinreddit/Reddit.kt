@@ -93,24 +93,28 @@ object Reddit {
 		return accessToken
 	}
 
-	fun getObs(url: String): String {
-		return client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute().body().string()
+	fun getOrEmpty(url: String): String {
+		val resp = client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute()
+		if(resp.isSuccessful) {
+			return resp.body().string()
+		}
+		return "{}"
 	}
 
 	fun getNewPosts() {
-		parsePosts(getObs("https://oauth.reddit.com/new/"))
+		parsePosts(getOrEmpty("https://oauth.reddit.com/new/"))
 	}
 
 	fun getHotPosts() {
-		parsePosts(getObs("https://oauth.reddit.com/hot"))
+		parsePosts(getOrEmpty("https://oauth.reddit.com/hot"))
 	}
 
 	fun getSubredditPosts(subreddit: String) {
-		parsePosts(getObs("https://oauth.reddit.com/r/$subreddit"))
+		parsePosts(getOrEmpty("https://oauth.reddit.com/r/$subreddit"))
 	}
 
 	fun getPostsAfter(limit: Int = 5) {
-		parsePosts(getObs("$REDDIT_FRONT?limit=$limit&after=${App.postAfter}"))
+		parsePosts(getOrEmpty("$REDDIT_FRONT?limit=$limit&after=${App.postAfter}"))
 	}
 
 	fun parsePosts(json: String) {

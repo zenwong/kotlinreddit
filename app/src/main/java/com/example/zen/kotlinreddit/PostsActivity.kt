@@ -40,6 +40,8 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		toggle.syncState()
 
 		nav_view.setNavigationItemSelectedListener(this)
+
+
 	}
 
 	override fun onNewIntent(intent: Intent) {
@@ -52,10 +54,9 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		EventBus.getDefault().register(this)
 
 		val ft = supportFragmentManager.beginTransaction()
-
 		if(App.accessToken != null) {
 			if(intent.dataString != null) {
-				toolbar_title.text = intent.dataString
+				//toolbar_title.text = intent.dataString
 				val paths = intent.data.pathSegments
 
 				// handle various types of reddit links
