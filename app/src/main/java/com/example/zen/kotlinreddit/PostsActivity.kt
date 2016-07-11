@@ -11,7 +11,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import com.example.zen.kotlinreddit.fragments.PostsAdapter
+import com.example.zen.kotlinreddit.adapters.PostsAdapter
 import com.example.zen.kotlinreddit.models.Post
 import com.example.zen.kotlinreddit.views.PreCachingLayoutManager
 import kotlinx.android.synthetic.main.app_bar_posts.*
@@ -24,7 +24,7 @@ import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 
 class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-	val subs = CompositeSubscription()
+	var subs = CompositeSubscription()
 	var adapter: PostsAdapter? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,33 +45,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		toggle.syncState()
 
 		nav_view.setNavigationItemSelectedListener(this)
-
-		val layoutManager = PreCachingLayoutManager(this)
-		layoutManager.orientation = LinearLayoutManager.VERTICAL
-		layoutManager.setExtraLayoutSpace(resources.displayMetrics.heightPixels)
-		adapter = PostsAdapter(this, subs)
-
-		postsList.setHasFixedSize(true)
-		postsList.layoutManager = layoutManager
-		postsList.adapter = adapter
-
-//		var querySub: Subscription? = null
-//		if (intent.dataString != null) {
-//			val subreddit = Uri.parse(intent.dataString).pathSegments[1]
-//			querySub = App.sdb.createQuery("posts", "select * from posts where subreddit = ?", subreddit)
-//				.mapToList(Post.MAPPER)
-//				.subscribeOn(Schedulers.newThread())
-//				.observeOn(AndroidSchedulers.mainThread())
-//				.subscribe(adapter)
-//		} else {
-//			querySub = App.sdb.createQuery("posts", "select * from posts")
-//				.mapToList(Post.MAPPER)
-//				.subscribeOn(Schedulers.newThread())
-//				.observeOn(AndroidSchedulers.mainThread())
-//				.subscribe(adapter)
-//		}
-//
-//		subs.add(querySub)
 	}
 
 	override fun onRestart() {
@@ -83,6 +56,16 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 	override fun onPostResume() {
 		Log.d("ZXZ", "PostsActivity onPostResume")
+		subs = CompositeSubscription()
+		adapter = PostsAdapter(this, subs)
+
+		val layoutManager = PreCachingLayoutManager(this)
+		layoutManager.orientation = LinearLayoutManager.VERTICAL
+		layoutManager.setExtraLayoutSpace(resources.displayMetrics.heightPixels)
+		postsList.setHasFixedSize(true)
+		postsList.layoutManager = layoutManager
+		postsList.adapter = adapter
+
 		initQuery()
 		super.onPostResume()
 	}
@@ -160,7 +143,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		return super.onOptionsItemSelected(item)
 	}
 
-	@SuppressWarnings("StatementWithEmptyBody")
 	override fun onNavigationItemSelected(item: MenuItem): Boolean {
 		// Handle navigation view item clicks here.
 		val id = item.itemId

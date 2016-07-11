@@ -35,12 +35,14 @@ class App : Application() {
 		lateinit var db: DB
 		lateinit var sqlBrite : SqlBrite
 		lateinit var sdb: BriteDatabase
+		//lateinit var store: StoreProvider
 	}
 
 	override fun onCreate() {
 		sqlBrite = SqlBrite.create()
 		sdb = sqlBrite.wrapDatabaseHelper(DB(this), Schedulers.io())
 		//sdb.setLoggingEnabled(true)
+		//store = StoreProvider.withContext(this).inDir("rxStore").using(JacksonConverter())
 
 		Reddit.init(this, cacheDir)
 		Iconify.with(FontAwesomeModule())

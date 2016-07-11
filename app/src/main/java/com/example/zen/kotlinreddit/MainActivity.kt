@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
 import com.example.zen.kotlinreddit.fragments.CommentsFragment
-import com.example.zen.kotlinreddit.fragments.GifFragment
 import com.example.zen.kotlinreddit.fragments.RedditPostsFragment
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
@@ -81,26 +80,23 @@ class MainActivity : AppCompatActivity() {
 		setSupportActionBar(toolbar)
 
 
+		val ft = supportFragmentManager.beginTransaction()
 		if (App.accessToken == null) {
-			val ft = supportFragmentManager.beginTransaction()
 			ft.replace(R.id.content, BrowserFragment())
-			ft.commit()
 		} else {
-//			txtToolbarTitle.text = "Front Page"
-//			val ft = supportFragmentManager.beginTransaction()
-//			ft.replace(R.id.content, RedditPostsFragment())
-//			ft.addToBackStack("PostsFragment")
-//			ft.commit()
-
-			txtToolbarTitle.text = "Gif Fragment"
-			val ft = supportFragmentManager.beginTransaction()
-			ft.replace(R.id.content, GifFragment())
+			txtToolbarTitle.text = "Front Page"
+			ft.replace(R.id.content, RedditPostsFragment())
 			ft.addToBackStack("PostsFragment")
-			ft.commit()
+
+//			txtToolbarTitle.text = "Gif Fragment"
+//			ft.replace(R.id.content, GifFragment())
+//			ft.addToBackStack("PostsFragment")
 
 //			val intent = Intent(this, PostsActivity::class.java)
 //			startActivity(intent)
 		}
+		ft.commit()
+
 
 		txtToolbarRefresh.setOnClickListener {
 			val clearSub = Observable.fromCallable {
