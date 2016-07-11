@@ -16,8 +16,8 @@ import com.example.zen.kotlinreddit.models.PostSort
 import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
 import com.example.zen.kotlinreddit.views.PreCachingLayoutManager
 import com.squareup.sqlbrite.SqlBrite
-import kotlinx.android.synthetic.main.front_page.*
 import kotlinx.android.synthetic.main.main.*
+import kotlinx.android.synthetic.main.recycler.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -39,6 +39,16 @@ class RedditPostsFragment : Fragment() {
 	var adapter: PostsAdapter? = null
 	//var selectSub = App.sdb.createQuery("posts", select).mapToList(Post.MAPPER)
 
+	companion object {
+		fun forSubreddit(subreddit: String) : RedditPostsFragment {
+			val frag = RedditPostsFragment()
+			val bundle = Bundle()
+			bundle.putString("subreddit", subreddit)
+			frag.arguments = bundle
+			return frag
+		}
+	}
+
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
 		adapter = PostsAdapter(context, subscriptions)
@@ -46,6 +56,9 @@ class RedditPostsFragment : Fragment() {
 
 	override fun onResume() {
 		super.onResume()
+
+
+
 		EventBus.getDefault().register(this)
 		activity.txtToolbarTitle.text = "Front Page"
 		println("PostsFragment onResume")

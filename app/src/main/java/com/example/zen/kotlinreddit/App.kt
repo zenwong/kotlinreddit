@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment
 import android.util.Log
 import com.example.zen.kotlinreddit.models.AccessToken
 import com.example.zen.kotlinreddit.models.CommentsRequest
-import com.example.zen.kotlinreddit.models.RedditPost
 import com.example.zen.kotlinreddit.models.RefreshToken
 import com.joanzapata.iconify.Iconify
 import com.joanzapata.iconify.fonts.FontAwesomeModule
@@ -17,11 +16,8 @@ import com.squareup.sqlbrite.SqlBrite
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
-import java.util.*
 
 const val TAG = "com.example.zen.kotlinreddit"
 
@@ -76,16 +72,6 @@ class App : Application() {
 			editablePreferences ->
 			editablePreferences.putString("REFRESH_TOKEN", refresh.token)
 		}
-	}
-
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	fun onPosts(posts: ArrayList<RedditPost>) {
-		subs.add(Observable.fromCallable { db.insertPosts(posts) }
-			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-			.subscribe {
-				println("onPOSTS after subscribe")
-			})
-
 	}
 
 

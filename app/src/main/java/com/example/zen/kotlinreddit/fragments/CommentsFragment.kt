@@ -25,7 +25,7 @@ import com.hkm.ezwebview.Util.Fx9C
 import com.hkm.ezwebview.webviewclients.HClient
 import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter
 import kotlinx.android.synthetic.main.comment_header.*
-import kotlinx.android.synthetic.main.comments.*
+import kotlinx.android.synthetic.main.recycler.*
 import kotlinx.android.synthetic.main.row_comment.view.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
@@ -68,17 +68,17 @@ class CommentsFragment : Fragment() {
 		//val adapter = CommentsAdapter(context)
 		var test = ArrayList<Comment>()
 		val adapter = ParallaxCommentAdapter(context, test)
-		adapter.setParallaxHeader(headerView, list)
+		adapter.setParallaxHeader(headerView, rv)
 //		adapter.setOnParallaxScroll { percentage, offset, view ->
 //			val c = activity.toolbar.background
 //			c.alpha = Math.round(percentage * 255)
 //			activity.toolbar.background = c
 //		}
 
-		list.setHasFixedSize(true)
-		list.layoutManager = layout
-		list.addItemDecoration(DividerItemDecoration(ResourcesCompat.getDrawable(resources, R.drawable.abc_list_divider_mtrl_alpha, null)!!))
-		list.adapter = adapter
+		rv.setHasFixedSize(true)
+		rv.layoutManager = layout
+		rv.addItemDecoration(DividerItemDecoration(ResourcesCompat.getDrawable(resources, R.drawable.abc_list_divider_mtrl_alpha, null)!!))
+		rv.adapter = adapter
 
 		subscriptions.add(App.sdb.createQuery(table, select, pid.toString())
 			.mapToList(Comment.MAPPER)

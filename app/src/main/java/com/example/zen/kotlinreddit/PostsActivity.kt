@@ -1,44 +1,39 @@
 package com.example.zen.kotlinreddit
 
-import android.net.Uri
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import com.example.zen.kotlinreddit.adapters.PostsAdapter
-import com.example.zen.kotlinreddit.models.Post
-import com.example.zen.kotlinreddit.views.PreCachingLayoutManager
+import com.example.zen.kotlinreddit.fragments.BrowserFragment
+import com.example.zen.kotlinreddit.fragments.CommentsFragment
+import com.example.zen.kotlinreddit.fragments.PostsFragment
+import com.example.zen.kotlinreddit.fragments.TestCommentsFragment
+import com.example.zen.kotlinreddit.models.CommentsRequest
+import com.example.zen.kotlinreddit.models.Navigation
+import com.example.zen.kotlinreddit.models.Title
 import kotlinx.android.synthetic.main.app_bar_posts.*
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.posts.*
-import rx.Observable
-import rx.Subscription
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import rx.subscriptions.CompositeSubscription
 
 class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 	var subs = CompositeSubscription()
-	var adapter: PostsAdapter? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-
-		Log.d("ZXZ", "PostsActivity oncreate")
 
 		setContentView(R.layout.posts)
 		setSupportActionBar(postsToolbar)
 		supportActionBar?.setDisplayShowTitleEnabled(false)
 
-		toolbar_title.text = "Posts Activity"
-
-		fab.setOnClickListener { view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show() }
+		toolbar_title.text = "Post Acitivty"
 
 		val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
 		drawer_layout.addDrawerListener(toggle)
@@ -47,72 +42,53 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		nav_view.setNavigationItemSelectedListener(this)
 	}
 
-	override fun onRestart() {
-		Log.d("ZXZ", "PostsActivity onRestart")
-		initQuery()
-
-		super.onRestart()
+	override fun onNewIntent(intent: Intent) {
+		super.onNewIntent(intent)
+		setIntent(intent)
 	}
 
-	override fun onPostResume() {
-		Log.d("ZXZ", "PostsActivity onPostResume")
-		subs = CompositeSubscription()
-		adapter = PostsAdapter(this, subs)
+	override fun onResume() {
+		super.onResume()
+		EventBus.getDefault().register(this)
 
-		val layoutManager = PreCachingLayoutManager(this)
-		layoutManager.orientation = LinearLayoutManager.VERTICAL
-		layoutManager.setExtraLayoutSpace(resources.displayMetrics.heightPixels)
-		postsList.setHasFixedSize(true)
-		postsList.layoutManager = layoutManager
-		postsList.adapter = adapter
+		val ft = supportFragmentManager.beginTransaction()
 
-		initQuery()
-		super.onPostResume()
+		if(App.accessToken != null) {
+			if(intent.dataString != null) {
+				toolbar_title.text = intent.dataString
+				val paths = intent.data.pathSegments
+
+				// handle various types of reddit links
+				when(paths.size) {
+					0 -> ft.replace(R.id.contentFrame, PostsFragment())
+					2 -> {
+						val subreddit = paths[1]
+						ft.replace(R.id.contentFrame, PostsFragment.forSubreddit(subreddit))
+					}
+					else -> {
+						val parent = paths[3]
+						ft.replace(R.id.contentFrame, TestCommentsFragment.newInstance(intent.dataString, parent))
+					}
+				}
+			} else {
+				ft.replace(R.id.contentFrame, PostsFragment())
+			}
+		} else {
+			ft.replace(R.id.contentFrame, BrowserFragment())
+		}
+
+		ft.commit()
 	}
 
 	override fun onStop() {
 		subs.unsubscribe()
-		Log.d("ZXZ", "PostsActivity onStop")
-
+		EventBus.getDefault().unregister(this)
 		super.onStop()
 	}
 
 	override fun onDestroy() {
 		subs.unsubscribe()
 		super.onDestroy()
-	}
-
-	fun initQuery() {
-		var querySub: Subscription? = null
-		if (intent.dataString != null) {
-			val paths = Uri.parse(intent.dataString).pathSegments
-			val subreddit = paths[1]
-			if(paths.size > 2) {
-				val url = "${Reddit.REDDIT_FRONT}${paths[4]}/.json"
-				subs.add(Observable.fromCallable { Reddit.parseComments(url, paths[3]) }
-					.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
-			} else {
-				subs.add(Observable.fromCallable { Reddit.getSubredditPosts(subreddit) }
-					.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
-			}
-			Log.i("ZXZ", "initQuery $subreddit")
-
-			querySub = App.sdb.createQuery("posts", "select * from posts where subreddit = ? order by subreddit asc", subreddit)
-				.mapToList(Post.MAPPER)
-				.subscribeOn(Schedulers.newThread())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(adapter)
-
-
-		} else {
-			querySub = App.sdb.createQuery("posts", "select * from posts order by subreddit asc")
-				.mapToList(Post.MAPPER)
-				.subscribeOn(Schedulers.newThread())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(adapter)
-		}
-
-		subs.add(querySub)
 	}
 
 	override fun onBackPressed() {
@@ -130,11 +106,11 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
-			R.id.action_settings -> {
+			R.id.action_hot -> {
 				println("SETTINGS")
 				return true
 			}
-			R.id.action_refresh -> {
+			R.id.action_new -> {
 				println("REFRESH")
 				return true
 			}
@@ -144,7 +120,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 	}
 
 	override fun onNavigationItemSelected(item: MenuItem): Boolean {
-		// Handle navigation view item clicks here.
 		val id = item.itemId
 
 		if (id == R.id.nav_camera) {
@@ -163,5 +138,36 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 		drawer_layout.closeDrawer(GravityCompat.START)
 		return true
+	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	fun onTitle(t: Title) {
+		toolbar_title.text = t.title
+	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	fun onCommentsRequest(req: CommentsRequest) {
+		val ft = supportFragmentManager.beginTransaction()
+		ft.replace(R.id.contentFrame, TestCommentsFragment.newInstance(req.url, req.parent))
+		ft.addToBackStack("CommentsFragment")
+		ft.commit()
+	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	fun onNav(nav: Navigation) {
+		val ft = supportFragmentManager.beginTransaction()
+		when (nav.fragment) {
+			FRONT -> {
+				ft.replace(R.id.contentFrame, PostsFragment())
+				ft.addToBackStack("PostsFragment")
+			}
+			COMMENTS -> {
+				//ft.replace(R.id.content, CommentsFragment.newInstance(nav.id!!))
+				ft.replace(R.id.contentFrame, CommentsFragment.newInstance(nav.pid!!))
+				ft.addToBackStack("CommentsFragment")
+			}
+			MESSAGES -> println("messages")
+		}
+		ft.commit()
 	}
 }

@@ -2,6 +2,7 @@ package com.example.zen.kotlinreddit
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
@@ -44,36 +45,6 @@ class MainActivity : AppCompatActivity() {
 		super.onStop()
 	}
 
-//	override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//		val item = menu.add("sync").setOnMenuItemClickListener {
-//			val clearSub = Observable.fromCallable {
-//				App.sdb.delete("posts", null)
-//				App.sdb.delete("comments", null)
-//				App.sdb.delete("messages", null)
-//				App.sdb.delete("sqlite_sequence", null)
-//			}
-//
-//			//val postsSub = Observable.fromCallable { Reddit.getHotPosts() }
-//			val postsSub = Observable.fromCallable { Reddit.getPostsAfter() }
-//
-//			subscriptions.add(Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe())
-//			true
-//		}
-//
-//		item.icon = IconDrawable(this, FontAwesomeIcons.fa_refresh).colorRes(R.color.button_material_light).actionBarSize()
-//
-//		MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM)
-//		return super.onCreateOptionsMenu(menu)
-//	}
-
-//	override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//		menuInflater.inflate(R.menu.main_menu, menu)
-//		val refresh = menu.findItem(R.id.mnuRefresh).setOnMenuItemClickListener {
-//
-//		}
-//		return true
-//	}
-
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.main)
@@ -84,16 +55,16 @@ class MainActivity : AppCompatActivity() {
 		if (App.accessToken == null) {
 			ft.replace(R.id.content, BrowserFragment())
 		} else {
-			txtToolbarTitle.text = "Front Page"
-			ft.replace(R.id.content, RedditPostsFragment())
-			ft.addToBackStack("PostsFragment")
+			//txtToolbarTitle.text = "Front Page"
+//			ft.replace(R.id.content, RedditPostsFragment())
+//			ft.addToBackStack("PostsFragment")
 
 //			txtToolbarTitle.text = "Gif Fragment"
 //			ft.replace(R.id.content, GifFragment())
 //			ft.addToBackStack("PostsFragment")
 
-//			val intent = Intent(this, PostsActivity::class.java)
-//			startActivity(intent)
+			val intent = Intent(this, PostsActivity::class.java)
+			startActivity(intent)
 		}
 		ft.commit()
 

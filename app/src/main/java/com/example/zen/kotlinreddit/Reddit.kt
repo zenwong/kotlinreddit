@@ -211,86 +211,98 @@ object Reddit {
 
 	}
 
-	fun parseComments(url: String, parent: String, limit: Int = 10) {
-		val json = client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute().body().string()
-		val jp = jsonFactory.createParser(json)
-		val tr = App.sdb.newTransaction()
-		try {
-			while (jp.nextToken() !== null) {
-				if ("selftext".equals(jp.currentName)) {
-					val header = CommentHeader()
-					header.parent = parent
-					header.selftext = jp.nextTextValue()
+	fun normalizeCommentsUrl(url: String, limit: Int = 10) : String {
+		val uri = Uri.parse(url)
+		val ret = "$REDDIT_FRONT${uri.path}.json?limit=$limit"
+		println("DDDD url: $ret")
+		return ret
+	}
 
-					loop@ while (jp.nextToken() != JsonToken.END_OBJECT) {
-						val key = jp.currentName
-						when (key) {
-							"user_reports" -> jp.skipChildren()
-							"secure_media" -> {
-								if (jp.nextToken() == JsonToken.START_OBJECT) {
-									val media = Media()
-									parseMedia(jp, media)
-									header.media = media.html
+	fun parseComments(url: String, parent: String, limit: Int = 10) {
+		val resp = client.newCall(Request.Builder().url(normalizeCommentsUrl(url)).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute()
+
+		if(resp.isSuccessful) {
+			val json = resp.body().string()
+			val jp = jsonFactory.createParser(json)
+			val tr = App.sdb.newTransaction()
+			try {
+				while (jp.nextToken() !== null) {
+					if ("selftext".equals(jp.currentName)) {
+						val header = CommentHeader()
+						header.parent = parent
+						header.selftext = jp.nextTextValue()
+
+						loop@ while (jp.nextToken() != JsonToken.END_OBJECT) {
+							val key = jp.currentName
+							when (key) {
+								"user_reports" -> jp.skipChildren()
+								"secure_media" -> {
+									if (jp.nextToken() == JsonToken.START_OBJECT) {
+										val media = Media()
+										parseMedia(jp, media)
+										header.media = media.html
+									}
+								}
+								"id" -> header.id = jp.nextTextValue()
+								"author" -> header.author = jp.nextTextValue()
+								"media" -> jp.skipChildren()
+								"score" -> header.score = jp.nextIntValue(0)
+								"preview" -> {
+									val preview = Preview()
+									parsePreview(jp, preview, 320)
+									header.preview = preview
+									//println("SSS preview source : ${preview.source}")
+								}
+								"mod_reports" -> jp.skipChildren()
+								"secure_media_embed" -> jp.skipChildren()
+								"url" -> header.url = jp.nextTextValue()
+								"title" -> header.title = jp.nextTextValue()
+								"created_utc" -> {
+									jp.nextToken()
+									header.created = jp.getValueAsLong(0L)
+								}
+								"before" -> {
+									println("inside before")
+									break@loop
 								}
 							}
-							"id" -> header.id = jp.nextTextValue()
-							"author" -> header.author = jp.nextTextValue()
-							"media" -> jp.skipChildren()
-							"score" -> header.score = jp.nextIntValue(0)
-							"preview" -> {
-								val preview = Preview()
-								parsePreview(jp, preview, 320)
-								header.preview = preview
-								//println("SSS preview source : ${preview.source}")
-							}
-							"mod_reports" -> jp.skipChildren()
-							"secure_media_embed" -> jp.skipChildren()
-							"url" -> header.url = jp.nextTextValue()
-							"title" -> header.title = jp.nextTextValue()
-							"created_utc" -> {
-								jp.nextToken()
-								header.created = jp.getValueAsLong(0L)
-							}
-							"before" -> {
-								println("inside before")
-								break@loop
-							}
 						}
+
+						//println("COMMENT HEADER: $header")
+						App.sdb.insert("comment_headers", header.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 					}
 
-					//println("COMMENT HEADER: $header")
-					App.sdb.insert("comment_headers", header.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
-				}
+					if ("author".equals(jp.currentName)) {
+						val comment = Comment()
+						comment.author = jp.nextTextValue()
+						comment.parent = parent
 
-				if ("author".equals(jp.currentName)) {
-					val comment = Comment()
-					comment.author = jp.nextTextValue()
-					comment.parent = parent
-
-					while (jp.nextToken() != JsonToken.END_OBJECT) {
-						val key = jp.currentName
-						when (key) {
-							"parent_id" -> comment.comment_parent = jp.nextTextValue()
-							"score" -> comment.score = jp.nextIntValue(0)
-							"body" -> comment.body = jp.nextTextValue()
-							"name" -> comment.id = jp.nextTextValue().replace("t1_", "")
-							"created_utc" -> {
-								jp.nextToken()
-								comment.created = jp.valueAsLong
+						while (jp.nextToken() != JsonToken.END_OBJECT) {
+							val key = jp.currentName
+							when (key) {
+								"parent_id" -> comment.comment_parent = jp.nextTextValue()
+								"score" -> comment.score = jp.nextIntValue(0)
+								"body" -> comment.body = jp.nextTextValue()
+								"name" -> comment.id = jp.nextTextValue().replace("t1_", "")
+								"created_utc" -> {
+									jp.nextToken()
+									comment.created = jp.valueAsLong
+								}
 							}
 						}
+
+						App.sdb.insert("comments", comment.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
+						//println("COMMENT: $comment")
 					}
 
-					App.sdb.insert("comments", comment.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
-					//println("COMMENT: $comment")
 				}
 
+				tr.markSuccessful()
+			} finally {
+				tr.end()
 			}
-
-			tr.markSuccessful()
-		} finally {
-			tr.end()
 		}
+
 	}
 
 	fun parseMedia(jp: JsonParser, media: Media) {
