@@ -6,17 +6,17 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import com.example.zen.kotlinreddit.App
-import com.example.zen.kotlinreddit.R
-import com.example.zen.kotlinreddit.Reddit
-import com.example.zen.kotlinreddit.TComment
+import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.adapters.CommentAdapter
+import com.joanzapata.iconify.IconDrawable
+import com.joanzapata.iconify.fonts.FontAwesomeIcons
 import kotlinx.android.synthetic.main.recycler.*
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 
 class TestCommentsFragment : BaseFragment() {
+	val header = THeader().getTableName()
 	val table = TComment().getTableName()
 	val lm = LinearLayoutManager(context)
 	override val layout = R.layout.comments
@@ -57,12 +57,18 @@ class TestCommentsFragment : BaseFragment() {
 			.subscribe(adapter))
 	}
 
-	override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
+	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 		inflater.inflate(R.menu.comments, menu)
+
+		menu.findItem(R.id.action_save).icon = IconDrawable(context, FontAwesomeIcons.fa_bookmark).colorRes(R.color.white).actionBarSize()
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
+			R.id.action_save -> {
+				App.sdb.execute("update $header set bookmarked = 1 where id = '$parent'")
+				return true
+			}
 			R.id.action_best -> {
 
 				return true

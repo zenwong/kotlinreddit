@@ -71,6 +71,7 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 				ft.replace(R.id.contentFrame, PostsFragment())
 			}
 		} else {
+			toolbar_title.text = "Kotlin Reddit"
 			ft.replace(R.id.contentFrame, BrowserFragment())
 		}
 

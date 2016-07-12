@@ -11,7 +11,7 @@ TODO
 - [X] add different view types for post listing
 - [ ] add customizable user settings
 - [ ] add unit tests
-- [ ] add bookmark posts to fav list to read in future
+- [X] add bookmark posts to fav list to read in future
 - [X] add intent filter to handle reddit links
 - [X] sort posts by preview / score / comments / subreddit
 - [ ] sort comments by score / author / created

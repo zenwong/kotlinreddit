@@ -43,6 +43,7 @@ class THeader : BaseModel() {
 	var preview: String? = null
 	var mp4: String? = null
 
+	var bookmarked: Int = 0
 	var comments: Int = 0
 	var score: Int = 0
 	var created: Long = 0L
@@ -51,16 +52,17 @@ class THeader : BaseModel() {
 		val MAPPER = Func1<Cursor, THeader> { c ->
 			THeader().apply {
 				author = c.getString(1)
-				comments = c.getInt(2)
-				created = c.getLong(13)
-				embed = c.getString(4)
-				id = c.getString(5)
-				mp4 = c.getString(6)
-				preview = c.getString(7)
-				score = c.getInt(8)
-				selftext = c.getString(9)
-				title = c.getString(10)
-				url = c.getString(11)
+				bookmarked = c.getInt(2)
+				comments = c.getInt(3)
+				created = c.getLong(4)
+				embed = c.getString(5)
+				id = c.getString(6)
+				mp4 = c.getString(7)
+				preview = c.getString(8)
+				score = c.getInt(9)
+				selftext = c.getString(10)
+				title = c.getString(11)
+				url = c.getString(12)
 			}
 		}
 	}

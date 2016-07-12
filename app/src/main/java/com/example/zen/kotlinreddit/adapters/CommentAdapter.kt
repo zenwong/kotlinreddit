@@ -25,7 +25,7 @@ class CommentAdapter(val context: Context) : RecyclerView.Adapter<CommentsViewHo
 	}
 
 	override fun onBindViewHolder(holder: CommentsViewHolder, idx: Int) {
-		holder.txtAuthor.text = items[idx].author
+		holder.txtAuthor.text = "${items[idx].author}  ${items[idx].score} pts"
 		holder.txtBody.loadMarkdown(items[idx].body)
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(items[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}
