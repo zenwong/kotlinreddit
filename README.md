@@ -12,6 +12,7 @@ TODO
 - [ ] add customizable user settings
 - [ ] add unit tests
 - [X] add bookmark posts to fav list to read in future
+- [ ] add syncing bookmarks to FireBase
 - [X] add intent filter to handle reddit links
 - [X] sort posts by preview / score / comments / subreddit
 - [ ] sort comments by score / author / created

@@ -12,11 +12,11 @@ import rx.functions.Action1
 import java.util.*
 
 class CommentAdapter(val context: Context) : RecyclerView.Adapter<CommentsViewHolder>(), Action1<List<TComment>> {
-	val items = ArrayList<TComment>()
+	var items: List<TComment> = ArrayList()
 	val now = System.currentTimeMillis()
 
 	override fun call(t: List<TComment>) {
-		items.addAll(t)
+		items = t
 		notifyDataSetChanged()
 	}
 

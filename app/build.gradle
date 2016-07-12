@@ -47,11 +47,6 @@ dependencies {
     compile 'com.hkm.ezwebview:ezwebviewv:1.3.6'
     //compile 'com.github.eneim:Toro:1.2.0'
 
-    //compile 'au.com.gridstone.rxstore:rxstore:5.0.2'
-    //compile 'au.com.gridstone.rxstore:rxstore-kotlin:5.0.2'
-    //compile 'au.com.gridstone.rxstore:converter-jackson:5.0.2'
-
-
     compile 'com.squareup.okhttp3:okhttp:3.3.0'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.sqlbrite:sqlbrite:0.6.3'
