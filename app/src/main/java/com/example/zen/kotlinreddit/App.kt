@@ -36,6 +36,7 @@ class App : Application() {
 		lateinit var snappy: com.snappydb.DB
 		lateinit var cdir: File
 		//lateinit var store: StoreProvider
+
 	}
 
 	override fun onCreate() {

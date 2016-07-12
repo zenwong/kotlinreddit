@@ -12,6 +12,7 @@ class TPost : BaseModel() {
 	var subreddit: String? = null
 	var author: String? = null
 	var preview: String? = null
+	var permalink: String? = null
 	var comments: Int = 0
 	var score: Int = 0
 	var created: Long = 0L

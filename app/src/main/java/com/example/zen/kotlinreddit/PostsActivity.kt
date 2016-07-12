@@ -21,6 +21,9 @@ import kotlinx.android.synthetic.main.posts.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 
 class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -108,11 +111,17 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			R.id.action_hot -> {
-				println("SETTINGS")
+				val delSub = Observable.fromCallable { Api.clearSnappy() }
+				val getSub = Observable.fromCallable { Api.getHotPosts() }
+				subs.add(Observable.concat(delSub, getSub).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+
 				return true
 			}
 			R.id.action_new -> {
-				println("REFRESH")
+				val delSub = Observable.fromCallable { Api.clearSnappy() }
+				val getSub = Observable.fromCallable { Api.getHotPosts() }
+				subs.add(Observable.concat(delSub, getSub).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+
 				return true
 			}
 		}

@@ -12,4 +12,28 @@
         android:orderInCategory="101"
         android:title="@string/action_new"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_preview"
+        android:orderInCategory="102"
+        android:title="@string/action_preview"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_comments"
+        android:orderInCategory="103"
+        android:title="@string/action_comments"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_score"
+        android:orderInCategory="104"
+        android:title="@string/action_score"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_subreddit"
+        android:orderInCategory="105"
+        android:title="@string/action_subreddit"
+        app:showAsAction="never"/>
 </menu>

@@ -18,7 +18,12 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_hot">Settings</string>
-    <string name="action_new">Settings</string>
+    <string name="action_hot">Hot</string>
+    <string name="action_new">New</string>
+    <string name="action_preview">Preview</string>
+    <string name="action_comments">Comments</string>
+    <string name="action_score">Score</string>
+    <string name="action_subreddit">Subreddit</string>
+
 
 </resources>

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonToken
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.util.*
 
 object Api {
 	val factory = JsonFactory()
@@ -14,6 +15,36 @@ object Api {
 	init {
 		val cache = Cache(App.cdir, 1024L * 1024L * 100L)
 		client = OkHttpClient.Builder().authenticator(RedditOauthAuthenticator()).cache(cache).build()
+	}
+
+	fun getAllPostsFromDb() : ArrayList<TPost> {
+		val list = ArrayList<TPost>()
+
+		try {
+			for (batch in App.snappy.allKeysIterator().byBatch(100)) {
+				for (key in batch) {
+					val p = App.snappy.getObject(key, TPost::class.java)
+					println(p.title)
+					list.add(p)
+				}
+			}
+		} catch(ex: Exception) {
+			println(ex.message)
+		}
+
+		return list
+	}
+
+	fun clearSnappy() {
+		try {
+			for (batch in App.snappy.allKeysIterator().byBatch(100)) {
+				for (key in batch) {
+					App.snappy.del(key)
+				}
+			}
+		} catch(ex: Exception) {
+			println(ex.message)
+		}
 	}
 
 	fun parsePosts(json: String) {
@@ -58,9 +89,9 @@ object Api {
 									"source" -> jp.skipChildren()
 									"url" -> {
 										jp.nextToken()
-										preview = jp.valueAsString
-										if (preview.contains("w=320")) {
-											preview.replace("amp;", "")
+										val local = jp.valueAsString
+										if (local.contains("w=320")) {
+											preview = local.replace("amp;", "")
 										}
 									}
 									"variants" -> jp.skipChildren()
@@ -75,6 +106,7 @@ object Api {
 						"num_comments" -> post.comments = jp.nextIntValue(0)
 						"thumbnail" -> thumbnail = jp.nextTextValue()
 						"secure_media_embed" -> jp.skipChildren()
+						"permalink" -> post.permalink = jp.nextTextValue()
 						"title" -> post.title = jp.nextTextValue()
 						"created_utc" -> post.created = jp.getValueAsLong(0L)
 						"mod_reports" -> jp.skipChildren()
