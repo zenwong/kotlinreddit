@@ -39,7 +39,7 @@ class App : Application() {
 		cdir = cacheDir
 		sqlBrite = SqlBrite.create()
 		sdb = sqlBrite.wrapDatabaseHelper(DB(this), Schedulers.io())
-		sdb.setLoggingEnabled(true)
+		//sdb.setLoggingEnabled(true)
 
 		Reddit.init(this, cacheDir)
 		Iconify.with(FontAwesomeModule())

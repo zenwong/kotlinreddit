@@ -50,6 +50,7 @@ class PostsAdapter(val context: Context, val sort: Int = SORT_CREATED) : Recycle
 
 	override fun call(list: List<TPost>) {
 		posts = list as ArrayList<TPost>
+		println("PostsAdapter Call ${posts.size}")
 		notifyDataSetChanged()
 	}
 

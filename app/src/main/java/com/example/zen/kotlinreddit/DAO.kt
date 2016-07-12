@@ -18,7 +18,7 @@ class TPost : BaseModel() {
 
 	companion object {
 		val MAPPER = Func1<Cursor, TPost> { c ->
-			TPost().apply {
+			val post = TPost().apply {
 				author = c.getString(1)
 				comments = c.getInt(2)
 				created = c.getLong(3)
@@ -29,6 +29,7 @@ class TPost : BaseModel() {
 				subreddit = c.getString(8)
 				title = c.getString(9)
 			}
+			post
 		}
 	}
 }

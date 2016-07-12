@@ -7,10 +7,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import com.example.zen.kotlinreddit.fragments.BrowserFragment
-import com.example.zen.kotlinreddit.fragments.CommentsFragment
-import com.example.zen.kotlinreddit.fragments.PostsFragment
-import com.example.zen.kotlinreddit.fragments.TestCommentsFragment
+import com.example.zen.kotlinreddit.fragments.*
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
 import com.example.zen.kotlinreddit.models.Title
@@ -60,7 +57,7 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 				// handle various types of reddit links
 				when(paths.size) {
-					0 -> ft.replace(R.id.contentFrame, PostsFragment())
+					0 -> ft.replace(R.id.contentFrame, RedditPostsFragment())
 					2 -> {
 						val subreddit = paths[1]
 						ft.replace(R.id.contentFrame, PostsFragment.forSubreddit(subreddit))

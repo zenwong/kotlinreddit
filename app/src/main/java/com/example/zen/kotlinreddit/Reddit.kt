@@ -203,6 +203,8 @@ object Reddit {
 						post.preview = preview
 					}
 
+					println("CONTENTVALUES: ${post.getValues()}")
+
 					App.sdb.insert("TPosts", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 

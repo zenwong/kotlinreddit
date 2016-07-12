@@ -51,25 +51,32 @@ class PostsFragment : BaseFragment() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setHasOptionsMenu(true)
-		adapter = PostsAdapter(context, currentSort)
-
-		val query: Observable<List<TPost>>
-		if (arguments == null) {
-			//setTitle("Hot")
-			query = App.sdb.createQuery("posts", "select * from TPosts").mapToList(TPost.MAPPER)
-			subs.add(Observable.fromCallable { Reddit.getHotPosts() }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
-		} else {
-			subreddit = arguments.getString("subreddit")
-			//setTitle(subreddit!!)
-			query = App.sdb.createQuery("posts", "select * from TPosts where subreddit = ?", subreddit).mapToList(TPost.MAPPER)
-			subs.add(Observable.fromCallable { Reddit.getSubredditPosts(subreddit!!) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
-		}
-		subs.add(query.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
-
 	}
 
 	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-		super.onViewCreated(view, savedInstanceState)
+		//super.onViewCreated(view, savedInstanceState)
+
+//		val query: Observable<List<TPost>>
+//		if (arguments == null) {
+//			setTitle("Hot")
+//			query = App.sdb.createQuery("posts", "select * from TPosts").mapToList(TPost.MAPPER)
+//			subs.add(Observable.fromCallable { Reddit.getHotPosts() }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+//		} else {
+//			subreddit = arguments.getString("subreddit")
+//			setTitle(subreddit!!)
+//			query = App.sdb.createQuery("posts", "select * from TPosts where subreddit = ?", subreddit).mapToList(TPost.MAPPER)
+//			subs.add(Observable.fromCallable { Reddit.getSubredditPosts(subreddit!!) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+//		}
+
+		//subs.add(query.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
+
+		adapter = PostsAdapter(context, currentSort)
+
+		App.sdb.createQuery("posts", "select * from TPosts").mapToList(TPost.MAPPER)
+			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter)
+
+		subs.add(Observable.fromCallable { Reddit.getHotPosts() }
+			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 
 		val layoutManager = PreCachingLayoutManager(context)
 		layoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -96,7 +103,13 @@ class PostsFragment : BaseFragment() {
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			R.id.action_hot -> {
+				val clearSub = Observable.fromCallable {
+					App.sdb.delete("tposts", null)
+					App.sdb.delete("sqlite_sequence", null)
+				}
 
+				val postsSub = Observable.fromCallable { Reddit.getHotPosts() }
+				Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe()
 				return true
 			}
 			R.id.action_new -> {
