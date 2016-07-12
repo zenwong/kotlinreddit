@@ -2,7 +2,6 @@ package com.example.zen.kotlinreddit
 
 import android.content.ContentValues
 import android.database.Cursor
-import com.example.zen.kotlinreddit.models.Comment
 import rx.functions.Func1
 
 class TPost : BaseModel() {
@@ -51,17 +50,17 @@ class THeader : BaseModel() {
 	companion object {
 		val MAPPER = Func1<Cursor, THeader> { c ->
 			THeader().apply {
-				id = c.getString(1)
-				selftext = c.getString(2)
-				url = c.getString(3)
-				title = c.getString(4)
-				author = c.getString(5)
-				embed = c.getString(6)
+				author = c.getString(1)
+				comments = c.getInt(2)
+				created = c.getLong(13)
+				embed = c.getString(4)
+				id = c.getString(5)
+				mp4 = c.getString(6)
 				preview = c.getString(7)
-				mp4 = c.getString(8)
-				comments = c.getInt(9)
-				score = c.getInt(10)
-				created = c.getLong(11)
+				score = c.getInt(8)
+				selftext = c.getString(9)
+				title = c.getString(10)
+				url = c.getString(11)
 			}
 		}
 	}
@@ -76,14 +75,14 @@ class TComment : BaseModel() {
 	var created: Long = 0L
 
 	companion object {
-		val MAPPER = Func1<Cursor, Comment> { c ->
-			Comment().apply {
-				id = c.getString(1)
-				parent = c.getString(2)
-				author = c.getString(3)
-				body = c.getString(4)
-				score = c.getInt(5)
-				created = c.getLong(6)
+		val MAPPER = Func1<Cursor, TComment> { c ->
+			TComment().apply {
+				author = c.getString(1)
+				body = c.getString(2)
+				created = c.getLong(3)
+				id = c.getString(4)
+				parent = c.getString(5)
+				score = c.getInt(6)
 			}
 		}
 	}
@@ -94,7 +93,7 @@ open class BaseModel() {
 		return javaClass.simpleName
 	}
 
-	fun getSchema(table: String, foreignKey: String? = null, foreignTable: String? = null): String {
+	fun getSchema(table: String = getTableName(), foreignKey: String? = null, foreignTable: String? = null): String {
 		val sb = StringBuilder()
 		sb.append("_id integer primary key autoincrement,")
 		javaClass.declaredFields.forEach {

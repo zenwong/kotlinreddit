@@ -9,13 +9,15 @@ import android.view.View
 import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
-import com.example.zen.kotlinreddit.models.Comment
+import com.example.zen.kotlinreddit.TComment
+import com.example.zen.kotlinreddit.adapters.CommentAdapter
 import kotlinx.android.synthetic.main.recycler.*
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 
 class TestCommentsFragment : BaseFragment() {
+	val table = TComment().getTableName()
 	val lm = LinearLayoutManager(context)
 	override val layout = R.layout.comments
 	var parent = ""
@@ -37,7 +39,7 @@ class TestCommentsFragment : BaseFragment() {
 		url = arguments.getString("url")
 		parent = arguments.getString("parent")
 
-		val adapter = CommentsAdapter(context)
+		val adapter = CommentAdapter(context)
 
 		rv.setHasFixedSize(true)
 		rv.layoutManager = lm
@@ -48,8 +50,8 @@ class TestCommentsFragment : BaseFragment() {
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe())
 
-		subs.add(App.sdb.createQuery("comments", "select * from comments where parent = ?", parent)
-			.mapToList(Comment.MAPPER)
+		subs.add(App.sdb.createQuery(table, "select * from $table where parent = ?", parent)
+			.mapToList(TComment.MAPPER)
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))

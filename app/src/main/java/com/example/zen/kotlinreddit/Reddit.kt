@@ -204,8 +204,6 @@ object Reddit {
 						post.preview = preview
 					}
 
-					println("CONTENTVALUES: ${post.getValues()}")
-
 					App.sdb.insert("$table", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 
@@ -235,12 +233,13 @@ object Reddit {
 		if(resp.isSuccessful) {
 			val json = resp.body().string()
 			val jp = jsonFactory.createParser(json)
+			val headTable = THeader().getTableName()
+			val commentTable = TComment().getTableName()
 			val tr = App.sdb.newTransaction()
 			try {
 				while (jp.nextToken() !== null) {
 					if ("selftext".equals(jp.currentName)) {
-						val header = CommentHeader()
-						header.parent = parent
+						val header = THeader()
 						header.selftext = jp.nextTextValue()
 
 						loop@ while (jp.nextToken() != JsonToken.END_OBJECT) {
@@ -251,7 +250,7 @@ object Reddit {
 									if (jp.nextToken() == JsonToken.START_OBJECT) {
 										val media = Media()
 										parseMedia(jp, media)
-										header.media = media.html
+										header.embed = media.html
 									}
 								}
 								"id" -> header.id = jp.nextTextValue()
@@ -259,10 +258,9 @@ object Reddit {
 								"media" -> jp.skipChildren()
 								"score" -> header.score = jp.nextIntValue(0)
 								"preview" -> {
-									val preview = Preview()
-									parsePreview(jp, preview, 320)
-									header.preview = preview
-									//println("SSS preview source : ${preview.source}")
+									val local = Preview()
+									parsePreview(jp, local, 320)
+									header.preview = local.source
 								}
 								"mod_reports" -> jp.skipChildren()
 								"secure_media_embed" -> jp.skipChildren()
@@ -279,19 +277,17 @@ object Reddit {
 							}
 						}
 
-						//println("COMMENT HEADER: $header")
-						App.sdb.insert("comment_headers", header.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
+						App.sdb.insert(headTable, header.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 					}
 
 					if ("author".equals(jp.currentName)) {
-						val comment = Comment()
+						val comment = TComment()
 						comment.author = jp.nextTextValue()
 						comment.parent = parent
 
 						while (jp.nextToken() != JsonToken.END_OBJECT) {
 							val key = jp.currentName
 							when (key) {
-								"parent_id" -> comment.comment_parent = jp.nextTextValue()
 								"score" -> comment.score = jp.nextIntValue(0)
 								"body" -> comment.body = jp.nextTextValue()
 								"name" -> comment.id = jp.nextTextValue().replace("t1_", "")
@@ -302,8 +298,7 @@ object Reddit {
 							}
 						}
 
-						App.sdb.insert("comments", comment.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
-						//println("COMMENT: $comment")
+						App.sdb.insert(commentTable, comment.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 					}
 
 				}
