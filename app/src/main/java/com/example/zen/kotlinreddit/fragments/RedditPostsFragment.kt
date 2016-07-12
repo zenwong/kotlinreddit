@@ -51,7 +51,7 @@ class RedditPostsFragment : Fragment() {
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
-		adapter = PostsAdapter(context, subscriptions)
+		adapter = PostsAdapter(context)
 	}
 
 	override fun onResume() {
@@ -101,7 +101,7 @@ class RedditPostsFragment : Fragment() {
 		param.flatMap { App.sdb.createQuery("posts", select, it)
 			.mapToList(Post.MAPPER) }.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(adapter)
+			//.subscribe(adapter)
 
 		//subscriptions.add(selectSub.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
 	}

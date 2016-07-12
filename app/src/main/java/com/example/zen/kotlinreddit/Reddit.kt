@@ -124,8 +124,12 @@ object Reddit {
 			while (jp.nextToken() !== null) {
 				if ("domain".equals(jp.currentName)) {
 					jp.nextToken()
-					val post = Post()
-					post.domain = jp.valueAsString
+					val post = TPost()
+					var thumbnail: String? = null
+					var media: String? = null
+					var preview: String? = null
+
+					//post.domain = jp.valueAsString
 
 					while (jp.nextToken() != JsonToken.END_OBJECT) {
 
@@ -136,15 +140,15 @@ object Reddit {
 							"secure_media" -> jp.skipChildren()
 							"user_reports" -> jp.skipChildren()
 							"id" -> post.id = jp.nextTextValue()
-							"clicked" -> post.clicked = jp.nextBooleanValue()
+							//"clicked" -> post.clicked = jp.nextBooleanValue()
 							"author" -> post.author = jp.nextTextValue()
 							"media" -> {
 								if (jp.nextToken() !== JsonToken.VALUE_NULL) {
 									while (jp.nextToken() !== JsonToken.END_OBJECT) {
 										val key = jp.currentName
 										when (key) {
-											"title" -> post.media_title = jp.nextTextValue()
-											"thumbnail_url" -> post.media_preview = jp.nextTextValue()
+											//"title" -> post.media_title = jp.nextTextValue()
+											"thumbnail_url" -> media = jp.nextTextValue()
 										}
 									}
 									jp.nextToken()
@@ -160,9 +164,9 @@ object Reddit {
 										"source" -> jp.skipChildren()
 										"url" -> {
 											jp.nextToken()
-											val preview = jp.valueAsString
-											if (preview.contains("w=320")) {
-												post.preview = preview.replace("amp;", "")
+											val local = jp.valueAsString
+											if (local.contains("w=320")) {
+												preview = local.replace("amp;", "")
 											}
 										}
 										"variants" -> jp.skipChildren()
@@ -175,31 +179,31 @@ object Reddit {
 								jp.nextToken()
 							}
 							"num_comments" -> post.comments = jp.nextIntValue(0)
-							"thumbnail" -> post.thumbnail = jp.nextTextValue()
+							"thumbnail" -> thumbnail = jp.nextTextValue()
 							"secure_media_embed" -> jp.skipChildren()
 							"permalink" -> post.permalink = jp.nextTextValue()
-							"url" -> post.url = jp.nextTextValue()
+							//"url" -> post.url = jp.nextTextValue()
 							"title" -> post.title = jp.nextTextValue()
 							"created_utc" -> post.created = jp.getValueAsLong(0L)
 							"mod_reports" -> jp.skipChildren()
 						}
 					}
 
-					when (post.thumbnail) {
+					when (thumbnail) {
 						"self", "default" -> {
 						}
-						else -> post.display = post.thumbnail
+						else -> post.preview = thumbnail
 					}
 
-					post.media_preview?.let {
-						post.display = post.media_preview
+					media?.let {
+						post.preview = media
 					}
 
-					post.preview?.let {
-						post.display = post.preview
+					preview?.let {
+						post.preview = preview
 					}
 
-					App.sdb.insert("posts", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
+					App.sdb.insert("TPosts", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 
 				if ("after".equals(jp.currentName)) {

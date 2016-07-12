@@ -25,5 +25,13 @@
     <string name="action_score">Score</string>
     <string name="action_subreddit">Subreddit</string>
 
+    <string name="action_author">Author</string>
+    <string name="action_best">Best</string>
+    <string name="action_controversial">Controversial</string>
+    <string name="action_old">Old</string>
+    <string name="action_qa">Q&amp;A</string>
+
+
+
 
 </resources>

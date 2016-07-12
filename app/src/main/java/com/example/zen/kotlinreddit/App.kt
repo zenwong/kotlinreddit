@@ -11,7 +11,6 @@ import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.RefreshToken
 import com.joanzapata.iconify.Iconify
 import com.joanzapata.iconify.fonts.FontAwesomeModule
-import com.snappydb.SnappyDB
 import com.squareup.sqlbrite.BriteDatabase
 import com.squareup.sqlbrite.SqlBrite
 import org.greenrobot.eventbus.EventBus
@@ -33,24 +32,14 @@ class App : Application() {
 		lateinit var db: DB
 		lateinit var sqlBrite : SqlBrite
 		lateinit var sdb: BriteDatabase
-		lateinit var snappy: com.snappydb.DB
 		lateinit var cdir: File
-		//lateinit var store: StoreProvider
-
 	}
 
 	override fun onCreate() {
 		cdir = cacheDir
 		sqlBrite = SqlBrite.create()
 		sdb = sqlBrite.wrapDatabaseHelper(DB(this), Schedulers.io())
-
-		snappy = SnappyDB.Builder(this)
-			.directory(filesDir.path)
-			.name("reddit")
-			.build()
-
-		//sdb.setLoggingEnabled(true)
-		//store = StoreProvider.withContext(this).inDir("rxStore").using(JacksonConverter())
+		sdb.setLoggingEnabled(true)
 
 		Reddit.init(this, cacheDir)
 		Iconify.with(FontAwesomeModule())

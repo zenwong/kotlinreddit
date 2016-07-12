@@ -6,7 +6,6 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
 import android.view.MenuItem
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
 import com.example.zen.kotlinreddit.fragments.CommentsFragment
@@ -21,9 +20,6 @@ import kotlinx.android.synthetic.main.posts.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 
 class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -101,32 +97,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		} else {
 			super.onBackPressed()
 		}
-	}
-
-	override fun onCreateOptionsMenu(menu: Menu): Boolean {
-		menuInflater.inflate(R.menu.posts, menu)
-		return true
-	}
-
-	override fun onOptionsItemSelected(item: MenuItem): Boolean {
-		when (item.itemId) {
-			R.id.action_hot -> {
-				val delSub = Observable.fromCallable { Api.clearSnappy() }
-				val getSub = Observable.fromCallable { Api.getHotPosts() }
-				subs.add(Observable.concat(delSub, getSub).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
-
-				return true
-			}
-			R.id.action_new -> {
-				val delSub = Observable.fromCallable { Api.clearSnappy() }
-				val getSub = Observable.fromCallable { Api.getHotPosts() }
-				subs.add(Observable.concat(delSub, getSub).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
-
-				return true
-			}
-		}
-
-		return super.onOptionsItemSelected(item)
 	}
 
 	override fun onNavigationItemSelected(item: MenuItem): Boolean {

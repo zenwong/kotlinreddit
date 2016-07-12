@@ -2,6 +2,9 @@ package com.example.zen.kotlinreddit.fragments
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.R
@@ -30,6 +33,7 @@ class TestCommentsFragment : BaseFragment() {
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		setHasOptionsMenu(true)
 		url = arguments.getString("url")
 		parent = arguments.getString("parent")
 
@@ -49,5 +53,30 @@ class TestCommentsFragment : BaseFragment() {
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
+	}
+
+	override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
+		inflater.inflate(R.menu.comments, menu)
+	}
+
+	override fun onOptionsItemSelected(item: MenuItem): Boolean {
+		when (item.itemId) {
+			R.id.action_best -> {
+
+				return true
+			}
+			R.id.action_new -> {
+
+				return true
+			}
+			R.id.action_author -> {
+				return true
+			}
+			R.id.action_controversial -> {
+				return true
+			}
+		}
+
+		return super.onOptionsItemSelected(item)
 	}
 }

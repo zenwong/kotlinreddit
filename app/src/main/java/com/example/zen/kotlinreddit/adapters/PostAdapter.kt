@@ -1,35 +1,55 @@
 package com.example.zen.kotlinreddit.adapters
 
 import android.content.Context
-import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.zen.kotlinreddit.CommentsActivity
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
+import com.example.zen.kotlinreddit.TPost
 import com.example.zen.kotlinreddit.models.CommentsRequest
-import com.example.zen.kotlinreddit.models.Post
 import com.example.zen.kotlinreddit.models.Title
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.row_post.view.*
 import org.greenrobot.eventbus.EventBus
 import rx.functions.Action1
-import rx.subscriptions.CompositeSubscription
 import java.util.*
 
-class PostsAdapter(val context: Context, val subscriptions: CompositeSubscription) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Action1<List<Post>> {
+class PostsAdapter(val context: Context, val sort: Int = SORT_CREATED) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Action1<List<TPost>> {
 	val now = System.currentTimeMillis()
-	var posts: List<Post> = ArrayList()
+	var posts = ArrayList<TPost>()
 	val TEXT_ONLY_POST = 0
 	val IMAGE_POST = 1
 
-	override fun call(list: List<Post>) {
-		//posts.addAll(list)
-		posts = list
-		println("PostsAdapter call ${posts.size}")
+	companion object {
+		const val SORT_TITLE = 0
+		const val SORT_PREVIEW = 1
+		const val SORT_SUBREDDIT = 2
+		const val SORT_CREATED = 3
+		const val SORT_COMMENTS = 4
+		const val SORT_SCORE = 5
+		const val SORT_HOT = 6
+		const val SORT_NEW = 7
+		const val IMG_POST = 111
+		const val TXT_POST = 222
+	}
+
+	fun sortBy(sortColumn: Int) {
+		when(sortColumn) {
+			PostsAdapter.SORT_TITLE -> posts.sortByDescending { it.title }
+			PostsAdapter.SORT_PREVIEW -> posts.sortByDescending { it.preview }
+			PostsAdapter.SORT_SUBREDDIT -> posts.sortByDescending { it.subreddit }
+			PostsAdapter.SORT_CREATED -> posts.sortByDescending { it.created }
+			PostsAdapter.SORT_COMMENTS -> posts.sortByDescending { it.comments }
+			PostsAdapter.SORT_SCORE -> posts.sortByDescending { it.score }
+		}
+		notifyDataSetChanged()
+	}
+
+	override fun call(list: List<TPost>) {
+		posts = list as ArrayList<TPost>
 		notifyDataSetChanged()
 	}
 
@@ -54,7 +74,7 @@ class PostsAdapter(val context: Context, val subscriptions: CompositeSubscriptio
 				holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"
 				holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!! * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 
-				Picasso.with(context).load(posts[idx].display)
+				Picasso.with(context).load(posts[idx].preview)
 					.fit()
 					.centerCrop()
 					.into(holder.imgPreviw)
@@ -68,10 +88,6 @@ class PostsAdapter(val context: Context, val subscriptions: CompositeSubscriptio
 				holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!! * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 			}
 		}
-
-		// optimization for pre caching top 10 comments so user sees comments immediately
-		// optional check for wifi connection or user setting before getting comments
-		// subscriptions.add(Observable.fromCallable { Reddit.parseComments("${Reddit.REDDIT_FRONT}${posts[idx].permalink}.json", posts[idx].id!!) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -83,7 +99,7 @@ class PostsAdapter(val context: Context, val subscriptions: CompositeSubscriptio
 
 	fun handleTxtComments(adapterPosition: Int) {
 		val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
-		val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
+		val req = CommentsRequest(url, 0, posts[adapterPosition].id!!)
 		EventBus.getDefault().post(Title(posts[adapterPosition].title!!))
 		EventBus.getDefault().post(req)
 	}
@@ -102,23 +118,10 @@ class PostsAdapter(val context: Context, val subscriptions: CompositeSubscriptio
 
 			txtComments.setOnClickListener {
 				handleTxtComments(adapterPosition)
-//				EventBus.getDefault().post(Title(posts[adapterPosition].title!!))
-//				val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
-//				val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
-//				EventBus.getDefault().post(req)
 			}
 
 			imgPreviw.setOnClickListener {
-				EventBus.getDefault().post(Title(posts[adapterPosition].title!!))
-				val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
-				val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
-				//EventBus.getDefault().post(req)
-				val intent = Intent(context, CommentsActivity::class.java)
-				intent.putExtra("url", req.url)
-				intent.putExtra("parent", req.parent)
-				context.startActivity(intent)
-
-				//navigate<CommentsActivity>(req)
+				handleTxtComments(adapterPosition)
 			}
 
 			txtSubreddit.setOnClickListener {
@@ -140,10 +143,6 @@ class PostsAdapter(val context: Context, val subscriptions: CompositeSubscriptio
 
 			txtComments.setOnClickListener {
 				handleTxtComments(adapterPosition)
-//				EventBus.getDefault().post(Title(posts[adapterPosition].title!!))
-//				val url = "${Reddit.REDDIT_FRONT}${posts[adapterPosition].permalink}.json"
-//				val req = CommentsRequest(url, posts[adapterPosition]._id!!, posts[adapterPosition].id!!)
-//				EventBus.getDefault().post(req)
 			}
 
 			txtSubreddit.setOnClickListener {
