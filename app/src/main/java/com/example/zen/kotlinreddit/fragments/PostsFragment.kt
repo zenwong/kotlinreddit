@@ -23,6 +23,7 @@ class PostsFragment : BaseFragment() {
 	var subreddit: String? = null
 	override val layout = R.layout.front_page
 	lateinit var adapter : PostsAdapter
+	val table = TPost().getTableName()
 
 	companion object {
 		fun forSubreddit(subreddit: String): PostsFragment {
@@ -58,12 +59,12 @@ class PostsFragment : BaseFragment() {
 		val query: Observable<List<TPost>>
 		if (arguments == null) {
 			setTitle("Hot")
-			query = App.sdb.createQuery("tposts", "select * from tposts").mapToList(TPost.MAPPER)
+			query = App.sdb.createQuery("$table", "select * from $table").mapToList(TPost.MAPPER)
 			subs.add(Observable.fromCallable { Reddit.getHotPosts() }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 		} else {
 			subreddit = arguments.getString("subreddit")
 			setTitle(subreddit!!)
-			query = App.sdb.createQuery("tposts", "select * from tposts where subreddit = ?", subreddit).mapToList(TPost.MAPPER)
+			query = App.sdb.createQuery("$table", "select * from $table where subreddit = ?", subreddit).mapToList(TPost.MAPPER)
 			subs.add(Observable.fromCallable { Reddit.getSubredditPosts(subreddit!!) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 		}
 

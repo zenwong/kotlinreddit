@@ -120,6 +120,7 @@ object Reddit {
 	fun parsePosts(json: String) {
 		val jp = jsonFactory.createParser(json)
 		val tr = App.sdb.newTransaction()
+		val table = TPost().getTableName()
 		try {
 			while (jp.nextToken() !== null) {
 				if ("domain".equals(jp.currentName)) {
@@ -205,7 +206,7 @@ object Reddit {
 
 					println("CONTENTVALUES: ${post.getValues()}")
 
-					App.sdb.insert("tposts", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
+					App.sdb.insert("$table", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 
 				if ("after".equals(jp.currentName)) {

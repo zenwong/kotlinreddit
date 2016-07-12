@@ -66,7 +66,8 @@ class DB(ctx: Context) : SQLiteOpenHelper(ctx, "test.db", null, 1) {
 	}
 
 	override fun onCreate(db: SQLiteDatabase) {
-		db.execSQL(TPost().getSchema("TPosts"))
+		val tpost = TPost()
+		db.execSQL(tpost.getSchema(tpost.getTableName()))
 		db.execSQL(commentsSchema)
 		db.execSQL(commentHeaderSchema)
 		db.execSQL(messagesSchema)
