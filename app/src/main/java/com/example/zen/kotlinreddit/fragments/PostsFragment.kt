@@ -20,9 +20,9 @@ import rx.schedulers.Schedulers
 
 class PostsFragment : BaseFragment() {
 	var currentSort = PostsAdapter.SORT_HOT
-	lateinit var adapter : PostsAdapter
 	var subreddit: String? = null
 	override val layout = R.layout.front_page
+	lateinit var adapter : PostsAdapter
 
 	companion object {
 		fun forSubreddit(subreddit: String): PostsFragment {
@@ -51,32 +51,23 @@ class PostsFragment : BaseFragment() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setHasOptionsMenu(true)
+		adapter = PostsAdapter(context, currentSort)
 	}
 
 	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-		//super.onViewCreated(view, savedInstanceState)
+		val query: Observable<List<TPost>>
+		if (arguments == null) {
+			setTitle("Hot")
+			query = App.sdb.createQuery("tposts", "select * from tposts").mapToList(TPost.MAPPER)
+			subs.add(Observable.fromCallable { Reddit.getHotPosts() }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+		} else {
+			subreddit = arguments.getString("subreddit")
+			setTitle(subreddit!!)
+			query = App.sdb.createQuery("tposts", "select * from tposts where subreddit = ?", subreddit).mapToList(TPost.MAPPER)
+			subs.add(Observable.fromCallable { Reddit.getSubredditPosts(subreddit!!) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+		}
 
-//		val query: Observable<List<TPost>>
-//		if (arguments == null) {
-//			setTitle("Hot")
-//			query = App.sdb.createQuery("posts", "select * from TPosts").mapToList(TPost.MAPPER)
-//			subs.add(Observable.fromCallable { Reddit.getHotPosts() }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
-//		} else {
-//			subreddit = arguments.getString("subreddit")
-//			setTitle(subreddit!!)
-//			query = App.sdb.createQuery("posts", "select * from TPosts where subreddit = ?", subreddit).mapToList(TPost.MAPPER)
-//			subs.add(Observable.fromCallable { Reddit.getSubredditPosts(subreddit!!) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
-//		}
-
-		//subs.add(query.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
-
-		adapter = PostsAdapter(context, currentSort)
-
-		App.sdb.createQuery("posts", "select * from TPosts").mapToList(TPost.MAPPER)
-			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter)
-
-		subs.add(Observable.fromCallable { Reddit.getHotPosts() }
-			.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
+		subs.add(query.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
 
 		val layoutManager = PreCachingLayoutManager(context)
 		layoutManager.orientation = LinearLayoutManager.VERTICAL

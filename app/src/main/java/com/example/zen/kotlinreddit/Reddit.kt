@@ -205,7 +205,7 @@ object Reddit {
 
 					println("CONTENTVALUES: ${post.getValues()}")
 
-					App.sdb.insert("TPosts", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
+					App.sdb.insert("tposts", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
 				}
 
 				if ("after".equals(jp.currentName)) {
