@@ -121,14 +121,9 @@ class TestCommentsFragment : BaseFragment() {
 						.into(mp4Player.thumbImageView)
 				}
 
-
 				if(it.embed != null) {
-					Fx9C.setup_web_video(
-						this,
-						framevideoplayer,
-						videoplayer,
-						progressloadingbarpx,
-						Html.fromHtml(it.embed).toString(),
+					val iframe = Html.fromHtml(it.embed).toString()
+					Fx9C.setup_web_video(this, framevideoplayer, videoplayer,	progressloadingbarpx,	iframe,
 						object : HClient.Callback {
 							override fun overridedefaultlogic(url: String, activity: Activity): Boolean {
 								return true
