@@ -111,7 +111,7 @@ open class BaseModel() {
 			return """
 			create table if not exists $table (
 				${sb.toString()}
-				unique(id) on conflict ignore
+				unique(id) on conflict replace
 			);"""
 		}
 
@@ -119,7 +119,7 @@ open class BaseModel() {
 			create table if not exists $table (
 				${sb.toString()}
 				foreign key($foreignKey) references $foreignTable(_id) on delete cascade,
-				unique(id) on conflict ignore
+				unique(id) on conflict replace
 			);"""
 	}
 

@@ -22,5 +22,6 @@ Possible future features
 - [ ] add reddit api for posting new comments / replying
 - [ ] add reddit api for vote up / down for comments and posts
 - [ ] add syncing bookmarks to FireBase
+- [ ] add parsing markdown syntax for bullet lists and blockquotes
 - [ ] nested comments?
 - [ ] improve markdown performance for comments MarkDownView too slow?

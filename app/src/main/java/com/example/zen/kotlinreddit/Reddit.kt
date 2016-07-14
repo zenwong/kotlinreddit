@@ -1,7 +1,6 @@
 package com.example.zen.kotlinreddit
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.util.Base64
 import com.example.zen.kotlinreddit.models.*
@@ -204,7 +203,7 @@ object Reddit {
 						post.preview = preview
 					}
 
-					App.sdb.insert("$table", post.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
+					App.sdb.insert("$table", post.getValues())
 				}
 
 				if ("after".equals(jp.currentName)) {
@@ -277,7 +276,7 @@ object Reddit {
 							}
 						}
 
-						App.sdb.insert(headTable, header.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
+						App.sdb.insert(headTable, header.getValues())
 					}
 
 					if ("author".equals(jp.currentName)) {
@@ -298,7 +297,7 @@ object Reddit {
 							}
 						}
 
-						App.sdb.insert(commentTable, comment.getValues(), SQLiteDatabase.CONFLICT_IGNORE)
+						App.sdb.insert(commentTable, comment.getValues())
 					}
 
 				}
