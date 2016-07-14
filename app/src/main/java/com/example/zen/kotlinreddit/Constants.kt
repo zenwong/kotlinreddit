@@ -11,3 +11,8 @@ const val SORT_NEW = 7
 
 const val IMG_POST = 111
 const val TXT_POST = 222
+
+const val FRONT = 11
+const val COMMENTS = 22
+const val MESSAGES = 33
+const val BROWSER = 44

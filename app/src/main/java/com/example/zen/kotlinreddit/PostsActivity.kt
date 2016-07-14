@@ -1,13 +1,18 @@
 package com.example.zen.kotlinreddit
 
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.MenuItem
+import android.webkit.CookieManager
+import android.webkit.CookieSyncManager
 import com.example.zen.kotlinreddit.fragments.*
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
@@ -148,6 +153,25 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		return true
 	}
 
+	@SuppressWarnings("deprecation")
+	fun clearCookies(context: Context) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+			Log.d("Cookies", "Using clearCookies code for API >= ${Build.VERSION_CODES.LOLLIPOP_MR1}")
+			CookieManager.getInstance().removeAllCookies(null)
+			CookieManager.getInstance().flush()
+		} else {
+			Log.d("Cookies", "Using clearCookies code for API < ${Build.VERSION_CODES.LOLLIPOP_MR1}")
+			val cookieSyncMngr = CookieSyncManager.createInstance(context)
+			cookieSyncMngr.startSync()
+			val cookieManager = CookieManager.getInstance()
+			cookieManager.removeAllCookie()
+			cookieManager.removeSessionCookie()
+			cookieSyncMngr.stopSync()
+			cookieSyncMngr.sync()
+		}
+	}
+
+
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onTitle(t: Title) {
 		toolbar_title.text = t.title
@@ -175,7 +199,13 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 				ft.replace(R.id.contentFrame, CommentsFragment.newInstance(nav.pid!!))
 				ft.addToBackStack("CommentsFragment")
 			}
-			MESSAGES -> println("messages")
+			BROWSER -> {
+				clearCookies(this)
+				ft.replace(R.id.contentFrame, BrowserFragment(), BrowserFragment.TAG)
+			}
+			MESSAGES -> {
+				println("messages")
+			}
 		}
 		ft.commit()
 	}

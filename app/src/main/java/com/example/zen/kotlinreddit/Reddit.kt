@@ -31,6 +31,7 @@ object Reddit {
 	}
 
 	fun getAuthUrl(clientid: String = CLIENTID, state: String = "NONCE", redirect: String = "http://zreddit", scope: String = "read identity privatemessages"): String {
+		//println("https://ssl.reddit.com/api/v1/authorize.compact?client_id=$clientid&response_type=code&state=$state&redirect_uri=$redirect&duration=permanent&scope=$scope")
 		return "https://ssl.reddit.com/api/v1/authorize.compact?client_id=$clientid&response_type=code&state=$state&redirect_uri=$redirect&duration=permanent&scope=$scope"
 	}
 
@@ -39,6 +40,9 @@ object Reddit {
 		val error = uri.getQueryParameter("error")
 		if (error !== null) {
 			println(error)
+			if("access_denied".equals(error)) {
+				EventBus.getDefault().post(Navigation(BROWSER))
+			}
 		} else {
 			val code = uri.getQueryParameter("code")
 			val body = FormBody.Builder().add("code", code).add("redirect_uri", REDIRECT).add("grant_type", "authorization_code").build()

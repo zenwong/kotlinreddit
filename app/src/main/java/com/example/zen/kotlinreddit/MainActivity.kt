@@ -21,10 +21,6 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 
-const val FRONT = 1
-const val COMMENTS = 2
-const val MESSAGES = 3
-
 class MainActivity : AppCompatActivity() {
 	var subscriptions = CompositeSubscription()
 
