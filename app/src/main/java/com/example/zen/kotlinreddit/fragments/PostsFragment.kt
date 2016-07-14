@@ -43,26 +43,28 @@ class PostsFragment : BaseFragment() {
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
 		if (savedInstanceState != null) {
-			//Restore the fragment's state here
 			subreddit = savedInstanceState.getString("subreddit")
+			currentSort = savedInstanceState.getInt("currentSort")
+			toggleSort[currentSort] = savedInstanceState.getBoolean("currentOrder")
 		}
 	}
 
-	override fun onSaveInstanceState(outState: Bundle?) {
+	override fun onSaveInstanceState(outState: Bundle) {
 		super.onSaveInstanceState(outState)
-		//Save the fragment's state here
-		outState?.putString("subreddit", subreddit)
+		outState.putString("subreddit", subreddit)
+		outState.putInt("currentSort", currentSort)
+		outState.putBoolean("currentOrder", toggleSort[currentSort]!!)
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setHasOptionsMenu(true)
-		adapter = PostsAdapter(context, currentSort)
-	}
+		retainInstance = true
+		adapter = PostsAdapter(context)
 
-	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
 		val query: Observable<List<TPost>>
 		if (arguments == null) {
+			println("inside HOT")
 			setTitle("Hot")
 			query = App.sdb.createQuery("$table", "select * from $table").mapToList(TPost.MAPPER)
 			subs.add(Observable.fromCallable { Reddit.getHotPosts() }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
@@ -74,6 +76,16 @@ class PostsFragment : BaseFragment() {
 		}
 
 		subs.add(query.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
+	}
+
+	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+		setTitleBaseOnSort()
+
+		if(savedInstanceState != null) {
+			val sort = savedInstanceState.getInt("currentSort")
+			val order = savedInstanceState.getBoolean("currentOrder").not()
+			adapter.sortBy(sort, order)
+		}
 
 		val layoutManager = PreCachingLayoutManager(context)
 		layoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -100,12 +112,15 @@ class PostsFragment : BaseFragment() {
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			R.id.action_hot -> {
+				setTitle("Hot")
+				currentSort = SORT_HOT
 				val postsSub = Observable.fromCallable { Reddit.getHotPosts() }
 				Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe()
 				return true
 			}
 			R.id.action_new -> {
 				setTitle("New")
+				currentSort = SORT_NEW
 				val postsSub = Observable.fromCallable { Reddit.getNewPosts() }
 				Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe()
 				return true
@@ -146,6 +161,8 @@ class PostsFragment : BaseFragment() {
 
 	fun setTitleBaseOnSort() {
 		when(currentSort) {
+			SORT_HOT -> setTitle("Hot")
+			SORT_NEW -> setTitle("New")
 			SORT_PREVIEW -> {
 				if(toggleSort[currentSort] == true) setTitle("Preview Descending")
 				else setTitle("Preview Ascending")

@@ -15,11 +15,9 @@ import org.greenrobot.eventbus.EventBus
 import rx.functions.Action1
 import java.util.*
 
-class PostsAdapter(val context: Context, val sort: Int = SORT_CREATED) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Action1<List<TPost>> {
+class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Action1<List<TPost>> {
 	val now = System.currentTimeMillis()
 	var posts = ArrayList<TPost>()
-	val TEXT_ONLY_POST = 0
-	val IMAGE_POST = 1
 
 	fun sortBy(sortColumn: Int, order: Boolean?) {
 		if(order == true) {
@@ -46,7 +44,6 @@ class PostsAdapter(val context: Context, val sort: Int = SORT_CREATED) : Recycle
 
 	override fun call(list: List<TPost>) {
 		posts = list as ArrayList<TPost>
-		println("PostsAdapter Call ${posts.size}")
 		notifyDataSetChanged()
 	}
 
@@ -56,14 +53,14 @@ class PostsAdapter(val context: Context, val sort: Int = SORT_CREATED) : Recycle
 
 	override fun getItemViewType(position: Int): Int {
 		if (posts[position].preview != null) {
-			return IMAGE_POST
+			return IMG_POST
 		}
-		return TEXT_ONLY_POST
+		return TXT_POST
 	}
 
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, idx: Int) {
 		when (holder.itemViewType) {
-			IMAGE_POST -> {
+			IMG_POST -> {
 				holder as ImagePostViewHolder
 				holder.txtTitle.text = posts[idx].title
 				holder.txtComments.text = "${posts[idx].comments} {fa-comments}"
@@ -76,7 +73,7 @@ class PostsAdapter(val context: Context, val sort: Int = SORT_CREATED) : Recycle
 					.centerCrop()
 					.into(holder.imgPreviw)
 			}
-			TEXT_ONLY_POST -> {
+			TXT_POST -> {
 				holder as TextPostViewHolder
 				holder.txtTitle.text = posts[idx].title
 				holder.txtComments.text = "${posts[idx].comments} {fa-comments}"
@@ -88,7 +85,7 @@ class PostsAdapter(val context: Context, val sort: Int = SORT_CREATED) : Recycle
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-		if (IMAGE_POST == viewType) {
+		if (IMG_POST == viewType) {
 			return ImagePostViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_post, parent, false))
 		}
 		return TextPostViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_post_text_only, parent, false))
