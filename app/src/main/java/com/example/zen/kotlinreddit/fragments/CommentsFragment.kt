@@ -199,7 +199,9 @@ class ParallaxCommentAdapter(val context: Context, list: List<Comment>?) : Paral
 	override fun onBindViewHolderImpl(vh: RecyclerView.ViewHolder, adapter: ParallaxRecyclerAdapter<Comment>, idx: Int) {
 		val holder: CommentsViewHolder = vh as CommentsViewHolder
 		holder.txtAuthor.text = data[idx].author
-		holder.txtBody.loadMarkdown(data[idx].body)
+		//holder.txtBody.loadMarkdown(data[idx].body)
+		holder.txtBody.text = data[idx].body
+
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(data[idx].created!! * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}
 
@@ -224,7 +226,9 @@ class CommentsAdapter(val context: Context) : RecyclerView.Adapter<CommentsViewH
 
 	override fun onBindViewHolder(holder: CommentsViewHolder, idx: Int) {
 		holder.txtAuthor.text = items[idx].author
-		holder.txtBody.loadMarkdown(items[idx].body)
+		//holder.txtBody.loadMarkdown(items[idx].body)
+		holder.txtBody.text = items[idx].body
+
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(items[idx].created!! * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}
 

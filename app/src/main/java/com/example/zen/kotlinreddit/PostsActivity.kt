@@ -35,11 +35,9 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 			state = savedInstanceState
 			currentTag = savedInstanceState.getString("currentTag")
 			println("Current Tag $currentTag")
-			//val frag = supportFragmentManager.findFragmentByTag(currentTag)
 			val frag = supportFragmentManager.getFragment(savedInstanceState, currentTag)
 
 			frag?.let {
-				println("DDD inside replace frag $currentTag")
 				supportFragmentManager.beginTransaction().replace(R.id.contentFrame, frag, currentTag).commit()
 			}
 		}
@@ -96,10 +94,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 					currentTag = PostsFragment.TAG
 					frag = PostsFragment()
 				} else {
-					println("DDD inside getting fragment $currentTag")
-					supportFragmentManager.fragments?.forEach {
-						println("fragment tag: ${it?.tag}")
-					}
 					frag = supportFragmentManager.getFragment(state, currentTag)
 				}
 			}
@@ -109,7 +103,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 			frag = BrowserFragment()
 		}
 
-		println("DDD currentTag $currentTag")
 		frag?.let {
 			ft.replace(R.id.contentFrame, frag, currentTag)
 		}

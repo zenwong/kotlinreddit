@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Html
 import android.text.format.DateUtils
 import android.view.*
 import com.example.zen.kotlinreddit.*
@@ -93,11 +94,16 @@ class TestCommentsFragment : BaseFragment() {
 				txtCommentHeaderAuthor.text = it.author
 				txtCommentHeaderSelfText.text = it.selftext
 
-				Picasso.with(context)
-					.load(source)
-					.fit()
-					.centerCrop()
-					.into(imgCommentHeaderPreview)
+				if(it.preview == null) {
+					frameCommentHeader.visibility = View.GONE
+				} else {
+					Picasso.with(context)
+						.load(it.preview)
+						.fit()
+						.centerCrop()
+						.into(imgCommentHeaderPreview)
+				}
+
 			})
 	}
 
@@ -162,7 +168,9 @@ class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRec
 	override fun onBindViewHolderImpl(vh: RecyclerView.ViewHolder, adapter: ParallaxRecyclerAdapter<TComment>, idx: Int) {
 		val holder: CommentsViewHolder = vh as CommentsViewHolder
 		holder.txtAuthor.text = data[idx].author
-		holder.txtBody.loadMarkdown(data[idx].body)
+		//holder.txtBody.loadMarkdown(data[idx].body)
+		holder.txtBody.text = Html.fromHtml(data[idx].body)
+
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(data[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}
 

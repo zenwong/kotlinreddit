@@ -5,6 +5,7 @@ TODO
 - [X] fix comment preview parsing
 - [X] fix created timestamp for posts and comments
 - [X] fix screen rotation loads correct fragment
+- [ ] fix sqlite conflict update for posts and comments
 - [X] add load more to posts
 - [X] add comment header
 - [ ] add comment header preview
