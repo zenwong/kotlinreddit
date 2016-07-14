@@ -5,12 +5,13 @@ TODO
 - [X] fix comment preview parsing
 - [X] fix created timestamp for posts and comments
 - [X] fix screen rotation loads correct fragment
-- [ ] fix sqlite conflict update for posts and comments
+- [X] fix sqlite conflict update for posts and comments
 - [X] add load more to posts
 - [X] add comment header
 - [X] add comment header preview
 - [X] add comment header parallax scroll
 - [X] add different view types for post listing
+- [ ] add toggle sort order by asc / desc for posts
 - [ ] add unit tests
 - [X] add bookmark posts to fav list to read in future
 - [X] add intent filter to handle reddit links

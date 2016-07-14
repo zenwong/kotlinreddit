@@ -25,6 +25,11 @@ class PostsFragment : BaseFragment() {
 	lateinit var adapter : PostsAdapter
 	val table = TPost().getTableName()
 
+	val clearSub = Observable.fromCallable {
+		App.sdb.delete(table, null)
+		//App.sdb.delete("sqlite_sequence", null)
+	}
+
 	companion object {
 		const val TAG = "PostsFragment"
 		fun forSubreddit(subreddit: String): PostsFragment {
@@ -96,17 +101,14 @@ class PostsFragment : BaseFragment() {
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			R.id.action_hot -> {
-				val clearSub = Observable.fromCallable {
-					App.sdb.delete("tposts", null)
-					App.sdb.delete("sqlite_sequence", null)
-				}
-
 				val postsSub = Observable.fromCallable { Reddit.getHotPosts() }
 				Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe()
 				return true
 			}
 			R.id.action_new -> {
-
+				setTitle("New")
+				val postsSub = Observable.fromCallable { Reddit.getNewPosts() }
+				Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe()
 				return true
 			}
 			R.id.action_subreddit -> {
