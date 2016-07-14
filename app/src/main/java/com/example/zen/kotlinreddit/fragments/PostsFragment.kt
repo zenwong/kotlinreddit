@@ -110,37 +110,38 @@ class PostsFragment : BaseFragment() {
 				Observable.concat(clearSub, postsSub).subscribeOn(Schedulers.newThread()).subscribe()
 				return true
 			}
+		}
+
+		when (item.itemId) {
 			R.id.action_subreddit -> {
 				currentSort = SORT_SUBREDDIT
-				adapter.sortBy(currentSort, toggleSort[currentSort])
-				setTitleBaseOnSort()
-				toggleSort[currentSort] = toggleSort[currentSort]!!.not()
+				toggleAdapterSort()
 				return true
 			}
 			R.id.action_comments -> {
 				currentSort = SORT_COMMENTS
-				adapter.sortBy(currentSort, toggleSort[currentSort])
-				setTitleBaseOnSort()
-				toggleSort[currentSort] = toggleSort[currentSort]!!.not()
+				toggleAdapterSort()
 				return true
 			}
 			R.id.action_score -> {
 				currentSort = SORT_SCORE
-				adapter.sortBy(currentSort, toggleSort[currentSort])
-				setTitleBaseOnSort()
-				toggleSort[currentSort] = toggleSort[currentSort]!!.not()
+				toggleAdapterSort()
 				return true
 			}
 			R.id.action_preview -> {
 				currentSort = SORT_PREVIEW
-				adapter.sortBy(currentSort, toggleSort[currentSort])
-				setTitleBaseOnSort()
-				toggleSort[currentSort] = toggleSort[currentSort]!!.not()
+				toggleAdapterSort()
 				return true
 			}
 		}
 
 		return super.onOptionsItemSelected(item)
+	}
+
+	fun toggleAdapterSort() {
+		adapter.sortBy(currentSort, toggleSort[currentSort])
+		setTitleBaseOnSort()
+		toggleSort[currentSort] = toggleSort[currentSort]!!.not()
 	}
 
 	fun setTitleBaseOnSort() {
