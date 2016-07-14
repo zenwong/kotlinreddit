@@ -25,10 +25,20 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
     <TextView
-        android:id="@+id/txtMessageBody"
+        android:id="@+id/txtMessageTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txtMessageAuthor"
+        android:layout_marginTop="10dp"
+        android:textSize="@dimen/small_text_size"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/txtMessageBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtMessageTitle"
         android:textSize="@dimen/small_text_size"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"

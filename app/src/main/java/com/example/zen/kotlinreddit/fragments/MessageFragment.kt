@@ -68,8 +68,9 @@ class MessageAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.V
 
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, idx: Int) {
 		holder as MessageViewHolder
+		holder.txtTitle.text = data[idx].title
 		holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
-		holder.txtAuthor.text = data[idx].author
+		holder.txtAuthor.text = "${data[idx].author}  (${data[idx].subreddit})"
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(data[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}
 
@@ -81,6 +82,7 @@ class MessageAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.V
 		val txtBody = iv.txtMessageBody
 		val txtCreated = iv.txtMessageCreated
 		val txtAuthor = iv.txtMessageAuthor
+		val txtTitle = iv.txtMessageTitle
 	}
 
 }
