@@ -24,7 +24,7 @@ import com.example.zen.kotlinreddit.views.DividerItemDecoration
 import com.hkm.ezwebview.Util.Fx9C
 import com.hkm.ezwebview.webviewclients.HClient
 import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter
-import kotlinx.android.synthetic.main.comment_header.*
+import kotlinx.android.synthetic.main.header.*
 import kotlinx.android.synthetic.main.recycler.*
 import kotlinx.android.synthetic.main.row_comment.view.*
 import rx.android.schedulers.AndroidSchedulers

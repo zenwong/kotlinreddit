@@ -42,12 +42,21 @@
                 android:id="@+id/imgCommentHeaderPreview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="gone"
                 />
 
             <WebView
                 android:id="@+id/webCommentHeaderMedia"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="gone"
+                />
+
+            <fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard
+                android:id="@+id/mp4Player"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
                 android:visibility="gone"
                 />
 
@@ -63,7 +72,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    />
 
                 <com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar
                     xmlns:fab="http://schemas.android.com/apk/res-auto"

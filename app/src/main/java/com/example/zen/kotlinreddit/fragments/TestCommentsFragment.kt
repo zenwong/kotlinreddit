@@ -1,5 +1,6 @@
 package com.example.zen.kotlinreddit.fragments
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -8,6 +9,8 @@ import android.text.Html
 import android.text.format.DateUtils
 import android.view.*
 import com.example.zen.kotlinreddit.*
+import com.hkm.ezwebview.Util.Fx9C
+import com.hkm.ezwebview.webviewclients.HClient
 import com.joanzapata.iconify.IconDrawable
 import com.joanzapata.iconify.fonts.FontAwesomeIcons
 import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter
@@ -73,6 +76,7 @@ class TestCommentsFragment : BaseFragment() {
 		rv.adapter = adapter
 
 		val source = "https://i.redditmedia.com/e8S5WZkcryD1WRc07ngpE8C_AkKdfxdSpHFlyL05uCM.gif?fm=jpg&amp;s=cb37aac6b70c9777cb0e9cc80111b515".replace("amp;", "")
+		var mp4: String? = null
 
 		subs.add(Observable.fromCallable { Reddit.parseComments(url, parent) }
 			.subscribeOn(Schedulers.newThread())
@@ -97,11 +101,43 @@ class TestCommentsFragment : BaseFragment() {
 				if(it.preview == null) {
 					frameCommentHeader.visibility = View.GONE
 				} else {
+					imgCommentHeaderPreview.visibility = View.VISIBLE
 					Picasso.with(context)
 						.load(it.preview)
 						.fit()
 						.centerCrop()
 						.into(imgCommentHeaderPreview)
+				}
+
+				//mp4 = "https://g.redditmedia.com/LL25GBmeVYQRq1czEHcphmMD0p9F935iyNXL6ITHhpA.gif?fit=crop&crop=faces%2Centropy&arh=2&w=108&fm=mp4&mp4-fragmented=false&s=f483ae822896d4f08c6ec501a82693d8"
+				//mp4 = "https://g.redditmedia.com/ue0DjQCfHnTn7yXpiol3qTtZGAyTO1ma4OS07c5TvqQ.gif?fit=crop&crop=faces%2Centropy&arh=2&w=320&fm=mp4&mp4-fragmented=false&s=4f251ec415e6c57c40a4d0061deae4ee"
+				if(it.mp4 != null) {
+					mp4Player.visibility = View.VISIBLE
+					mp4Player.setUp(mp4, it.title)
+					mp4Player.setLoop(true)
+
+					Picasso.with(context).load(it.preview)
+						.fit().centerCrop()
+						.into(mp4Player.thumbImageView)
+				}
+
+
+				if(it.embed != null) {
+					Fx9C.setup_web_video(
+						this,
+						framevideoplayer,
+						videoplayer,
+						progressloadingbarpx,
+						Html.fromHtml(it.embed).toString(),
+						object : HClient.Callback {
+							override fun overridedefaultlogic(url: String, activity: Activity): Boolean {
+								return true
+							}
+
+							override fun retrieveCookie(s: String) {
+
+							}
+						}, null)
 				}
 
 			})
@@ -150,6 +186,14 @@ class TestCommentsFragment : BaseFragment() {
 		subs = CompositeSubscription()
 		headerView = inflater.inflate(R.layout.header, container, false)
 		return inflater.inflate(layout, container, false)
+	}
+
+
+	override fun onPause() {
+		super.onPause()
+		subs.unsubscribe()
+		Fx9C.clearVideo(framevideoplayer, videoplayer)
+		Fx9C.killWebView(videoplayer)
 	}
 }
 
