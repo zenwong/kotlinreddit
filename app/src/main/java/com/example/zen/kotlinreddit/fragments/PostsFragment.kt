@@ -6,10 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import com.example.zen.kotlinreddit.App
-import com.example.zen.kotlinreddit.R
-import com.example.zen.kotlinreddit.Reddit
-import com.example.zen.kotlinreddit.TPost
+import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.adapters.PostsAdapter
 import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
 import com.example.zen.kotlinreddit.views.PreCachingLayoutManager
@@ -19,7 +16,7 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 
 class PostsFragment : BaseFragment() {
-	var currentSort = PostsAdapter.SORT_HOT
+	var currentSort = SORT_HOT
 	var subreddit: String? = null
 	override val layout = R.layout.front_page
 	lateinit var adapter : PostsAdapter
@@ -29,6 +26,8 @@ class PostsFragment : BaseFragment() {
 		App.sdb.delete(table, null)
 		//App.sdb.delete("sqlite_sequence", null)
 	}
+
+	val toggleSort = mapOf(SORT_HOT to true, SORT_NEW to true, SORT_PREVIEW to true, SORT_COMMENTS to true, SORT_SCORE to true, SORT_SUBREDDIT to true)
 
 	companion object {
 		const val TAG = "PostsFragment"
@@ -112,26 +111,26 @@ class PostsFragment : BaseFragment() {
 				return true
 			}
 			R.id.action_subreddit -> {
-				currentSort = PostsAdapter.SORT_SUBREDDIT
-				adapter.sortBy(PostsAdapter.SORT_SUBREDDIT)
+				currentSort = SORT_SUBREDDIT
+				adapter.sortBy(SORT_SUBREDDIT)
 				setTitleBaseOnSort()
 				return true
 			}
 			R.id.action_comments -> {
-				currentSort = PostsAdapter.SORT_COMMENTS
-				adapter.sortBy(PostsAdapter.SORT_COMMENTS)
+				currentSort = SORT_COMMENTS
+				adapter.sortBy(SORT_COMMENTS)
 				setTitleBaseOnSort()
 				return true
 			}
 			R.id.action_score -> {
-				currentSort = PostsAdapter.SORT_SCORE
-				adapter.sortBy(PostsAdapter.SORT_SCORE)
+				currentSort = SORT_SCORE
+				adapter.sortBy(SORT_SCORE)
 				setTitleBaseOnSort()
 				return true
 			}
 			R.id.action_preview -> {
-				currentSort = PostsAdapter.SORT_PREVIEW
-				adapter.sortBy(PostsAdapter.SORT_PREVIEW)
+				currentSort = SORT_PREVIEW
+				adapter.sortBy(SORT_PREVIEW)
 				setTitleBaseOnSort()
 				return true
 			}
@@ -142,11 +141,11 @@ class PostsFragment : BaseFragment() {
 
 	fun setTitleBaseOnSort() {
 		when(currentSort) {
-			PostsAdapter.SORT_PREVIEW -> setTitle("Preview")
-			PostsAdapter.SORT_SUBREDDIT -> setTitle("Subreddit")
-			PostsAdapter.SORT_SCORE -> setTitle("Score")
-			PostsAdapter.SORT_COMMENTS -> setTitle("Comments")
-			PostsAdapter.SORT_CREATED -> setTitle("Created")
+			SORT_PREVIEW -> setTitle("Preview")
+			SORT_SUBREDDIT -> setTitle("Subreddit")
+			SORT_SCORE -> setTitle("Score")
+			SORT_COMMENTS -> setTitle("Comments")
+			SORT_CREATED -> setTitle("Created")
 			else -> setTitle("Hot")
 		}
 	}

@@ -6,9 +6,7 @@ import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.zen.kotlinreddit.R
-import com.example.zen.kotlinreddit.Reddit
-import com.example.zen.kotlinreddit.TPost
+import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Title
 import com.squareup.picasso.Picasso
@@ -23,27 +21,14 @@ class PostsAdapter(val context: Context, val sort: Int = SORT_CREATED) : Recycle
 	val TEXT_ONLY_POST = 0
 	val IMAGE_POST = 1
 
-	companion object {
-		const val SORT_TITLE = 0
-		const val SORT_PREVIEW = 1
-		const val SORT_SUBREDDIT = 2
-		const val SORT_CREATED = 3
-		const val SORT_COMMENTS = 4
-		const val SORT_SCORE = 5
-		const val SORT_HOT = 6
-		const val SORT_NEW = 7
-		const val IMG_POST = 111
-		const val TXT_POST = 222
-	}
-
 	fun sortBy(sortColumn: Int) {
 		when(sortColumn) {
-			PostsAdapter.SORT_TITLE -> posts.sortByDescending { it.title }
-			PostsAdapter.SORT_PREVIEW -> posts.sortByDescending { it.preview }
-			PostsAdapter.SORT_SUBREDDIT -> posts.sortByDescending { it.subreddit }
-			PostsAdapter.SORT_CREATED -> posts.sortByDescending { it.created }
-			PostsAdapter.SORT_COMMENTS -> posts.sortByDescending { it.comments }
-			PostsAdapter.SORT_SCORE -> posts.sortByDescending { it.score }
+			SORT_TITLE -> posts.sortByDescending { it.title }
+			SORT_PREVIEW -> posts.sortByDescending { it.preview }
+			SORT_SUBREDDIT -> posts.sortByDescending { it.subreddit }
+			SORT_CREATED -> posts.sortByDescending { it.created }
+			SORT_COMMENTS -> posts.sortByDescending { it.comments }
+			SORT_SCORE -> posts.sortByDescending { it.score }
 		}
 		notifyDataSetChanged()
 	}
