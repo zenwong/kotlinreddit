@@ -6,7 +6,7 @@ TODO
 - [X] fix created timestamp for posts and comments
 - [X] fix screen rotation loads correct fragment
 - [X] fix sqlite conflict update for posts and comments
-- [ ] fix retain current sort on back pressed after reading comment
+- [X] fix retain current sort on back pressed after reading comment
 - [X] add load more to posts
 - [X] add comment header
 - [X] add comment header preview

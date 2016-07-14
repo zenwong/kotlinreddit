@@ -8,10 +8,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import com.example.zen.kotlinreddit.fragments.BrowserFragment
-import com.example.zen.kotlinreddit.fragments.CommentsFragment
-import com.example.zen.kotlinreddit.fragments.PostsFragment
-import com.example.zen.kotlinreddit.fragments.TestCommentsFragment
+import com.example.zen.kotlinreddit.fragments.*
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
 import com.example.zen.kotlinreddit.models.Title
@@ -136,7 +133,7 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 		if (id == R.id.nav_camera) {
 		} else if (id == R.id.nav_gallery) {
-
+			supportFragmentManager.beginTransaction().replace(R.id.contentFrame, MessageFragment(), MessageFragment.TAG).addToBackStack(MessageFragment.TAG).commit()
 		} else if (id == R.id.nav_slideshow) {
 
 		} else if (id == R.id.nav_manage) {

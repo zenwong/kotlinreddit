@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp">
+
+    <com.joanzapata.iconify.widget.IconTextView
+        android:id="@+id/txtMessageAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textStyle="bold"
+        android:textSize="@dimen/small_text_size"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+    <com.joanzapata.iconify.widget.IconTextView
+        android:id="@+id/txtMessageCreated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:textStyle="bold"
+        android:textSize="@dimen/small_text_size"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+    <TextView
+        android:id="@+id/txtMessageBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtMessageAuthor"
+        android:textSize="@dimen/small_text_size"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:autoLink="web"
+        />
+
+</RelativeLayout>

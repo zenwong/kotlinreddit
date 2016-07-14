@@ -30,8 +30,9 @@ object Reddit {
 		client = OkHttpClient.Builder().authenticator(RedditOauthAuthenticator()).cache(cache).build()
 	}
 
-	fun getAuthUrl(clientid: String = CLIENTID, state: String = "NONCE", redirect: String = "http://zreddit", scope: String = "read identity"): String {
-		return "https://ssl.reddit.com/api/v1/authorize.compact?client_id=$clientid&response_type=code&state=$state&redirect_uri=$redirect&duration=permanent&scope=$scope"
+	fun getAuthUrl(clientid: String = CLIENTID, state: String = "NONCE", redirect: String = "http://zreddit", scope: String = "read identity privatemessages"): String {
+		//return "https://ssl.reddit.com/api/v1/authorize.compact?client_id=$clientid&response_type=code&state=$state&redirect_uri=$redirect&duration=permanent&scope=$scope"
+		return "https://ssl.reddit.com/api/v1/authorize?client_id=$clientid&response_type=code&state=$state&redirect_uri=$redirect&duration=permanent&scope=$scope"
 	}
 
 	fun getAccessToken(url: String) {
@@ -396,50 +397,52 @@ object Reddit {
 		if (preview.thumb == null) preview.thumb = selectedPreview
 	}
 
-	fun parseMessages() {
-		val jp = jsonFactory.createParser(File("/home/zen/reddit/messages.json"))
+	fun getInbox() {
+//		val resp = client.newCall(Request.Builder().url("https://oauth.reddit.com/message/inbox").addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute()
+//		println("getInbox : ${resp.body().string()}")
+//		if(resp.isSuccessful)	parseMessages(resp.body().string())
+		parseMessages(getOrEmpty("https://oauth.reddit.com/message/inbox"))
+	}
 
-		while (jp.nextToken() !== null) {
+	fun getUnread() {
+		parseMessages(getOrEmpty("https://oauth.reddit.com/message/unread"))
+	}
 
-			if ("body".equals(jp.currentName)) {
-				jp.nextToken()
-				val msg = Message(jp.valueAsString)
+	fun parseMessages(json: String) {
+		val jp = jsonFactory.createParser(json)
+		val table = TMessage().getTableName()
+		val tr = App.sdb.newTransaction()
+		try {
+			while (jp.nextToken() !== null) {
 
-				while (jp.nextToken() !== JsonToken.END_OBJECT) {
-					if ("link_title".equals(jp.currentName)) {
-						jp.nextToken()
-						msg.title = jp.valueAsString
+				if ("body".equals(jp.currentName)) {
+					val msg = TMessage()
+					msg.body = jp.nextTextValue()
+					println("body: ${msg.body}")
+
+					while (jp.nextToken() !== JsonToken.END_OBJECT) {
+						val key = jp.currentName
+						when (key) {
+							"link_title" -> msg.title = jp.nextTextValue()
+							"dest" -> msg.dest = jp.nextTextValue()
+							"author" -> msg.author = jp.nextTextValue()
+							"created_utc" -> {
+								jp.nextToken()
+								msg.created = jp.valueAsLong
+							}
+							"subreddit" -> msg.subreddit = jp.nextTextValue()
+							"parent_id" -> msg.parent = jp.nextTextValue()
+							"context" -> msg.context = jp.nextTextValue()
+							"id" -> msg.id = jp.nextTextValue()
+						}
 					}
 
-					if ("created".equals(jp.currentName)) {
-						jp.nextToken()
-						msg.created = jp.valueAsLong
-					}
-
-					if ("dest".equals(jp.currentName)) {
-						jp.nextToken()
-						msg.dest = jp.valueAsString
-					}
-
-					if ("author".equals(jp.currentName)) {
-						jp.nextToken()
-						msg.author = jp.valueAsString
-					}
-
-					if ("parent_id".equals(jp.currentName)) {
-						jp.nextToken()
-						msg.parent = jp.valueAsString
-					}
-
-					if ("id".equals(jp.currentName)) {
-						jp.nextToken()
-						msg.id = jp.valueAsString
-					}
+					App.sdb.insert(table, msg.getValues())
 				}
-
-				println(msg)
 			}
-
+			tr.markSuccessful()
+		} finally {
+			tr.end()
 		}
 	}
 

@@ -90,6 +90,34 @@ class TComment : BaseModel() {
 	}
 }
 
+class TMessage : BaseModel() {
+	var id: String? = null
+	var parent: String? = null
+	var subreddit: String? = null
+	var author: String? = null
+	var dest: String? = null
+	var context: String? = null
+	var body: String? = null
+	var title: String? = null
+	var created: Long = 0L
+
+	companion object {
+		val MAPPER = Func1<Cursor, TMessage> { c ->
+			TMessage().apply {
+				author = c.getString(1)
+				body = c.getString(2)
+				context = c.getString(3)
+				created = c.getLong(4)
+				dest = c.getString(5)
+				id = c.getString(6)
+				parent = c.getString(7)
+				subreddit = c.getString(8)
+				title = c.getString(9)
+			}
+		}
+	}
+}
+
 open class BaseModel() {
 	fun getTableName() : String {
 		return javaClass.simpleName
