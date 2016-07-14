@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.text.format.DateUtils
 import android.view.*
+import com.commonsware.cwac.anddown.AndDown
 import com.example.zen.kotlinreddit.*
 import com.hkm.ezwebview.Util.Fx9C
 import com.hkm.ezwebview.webviewclients.HClient
@@ -36,6 +37,7 @@ class TestCommentsFragment : BaseFragment() {
 	val getControversialComments = Observable.fromCallable { Reddit.parseComments("$url?sort=controversial", parent) }
 	val getOldComments  = Observable.fromCallable { Reddit.parseComments("$url?sort=old", parent) }
 	val getQAComments  = Observable.fromCallable { Reddit.parseComments("$url?sort=qa", parent) }
+	val md = AndDown()
 
 	val clearObs = Observable.fromCallable {
 		App.sdb.delete(tComment, null)
@@ -96,7 +98,7 @@ class TestCommentsFragment : BaseFragment() {
 			.subscribe{
 				txtCommentHeaderTitle.text = it.title
 				txtCommentHeaderAuthor.text = it.author
-				txtCommentHeaderSelfText.text = it.selftext
+				txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
 
 				if(it.preview == null) {
 					frameCommentHeader.visibility = View.GONE
@@ -194,6 +196,7 @@ class TestCommentsFragment : BaseFragment() {
 
 class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRecyclerAdapter<TComment>(list), Action1<List<TComment>> {
 	val now = System.currentTimeMillis()
+	val md = AndDown()
 
 	override fun call(t: List<TComment>) {
 		data = t
@@ -208,7 +211,8 @@ class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRec
 		val holder: CommentsViewHolder = vh as CommentsViewHolder
 		holder.txtAuthor.text = data[idx].author
 		//holder.txtBody.loadMarkdown(data[idx].body)
-		holder.txtBody.text = Html.fromHtml(data[idx].body)
+		//holder.txtBody.text = Html.fromHtml(data[idx].body)
+		holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
 
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(data[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}

@@ -12,6 +12,7 @@ TODO
 - [X] add comment header parallax scroll
 - [X] add different view types for post listing
 - [X] add toggle sort order by asc / desc for posts
+- [ ] add retain current sort on back pressed after reading comment
 - [ ] add unit tests
 - [X] add bookmark posts to fav list to read in future
 - [X] add intent filter to handle reddit links
