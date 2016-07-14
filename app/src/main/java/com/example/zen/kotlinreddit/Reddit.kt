@@ -223,7 +223,7 @@ object Reddit {
 	fun normalizeCommentsUrl(url: String, limit: Int = 10) : String {
 		val uri = Uri.parse(url)
 		val ret = "$REDDIT_FRONT${uri.path}.json?limit=$limit"
-		println("DDDD url: $ret")
+		//println("DDDD url: $ret")
 		return ret
 	}
 

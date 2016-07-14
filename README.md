@@ -4,22 +4,22 @@ TODO
 - [X] fix refresh access token
 - [X] fix comment preview parsing
 - [X] fix created timestamp for posts and comments
+- [X] fix screen rotation loads correct fragment
 - [X] add load more to posts
 - [X] add comment header
 - [ ] add comment header preview
 - [X] add comment header parallax scroll
 - [X] add different view types for post listing
-- [ ] add customizable user settings
 - [ ] add unit tests
 - [X] add bookmark posts to fav list to read in future
-- [ ] add syncing bookmarks to FireBase
 - [X] add intent filter to handle reddit links
 - [X] sort posts by preview / score / comments / subreddit
-- [ ] sort comments by score / author / created
+- [X] sort comments by score / author / created
 
 Possible future features
 - [ ] add reddit api for posting new posts
 - [ ] add reddit api for posting new comments / replying
 - [ ] add reddit api for vote up / down for comments and posts
+- [ ] add syncing bookmarks to FireBase
 - [ ] nested comments?
 - [ ] improve markdown performance for comments MarkDownView too slow?

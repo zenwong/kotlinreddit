@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.app_bar_posts.*
 import rx.subscriptions.CompositeSubscription
 
-open class BaseFragment : Fragment() {
+abstract class BaseFragment : Fragment() {
 	var subs: CompositeSubscription = CompositeSubscription()
 	open val layout = 0
 

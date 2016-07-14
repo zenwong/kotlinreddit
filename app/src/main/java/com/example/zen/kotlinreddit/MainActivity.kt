@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
 		setContentView(R.layout.main)
 		setSupportActionBar(toolbar)
 
-
 		val ft = supportFragmentManager.beginTransaction()
 		if (App.accessToken == null) {
 			ft.replace(R.id.content, BrowserFragment())

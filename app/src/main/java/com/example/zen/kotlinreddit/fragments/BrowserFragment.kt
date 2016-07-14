@@ -12,6 +12,10 @@ import com.example.zen.kotlinreddit.Reddit
 import kotlinx.android.synthetic.main.browser.*
 
 class BrowserFragment : Fragment() {
+	companion object {
+		const val TAG = "BrowserFragment"
+	}
+
 	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 

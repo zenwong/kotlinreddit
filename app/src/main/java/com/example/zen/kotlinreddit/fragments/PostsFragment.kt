@@ -26,6 +26,7 @@ class PostsFragment : BaseFragment() {
 	val table = TPost().getTableName()
 
 	companion object {
+		const val TAG = "PostsFragment"
 		fun forSubreddit(subreddit: String): PostsFragment {
 			val frag = PostsFragment()
 			val bundle = Bundle()
