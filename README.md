@@ -11,7 +11,7 @@ TODO
 - [X] add comment header preview
 - [X] add comment header parallax scroll
 - [X] add different view types for post listing
-- [ ] add toggle sort order by asc / desc for posts
+- [X] add toggle sort order by asc / desc for posts
 - [ ] add unit tests
 - [X] add bookmark posts to fav list to read in future
 - [X] add intent filter to handle reddit links

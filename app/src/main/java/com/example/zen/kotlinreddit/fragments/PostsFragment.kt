@@ -27,7 +27,7 @@ class PostsFragment : BaseFragment() {
 		//App.sdb.delete("sqlite_sequence", null)
 	}
 
-	val toggleSort = mapOf(SORT_HOT to true, SORT_NEW to true, SORT_PREVIEW to true, SORT_COMMENTS to true, SORT_SCORE to true, SORT_SUBREDDIT to true)
+	val toggleSort = hashMapOf(SORT_HOT to true, SORT_NEW to true, SORT_PREVIEW to true, SORT_COMMENTS to true, SORT_SCORE to true, SORT_SUBREDDIT to true)
 
 	companion object {
 		const val TAG = "PostsFragment"
@@ -112,26 +112,30 @@ class PostsFragment : BaseFragment() {
 			}
 			R.id.action_subreddit -> {
 				currentSort = SORT_SUBREDDIT
-				adapter.sortBy(SORT_SUBREDDIT)
+				adapter.sortBy(currentSort, toggleSort[currentSort])
 				setTitleBaseOnSort()
+				toggleSort[currentSort] = toggleSort[currentSort]!!.not()
 				return true
 			}
 			R.id.action_comments -> {
 				currentSort = SORT_COMMENTS
-				adapter.sortBy(SORT_COMMENTS)
+				adapter.sortBy(currentSort, toggleSort[currentSort])
 				setTitleBaseOnSort()
+				toggleSort[currentSort] = toggleSort[currentSort]!!.not()
 				return true
 			}
 			R.id.action_score -> {
 				currentSort = SORT_SCORE
-				adapter.sortBy(SORT_SCORE)
+				adapter.sortBy(currentSort, toggleSort[currentSort])
 				setTitleBaseOnSort()
+				toggleSort[currentSort] = toggleSort[currentSort]!!.not()
 				return true
 			}
 			R.id.action_preview -> {
 				currentSort = SORT_PREVIEW
-				adapter.sortBy(SORT_PREVIEW)
+				adapter.sortBy(currentSort, toggleSort[currentSort])
 				setTitleBaseOnSort()
+				toggleSort[currentSort] = toggleSort[currentSort]!!.not()
 				return true
 			}
 		}
@@ -141,11 +145,22 @@ class PostsFragment : BaseFragment() {
 
 	fun setTitleBaseOnSort() {
 		when(currentSort) {
-			SORT_PREVIEW -> setTitle("Preview")
-			SORT_SUBREDDIT -> setTitle("Subreddit")
-			SORT_SCORE -> setTitle("Score")
-			SORT_COMMENTS -> setTitle("Comments")
-			SORT_CREATED -> setTitle("Created")
+			SORT_PREVIEW -> {
+				if(toggleSort[currentSort] == true) setTitle("Preview Descending")
+				else setTitle("Preview Ascending")
+			}
+			SORT_SUBREDDIT -> {
+				if(toggleSort[currentSort] == true) setTitle("Subreddit Descending")
+				else setTitle("Subreddit Ascending")
+			}
+			SORT_SCORE -> {
+				if(toggleSort[currentSort] == true) setTitle("Score Descending")
+				else setTitle("Score Ascending")
+			}
+			SORT_COMMENTS -> {
+				if(toggleSort[currentSort] == true) setTitle("Comments Descending")
+				else setTitle("Comments Ascending")
+			}
 			else -> setTitle("Hot")
 		}
 	}

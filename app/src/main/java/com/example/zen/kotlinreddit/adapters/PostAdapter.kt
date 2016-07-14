@@ -21,14 +21,25 @@ class PostsAdapter(val context: Context, val sort: Int = SORT_CREATED) : Recycle
 	val TEXT_ONLY_POST = 0
 	val IMAGE_POST = 1
 
-	fun sortBy(sortColumn: Int) {
-		when(sortColumn) {
-			SORT_TITLE -> posts.sortByDescending { it.title }
-			SORT_PREVIEW -> posts.sortByDescending { it.preview }
-			SORT_SUBREDDIT -> posts.sortByDescending { it.subreddit }
-			SORT_CREATED -> posts.sortByDescending { it.created }
-			SORT_COMMENTS -> posts.sortByDescending { it.comments }
-			SORT_SCORE -> posts.sortByDescending { it.score }
+	fun sortBy(sortColumn: Int, order: Boolean?) {
+		if(order == true) {
+			when(sortColumn) {
+				SORT_TITLE -> posts.sortByDescending { it.title }
+				SORT_PREVIEW -> posts.sortByDescending { it.preview }
+				SORT_SUBREDDIT -> posts.sortByDescending { it.subreddit }
+				SORT_CREATED -> posts.sortByDescending { it.created }
+				SORT_COMMENTS -> posts.sortByDescending { it.comments }
+				SORT_SCORE -> posts.sortByDescending { it.score }
+			}
+		} else {
+			when(sortColumn) {
+				SORT_TITLE -> posts.sortBy { it.title }
+				SORT_PREVIEW -> posts.sortBy { it.preview }
+				SORT_SUBREDDIT -> posts.sortBy { it.subreddit }
+				SORT_CREATED -> posts.sortBy { it.created }
+				SORT_COMMENTS -> posts.sortBy { it.comments }
+				SORT_SCORE -> posts.sortBy { it.score }
+			}
 		}
 		notifyDataSetChanged()
 	}
