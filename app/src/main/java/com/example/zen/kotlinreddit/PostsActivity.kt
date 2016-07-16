@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.MenuItem
 import android.webkit.CookieManager
 import android.webkit.CookieSyncManager
@@ -156,11 +155,9 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 	@SuppressWarnings("deprecation")
 	fun clearCookies(context: Context) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-			Log.d("Cookies", "Using clearCookies code for API >= ${Build.VERSION_CODES.LOLLIPOP_MR1}")
 			CookieManager.getInstance().removeAllCookies(null)
 			CookieManager.getInstance().flush()
 		} else {
-			Log.d("Cookies", "Using clearCookies code for API < ${Build.VERSION_CODES.LOLLIPOP_MR1}")
 			val cookieSyncMngr = CookieSyncManager.createInstance(context)
 			cookieSyncMngr.startSync()
 			val cookieManager = CookieManager.getInstance()
