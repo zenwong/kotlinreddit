@@ -126,7 +126,8 @@ open class BaseModel() {
 	fun getSchema(table: String = getTableName(), foreignKey: String? = null, foreignTable: String? = null): String {
 		val sb = StringBuilder()
 		sb.append("_id integer primary key autoincrement,")
-		javaClass.declaredFields.forEach {
+
+		javaClass.declaredFields.sortedBy { it.name }.forEach {
 			println("SCHEMA ${it.name}")
 
 			when (it.genericType.toString()) {
