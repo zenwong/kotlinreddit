@@ -264,6 +264,7 @@ object Reddit {
 									val local = Preview()
 									parsePreview(jp, local, 320)
 									header.preview = local.source
+									header.mp4 = local.mp4
 								}
 								"mod_reports" -> jp.skipChildren()
 								"secure_media_embed" -> jp.skipChildren()
@@ -340,7 +341,7 @@ object Reddit {
 				"source" -> {
 					while (jp.nextToken() != JsonToken.END_OBJECT) {
 						if ("url".equals(jp.currentName)) {
-							preview.source = jp.nextTextValue()
+							preview.source = jp.nextTextValue().replace("amp;", "")
 						}
 					}
 				}

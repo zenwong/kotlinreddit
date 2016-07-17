@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.text.format.DateUtils
+import android.util.Log
 import android.view.*
 import com.commonsware.cwac.anddown.AndDown
 import com.example.zen.kotlinreddit.*
@@ -113,11 +114,13 @@ class TestCommentsFragment : BaseFragment() {
 						.into(imgCommentHeaderPreview)
 				}
 
+				Log.d("MP4", "mp4: ${it.mp4} preview: ${it.preview}")
+
 				//mp4 = "https://g.redditmedia.com/LL25GBmeVYQRq1czEHcphmMD0p9F935iyNXL6ITHhpA.gif?fit=crop&crop=faces%2Centropy&arh=2&w=108&fm=mp4&mp4-fragmented=false&s=f483ae822896d4f08c6ec501a82693d8"
 				//mp4 = "https://g.redditmedia.com/ue0DjQCfHnTn7yXpiol3qTtZGAyTO1ma4OS07c5TvqQ.gif?fit=crop&crop=faces%2Centropy&arh=2&w=320&fm=mp4&mp4-fragmented=false&s=4f251ec415e6c57c40a4d0061deae4ee"
 				if(it.mp4 != null) {
 					mp4Player.visibility = View.VISIBLE
-					mp4Player.setUp(mp4, it.title)
+					mp4Player.setUp(it.mp4, it.title)
 					mp4Player.setLoop(true)
 
 					Picasso.with(context).load(it.preview)
