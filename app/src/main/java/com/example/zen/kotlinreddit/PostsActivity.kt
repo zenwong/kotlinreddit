@@ -105,23 +105,19 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		frag?.let {
 			ft.replace(R.id.contentFrame, frag, currentTag)
 		}
-		ft.commit()
+		//ft.commit()
+		ft.commitAllowingStateLoss()
 	}
 
-	override fun onStop() {
+	override fun onPause() {
 		subs.unsubscribe()
 		EventBus.getDefault().unregister(this)
-		super.onStop()
+		super.onPause()
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
 		super.onSaveInstanceState(outState)
 		outState.putString("currentTag", currentTag)
-	}
-
-	override fun onDestroy() {
-		subs.unsubscribe()
-		super.onDestroy()
 	}
 
 	override fun onBackPressed() {

@@ -2,12 +2,15 @@ package com.example.zen.kotlinreddit.fragments
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.text.format.DateUtils
+import android.util.Log
 import android.view.*
 import com.commonsware.cwac.anddown.AndDown
 import com.example.zen.kotlinreddit.*
@@ -103,6 +106,12 @@ class TestCommentsFragment : BaseFragment() {
 				txtCommentHeaderAuthor.text = it.author
 				adapter.originalAuthor = it.author
 				txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
+
+				txtCommentHeaderTitle.setOnClickListener { click ->
+					Log.d("Url", "url: ${it.url}")
+
+					startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
+				}
 
 				if(it.preview == null) {
 					frameCommentHeader.visibility = View.GONE
