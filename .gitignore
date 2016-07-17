@@ -3,6 +3,7 @@ app/app.iml
 .gradle/
 build/
 bin/
+captures/
 *.iws
 /out/
 .idea_modules/
