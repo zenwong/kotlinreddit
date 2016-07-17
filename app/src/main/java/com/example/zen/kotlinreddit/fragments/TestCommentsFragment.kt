@@ -2,6 +2,7 @@ package com.example.zen.kotlinreddit.fragments
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -95,9 +96,10 @@ class TestCommentsFragment : BaseFragment() {
 			.mapToOne(THeader.MAPPER)
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe{
+			.subscribe {
 				txtCommentHeaderTitle.text = it.title
 				txtCommentHeaderAuthor.text = it.author
+				adapter.originalAuthor = it.author
 				txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
 
 				if(it.preview == null) {
@@ -197,6 +199,8 @@ class TestCommentsFragment : BaseFragment() {
 class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRecyclerAdapter<TComment>(list), Action1<List<TComment>> {
 	val now = System.currentTimeMillis()
 	val md = AndDown()
+	var originalAuthor: String? = null
+	val color = Color.parseColor("#FF4081")
 
 	override fun call(t: List<TComment>) {
 		data = t
@@ -210,10 +214,8 @@ class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRec
 	override fun onBindViewHolderImpl(vh: RecyclerView.ViewHolder, adapter: ParallaxRecyclerAdapter<TComment>, idx: Int) {
 		val holder: CommentsViewHolder = vh as CommentsViewHolder
 		holder.txtAuthor.text = data[idx].author
-		//holder.txtBody.loadMarkdown(data[idx].body)
-		//holder.txtBody.text = Html.fromHtml(data[idx].body)
+		if(data[idx].author == originalAuthor) holder.txtAuthor.setTextColor(color)
 		holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
-
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(data[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}
 

@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.MenuItem
 import android.webkit.CookieManager
 import android.webkit.CookieSyncManager
@@ -32,8 +31,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-
-		Log.d("Schema", TPost().getSchema())
 
 		savedInstanceState?.let {
 			state = savedInstanceState
