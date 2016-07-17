@@ -43,6 +43,8 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 			}
 		}
 
+		loadAppropriateFragment()
+
 		setContentView(R.layout.posts)
 		setSupportActionBar(postsToolbar)
 		supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -54,15 +56,7 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		nav_view.setNavigationItemSelectedListener(this)
 	}
 
-	override fun onNewIntent(intent: Intent) {
-		super.onNewIntent(intent)
-		setIntent(intent)
-	}
-
-	override fun onResume() {
-		super.onResume()
-		EventBus.getDefault().register(this)
-
+	fun loadAppropriateFragment() {
 		val ft = supportFragmentManager.beginTransaction()
 		var frag: Fragment? = null
 		if(App.accessToken != null) {
@@ -105,8 +99,17 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		frag?.let {
 			ft.replace(R.id.contentFrame, frag, currentTag)
 		}
-		//ft.commit()
-		ft.commitAllowingStateLoss()
+		ft.commit()
+	}
+
+	override fun onNewIntent(intent: Intent) {
+		super.onNewIntent(intent)
+		setIntent(intent)
+	}
+
+	override fun onResume() {
+		super.onResume()
+		EventBus.getDefault().register(this)
 	}
 
 	override fun onPause() {
