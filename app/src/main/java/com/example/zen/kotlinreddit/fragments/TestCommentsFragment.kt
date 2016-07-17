@@ -70,6 +70,8 @@ class TestCommentsFragment : BaseFragment() {
 		url = arguments.getString("url")
 		parent = arguments.getString("parent")
 
+		Log.d("DDDD", "url: $url parent: $parent")
+
 		//val adapter = CommentAdapter(context)
 
 		var test = ArrayList<TComment>()
@@ -97,57 +99,56 @@ class TestCommentsFragment : BaseFragment() {
 
 		subs.add(App.sdb.createQuery(tHeader, "select * from $tHeader where id = ? limit 1", parent)
 			.mapToOne(THeader.MAPPER)
-			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe {
-				commentProgress.visibility = View.GONE
+				if(txtCommentHeaderTitle != null) {
+					commentProgress.visibility = View.GONE
 
-				txtCommentHeaderTitle.text = it.title
-				txtCommentHeaderAuthor.text = it.author
-				adapter.originalAuthor = it.author
-				txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
+					txtCommentHeaderTitle.text = it.title
+					txtCommentHeaderAuthor.text = it.author
+					adapter.originalAuthor = it.author
+					txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
 
-				txtCommentHeaderTitle.setOnClickListener { click ->
-					Log.d("Url", "url: ${it.url}")
+					txtCommentHeaderTitle.setOnClickListener { click ->
+						startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
+					}
 
-					startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
-				}
+					if(it.preview == null) {
+						frameCommentHeader.visibility = View.GONE
+					} else {
+						imgCommentHeaderPreview.visibility = View.VISIBLE
+						Picasso.with(context)
+							.load(it.preview)
+							.fit()
+							.centerCrop()
+							.into(imgCommentHeaderPreview)
+					}
 
-				if(it.preview == null) {
-					frameCommentHeader.visibility = View.GONE
-				} else {
-					imgCommentHeaderPreview.visibility = View.VISIBLE
-					Picasso.with(context)
-						.load(it.preview)
-						.fit()
-						.centerCrop()
-						.into(imgCommentHeaderPreview)
-				}
+					//mp4 = "https://g.redditmedia.com/LL25GBmeVYQRq1czEHcphmMD0p9F935iyNXL6ITHhpA.gif?fit=crop&crop=faces%2Centropy&arh=2&w=108&fm=mp4&mp4-fragmented=false&s=f483ae822896d4f08c6ec501a82693d8"
+					//mp4 = "https://g.redditmedia.com/ue0DjQCfHnTn7yXpiol3qTtZGAyTO1ma4OS07c5TvqQ.gif?fit=crop&crop=faces%2Centropy&arh=2&w=320&fm=mp4&mp4-fragmented=false&s=4f251ec415e6c57c40a4d0061deae4ee"
+					if(it.mp4 != null) {
+						mp4Player.visibility = View.VISIBLE
+						mp4Player.setUp(it.mp4, it.title)
+						mp4Player.setLoop(true)
 
-				//mp4 = "https://g.redditmedia.com/LL25GBmeVYQRq1czEHcphmMD0p9F935iyNXL6ITHhpA.gif?fit=crop&crop=faces%2Centropy&arh=2&w=108&fm=mp4&mp4-fragmented=false&s=f483ae822896d4f08c6ec501a82693d8"
-				//mp4 = "https://g.redditmedia.com/ue0DjQCfHnTn7yXpiol3qTtZGAyTO1ma4OS07c5TvqQ.gif?fit=crop&crop=faces%2Centropy&arh=2&w=320&fm=mp4&mp4-fragmented=false&s=4f251ec415e6c57c40a4d0061deae4ee"
-				if(it.mp4 != null) {
-					mp4Player.visibility = View.VISIBLE
-					mp4Player.setUp(it.mp4, it.title)
-					mp4Player.setLoop(true)
+						Picasso.with(context).load(it.preview)
+							.fit().centerCrop()
+							.into(mp4Player.thumbImageView)
+					}
 
-					Picasso.with(context).load(it.preview)
-						.fit().centerCrop()
-						.into(mp4Player.thumbImageView)
-				}
+					if(it.embed != null) {
+						val iframe = Html.fromHtml(it.embed).toString()
+						Fx9C.setup_web_video(this, framevideoplayer, videoplayer,	progressloadingbarpx,	iframe,
+							object : HClient.Callback {
+								override fun overridedefaultlogic(url: String, activity: Activity): Boolean {
+									return true
+								}
 
-				if(it.embed != null) {
-					val iframe = Html.fromHtml(it.embed).toString()
-					Fx9C.setup_web_video(this, framevideoplayer, videoplayer,	progressloadingbarpx,	iframe,
-						object : HClient.Callback {
-							override fun overridedefaultlogic(url: String, activity: Activity): Boolean {
-								return true
-							}
+								override fun retrieveCookie(s: String) {
 
-							override fun retrieveCookie(s: String) {
-
-							}
-						}, null)
+								}
+							}, null)
+					}
 				}
 
 			})
@@ -194,6 +195,7 @@ class TestCommentsFragment : BaseFragment() {
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 		subs = CompositeSubscription()
+		Log.d("DDDD", "oncreateView")
 		headerView = inflater.inflate(R.layout.header, container, false)
 		return inflater.inflate(layout, container, false)
 	}

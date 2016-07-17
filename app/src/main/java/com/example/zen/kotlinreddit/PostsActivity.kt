@@ -43,8 +43,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 			}
 		}
 
-		loadAppropriateFragment()
-
 		setContentView(R.layout.posts)
 		setSupportActionBar(postsToolbar)
 		supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -109,6 +107,7 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 	override fun onResume() {
 		super.onResume()
+		loadAppropriateFragment()
 		EventBus.getDefault().register(this)
 	}
 
