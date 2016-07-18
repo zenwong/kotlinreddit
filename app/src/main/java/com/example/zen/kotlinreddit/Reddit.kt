@@ -8,6 +8,7 @@ import com.example.zen.kotlinreddit.network.RedditOauthAuthenticator
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
+import com.squareup.sqlbrite.BriteDatabase
 import okhttp3.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
@@ -40,7 +41,7 @@ object Reddit {
 		val error = uri.getQueryParameter("error")
 		if (error !== null) {
 			println(error)
-			if("access_denied".equals(error)) {
+			if ("access_denied".equals(error)) {
 				EventBus.getDefault().post(Navigation(BROWSER))
 			}
 		} else {
@@ -98,7 +99,7 @@ object Reddit {
 
 	fun getOrEmpty(url: String): String {
 		val resp = client.newCall(Request.Builder().url(url).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute()
-		if(resp.isSuccessful) {
+		if (resp.isSuccessful) {
 			return resp.body().string()
 		}
 		return "{}"
@@ -144,14 +145,14 @@ object Reddit {
 							"secure_media" -> jp.skipChildren()
 							"user_reports" -> jp.skipChildren()
 							"id" -> post.id = jp.nextTextValue()
-							//"clicked" -> post.clicked = jp.nextBooleanValue()
+						//"clicked" -> post.clicked = jp.nextBooleanValue()
 							"author" -> post.author = jp.nextTextValue()
 							"media" -> {
 								if (jp.nextToken() !== JsonToken.VALUE_NULL) {
 									while (jp.nextToken() !== JsonToken.END_OBJECT) {
 										val key = jp.currentName
 										when (key) {
-											//"title" -> post.media_title = jp.nextTextValue()
+										//"title" -> post.media_title = jp.nextTextValue()
 											"thumbnail_url" -> media = jp.nextTextValue()
 										}
 									}
@@ -186,7 +187,7 @@ object Reddit {
 							"thumbnail" -> thumbnail = jp.nextTextValue()
 							"secure_media_embed" -> jp.skipChildren()
 							"permalink" -> post.permalink = jp.nextTextValue()
-							//"url" -> post.url = jp.nextTextValue()
+						//"url" -> post.url = jp.nextTextValue()
 							"title" -> post.title = jp.nextTextValue()
 							"created_utc" -> post.created = jp.getValueAsLong(0L)
 							"mod_reports" -> jp.skipChildren()
@@ -223,96 +224,99 @@ object Reddit {
 
 	}
 
-	fun normalizeCommentsUrl(url: String, limit: Int = 10) : String {
+	fun normalizeCommentsUrl(url: String, limit: Int = 10): String {
 		val uri = Uri.parse(url)
 		val ret = "$REDDIT_FRONT${uri.path}.json?limit=$limit"
 		//println("DDDD url: $ret")
 		return ret
 	}
 
-	fun parseComments(url: String, parent: String, limit: Int = 10) {
+	fun getComments(url: String, parent: String, limit: Int = 10) {
 		val resp = client.newCall(Request.Builder().url(normalizeCommentsUrl(url)).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute()
 
-		if(resp.isSuccessful) {
-			val json = resp.body().string()
-			val jp = jsonFactory.createParser(json)
-			val headTable = THeader().getTableName()
-			val commentTable = TComment().getTableName()
-			val tr = App.sdb.newTransaction()
-			try {
-				while (jp.nextToken() !== null) {
-					if ("selftext".equals(jp.currentName)) {
-						val header = THeader()
-						header.selftext = jp.nextTextValue()
+		if (resp.isSuccessful) {
+			parseComments(resp.body().string(), parent)
+		}
+	}
 
-						loop@ while (jp.nextToken() != JsonToken.END_OBJECT) {
-							val key = jp.currentName
-							when (key) {
-								"user_reports" -> jp.skipChildren()
-								"secure_media" -> {
-									if (jp.nextToken() == JsonToken.START_OBJECT) {
-										val media = Media()
-										parseMedia(jp, media)
-										header.embed = media.html
-									}
-								}
-								"id" -> header.id = jp.nextTextValue()
-								"author" -> header.author = jp.nextTextValue()
-								"media" -> jp.skipChildren()
-								"score" -> header.score = jp.nextIntValue(0)
-								"preview" -> {
-									val local = Preview()
-									parsePreview(jp, local, 320)
-									header.preview = local.source
-									header.mp4 = local.mp4
-								}
-								"mod_reports" -> jp.skipChildren()
-								"secure_media_embed" -> jp.skipChildren()
-								"url" -> header.url = jp.nextTextValue()
-								"title" -> header.title = jp.nextTextValue()
-								"created_utc" -> {
-									jp.nextToken()
-									header.created = jp.getValueAsLong(0L)
-								}
-								"before" -> {
-									println("inside before")
-									break@loop
+	fun parseComments(json: String, parent: String, db: BriteDatabase = App.sdb, header: THeader = THeader()) {
+		val jp = jsonFactory.createParser(json)
+		val headTable = THeader().getTableName()
+		val commentTable = TComment().getTableName()
+		val tr = db.newTransaction()
+		try {
+			while (jp.nextToken() !== null) {
+				if ("selftext".equals(jp.currentName)) {
+					//val header = THeader()
+					header.selftext = jp.nextTextValue()
+
+					loop@ while (jp.nextToken() != JsonToken.END_OBJECT) {
+						val key = jp.currentName
+						when (key) {
+							"user_reports" -> jp.skipChildren()
+							"secure_media" -> {
+								if (jp.nextToken() == JsonToken.START_OBJECT) {
+									val media = Media()
+									parseMedia(jp, media)
+									header.embed = media.html
 								}
 							}
-						}
-
-						App.sdb.insert(headTable, header.getValues())
-					}
-
-					if ("author".equals(jp.currentName)) {
-						val comment = TComment()
-						comment.author = jp.nextTextValue()
-						comment.parent = parent
-
-						while (jp.nextToken() != JsonToken.END_OBJECT) {
-							val key = jp.currentName
-							when (key) {
-								"score" -> comment.score = jp.nextIntValue(0)
-								"body" -> comment.body = jp.nextTextValue()
-								"name" -> comment.id = jp.nextTextValue().replace("t1_", "")
-								"created_utc" -> {
-									jp.nextToken()
-									comment.created = jp.valueAsLong
-								}
+							"id" -> header.id = jp.nextTextValue()
+							"author" -> header.author = jp.nextTextValue()
+							"media" -> jp.skipChildren()
+							"score" -> header.score = jp.nextIntValue(0)
+							"preview" -> {
+								val local = Preview()
+								parsePreview(jp, local, 320)
+								header.preview = local.source
+								header.mp4 = local.mp4
+							}
+							"mod_reports" -> jp.skipChildren()
+							"secure_media_embed" -> jp.skipChildren()
+							"url" -> header.url = jp.nextTextValue()
+							"title" -> header.title = jp.nextTextValue()
+							"created_utc" -> {
+								jp.nextToken()
+								header.created = jp.getValueAsLong(0L)
+							}
+							"num_comments" -> header.comments = jp.nextIntValue(0)
+							"before" -> {
+								println("inside before")
+								break@loop
 							}
 						}
-
-						App.sdb.insert(commentTable, comment.getValues())
 					}
 
+					db.insert(headTable, header.getValues())
 				}
 
-				tr.markSuccessful()
-			} finally {
-				tr.end()
-			}
-		}
+				if ("author".equals(jp.currentName)) {
+					val comment = TComment()
+					comment.author = jp.nextTextValue()
+					comment.parent = parent
 
+					while (jp.nextToken() != JsonToken.END_OBJECT) {
+						val key = jp.currentName
+						when (key) {
+							"score" -> comment.score = jp.nextIntValue(0)
+							"body" -> comment.body = jp.nextTextValue()
+							"name" -> comment.id = jp.nextTextValue().replace("t1_", "")
+							"created_utc" -> {
+								jp.nextToken()
+								comment.created = jp.valueAsLong
+							}
+						}
+					}
+
+					db.insert(commentTable, comment.getValues())
+				}
+
+			}
+
+			tr.markSuccessful()
+		} finally {
+			tr.end()
+		}
 	}
 
 	fun parseMedia(jp: JsonParser, media: Media) {
@@ -328,7 +332,7 @@ object Reddit {
 		jp.nextToken()
 		jp.nextToken()
 		jp.nextToken()
-		println("parseMedia ${jp.currentName}")
+		//println("parseMedia ${jp.currentName}")
 	}
 
 	fun parsePreview(jp: JsonParser, preview: Preview, width: Int = 320) {
