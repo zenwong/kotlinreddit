@@ -39,17 +39,13 @@ class CommentYoutube  {
 
 
 	@Mocked val context: Context = App()
-	@Mocked val DB = DB(context)
 	@Mocked val sqlBrite = SqlBrite.create()
 	@Mocked val db = sqlBrite.wrapDatabaseHelper(DB(context), Schedulers.io())
 
 	@Test
 	fun testHeader() {
-
 		val json = File("/home/zen/AndroidStudioProjects/KotlinReddit/testJson/comment-youtube.json").readText()
 		val header = THeader()
-
-
 		Reddit.parseComments(json, "parent", db, header)
 
 		assertEquals(header.selftext, "")
@@ -62,5 +58,7 @@ class CommentYoutube  {
 		assertEquals(header.created, 1467708025L)
 		assertEquals(header.comments, 1)
 		assertEquals(header.embed, "&lt;iframe width=\"600\" height=\"338\" src=\"https://www.youtube.com/embed/02mk-3furUs?feature=oembed\" frameborder=\"0\" allowfullscreen&gt;&lt;/iframe&gt;")
+
 	}
+
 }
