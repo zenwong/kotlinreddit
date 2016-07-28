@@ -9,14 +9,17 @@ import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.commonsware.cwac.anddown.AndDown
+import android.widget.TextView
 import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.TMessage
+import com.yydcdut.rxmarkdown.RxMarkdown
+import com.yydcdut.rxmarkdown.factory.TextFactory
 import kotlinx.android.synthetic.main.recycler.*
 import kotlinx.android.synthetic.main.row_message.view.*
 import rx.Observable
+import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
 import rx.schedulers.Schedulers
@@ -52,7 +55,6 @@ class MessageFragment : BaseFragment() {
 
 class MessageAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Action1<List<TMessage>> {
 	val now = System.currentTimeMillis()
-	val md = AndDown()
 	var data: List<TMessage> = ArrayList()
 
 	override fun call(t: List<TMessage>) {
@@ -67,7 +69,20 @@ class MessageAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.V
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, idx: Int) {
 		holder as MessageViewHolder
 		holder.txtTitle.text = data[idx].title
-		holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
+
+		RxMarkdown.with(Html.fromHtml(data[idx].body).toString(), context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
+			override fun onCompleted() {
+			}
+
+			override fun onError(e: Throwable) {
+			}
+
+			override fun onNext(charSequence: CharSequence) {
+				holder.txtBody.setText(charSequence, TextView.BufferType.SPANNABLE)
+			}
+		})
+
+
 		holder.txtAuthor.text = "${data[idx].author}  (${data[idx].subreddit})"
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(data[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}

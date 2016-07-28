@@ -13,7 +13,6 @@ import android.text.format.DateUtils
 import android.util.Log
 import android.view.*
 import android.widget.TextView
-import com.commonsware.cwac.anddown.AndDown
 import com.example.zen.kotlinreddit.*
 import com.hkm.ezwebview.Util.Fx9C
 import com.hkm.ezwebview.webviewclients.HClient
@@ -45,7 +44,6 @@ class TestCommentsFragment : BaseFragment() {
 	val getControversialComments = Observable.fromCallable { Reddit.getComments("$url?sort=controversial", parent) }
 	val getOldComments = Observable.fromCallable { Reddit.getComments("$url?sort=old", parent) }
 	val getQAComments = Observable.fromCallable { Reddit.getComments("$url?sort=qa", parent) }
-	val md = AndDown()
 
 	val clearObs = Observable.fromCallable {
 		App.sdb.delete(tComment, null)
@@ -223,7 +221,6 @@ class TestCommentsFragment : BaseFragment() {
 
 class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRecyclerAdapter<TComment>(list), Action1<List<TComment>> {
 	val now = System.currentTimeMillis()
-	val md = AndDown()
 	var originalAuthor: String? = null
 	val color = Color.parseColor("#FF4081")
 
@@ -240,7 +237,6 @@ class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRec
 		val holder: CommentsViewHolder = vh as CommentsViewHolder
 		holder.txtAuthor.text = data[idx].author
 		if (data[idx].author == originalAuthor) holder.txtAuthor.setTextColor(color)
-		//holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
 
 		RxMarkdown.with(Html.fromHtml(data[idx].body).toString(), context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
 			override fun onCompleted() {
