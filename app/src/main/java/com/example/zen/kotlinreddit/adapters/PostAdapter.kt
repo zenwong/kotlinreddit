@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.models.CommentsRequest
+import com.example.zen.kotlinreddit.models.FilterSubreddit
 import com.example.zen.kotlinreddit.models.Title
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.row_post.view.*
@@ -119,6 +120,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 			}
 
 			txtSubreddit.setOnClickListener {
+				EventBus.getDefault().post(FilterSubreddit(posts[adapterPosition].subreddit!!))
 				println("subreddit adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}
 		}
@@ -144,6 +146,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 			}
 
 			txtSubreddit.setOnClickListener {
+				EventBus.getDefault().post(FilterSubreddit(posts[adapterPosition].subreddit!!))
 				println("subreddit adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}
 		}

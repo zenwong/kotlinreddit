@@ -8,8 +8,12 @@ import android.view.MenuItem
 import android.view.View
 import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.adapters.PostsAdapter
+import com.example.zen.kotlinreddit.models.FilterSubreddit
 import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
 import kotlinx.android.synthetic.main.recycler.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -57,13 +61,13 @@ class PostsFragment : BaseFragment() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		EventBus.getDefault().register(this)
 		setHasOptionsMenu(true)
 		retainInstance = true
 		adapter = PostsAdapter(context)
 
 		val query: Observable<List<TPost>>
 		if (arguments == null) {
-			println("inside HOT")
 			setTitle("Hot")
 			query = App.sdb.createQuery("$table", "select * from $table").mapToList(TPost.MAPPER)
 			subs.add(Observable.fromCallable { Reddit.getHotPosts() }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
@@ -96,7 +100,7 @@ class PostsFragment : BaseFragment() {
 
 		rv.addOnScrollListener(object : EndlessRecyclerViewScrollListener(layoutManager) {
 			override fun onLoadMore(page: Int, totalItemsCount: Int) {
-				subs.add(Observable.fromCallable { Reddit.getPostsAfter(10) }
+				subs.add(Observable.fromCallable { Reddit.getPostsAfter(20) }
 					.subscribeOn(Schedulers.newThread())
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribe())
@@ -180,6 +184,15 @@ class PostsFragment : BaseFragment() {
 			}
 			else -> setTitle("Hot")
 		}
+	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	fun onFilterSubreddit(sub: FilterSubreddit) {
+		subreddit = sub.subreddit
+		fragmentManager.beginTransaction()
+			.replace(R.id.contentFrame, SubredditFragment.newInstance(sub.subreddit), SubredditFragment.TAG)
+			.addToBackStack(SubredditFragment.TAG)
+			.commit()
 	}
 
 }
