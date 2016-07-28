@@ -121,6 +121,10 @@ object Reddit {
 		parsePosts(getOrEmpty("$REDDIT_FRONT?limit=$limit&after=${App.postAfter}"))
 	}
 
+	fun getSubredditPostsAfter(subreddit: String, limit: Int = 5) {
+		parsePosts(getOrEmpty("$REDDIT_FRONT/r/$subreddit?limit=$limit&after=${App.postAfter}"))
+	}
+
 	fun parsePosts(json: String) {
 		val jp = jsonFactory.createParser(json)
 		val tr = App.sdb.newTransaction()

@@ -41,17 +41,17 @@ class SubredditFragment : BaseFragment() {
 		super.onCreate(savedInstanceState)
 		setHasOptionsMenu(true)
 		retainInstance = true
+		subreddit = arguments.getString("subreddit")
 		setTitle(subreddit)
 
 		adapter = PostsAdapter(context)
-		subreddit = arguments.getString("subreddit")
 
 		subs.add(Observable.fromCallable { Reddit.getSubredditPosts(subreddit) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 		subs.add(App.sdb.createQuery("$table", "select * from $table where subreddit = ?", subreddit).mapToList(TPost.MAPPER).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
 	}
 
 	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-		setTitleBaseOnSort()
+		//setTitleBaseOnSort()
 
 		if (savedInstanceState != null) {
 			val sort = savedInstanceState.getInt("currentSort")
@@ -69,7 +69,7 @@ class SubredditFragment : BaseFragment() {
 
 		rv.addOnScrollListener(object : EndlessRecyclerViewScrollListener(layoutManager) {
 			override fun onLoadMore(page: Int, totalItemsCount: Int) {
-				subs.add(Observable.fromCallable { Reddit.getPostsAfter(20) }
+				subs.add(Observable.fromCallable { Reddit.getSubredditPostsAfter(subreddit, 20) }
 					.subscribeOn(Schedulers.newThread())
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribe())
