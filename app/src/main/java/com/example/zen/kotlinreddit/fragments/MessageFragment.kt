@@ -14,7 +14,6 @@ import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.TMessage
-import com.example.zen.kotlinreddit.views.PreCachingLayoutManager
 import kotlinx.android.synthetic.main.recycler.*
 import kotlinx.android.synthetic.main.row_message.view.*
 import rx.Observable
@@ -42,9 +41,8 @@ class MessageFragment : BaseFragment() {
 	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
-		val layoutManager = PreCachingLayoutManager(context)
+		val layoutManager = LinearLayoutManager(context)
 		layoutManager.orientation = LinearLayoutManager.VERTICAL
-		layoutManager.setExtraLayoutSpace(resources.displayMetrics.heightPixels)
 
 		rv.setHasFixedSize(true)
 		rv.layoutManager = layoutManager

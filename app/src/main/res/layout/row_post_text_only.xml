@@ -17,7 +17,6 @@
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentTop="true"
 			android:layout_marginTop="10dp"
-			android:text="Subreddit"
 			android:textSize="@dimen/small_text_size"
 		/>
 
@@ -28,7 +27,6 @@
 			android:layout_alignParentRight="true"
 			android:layout_alignParentTop="true"
 			android:layout_marginTop="10dp"
-			android:text="Created"
 			android:textSize="@dimen/small_text_size"
 		/>
 
@@ -40,7 +38,6 @@
 			android:layout_marginTop="10dp"
 			android:layout_marginBottom="10dp"
 			android:textStyle="bold"
-			android:text="Post Title"
 			android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
 		<com.joanzapata.iconify.widget.IconTextView

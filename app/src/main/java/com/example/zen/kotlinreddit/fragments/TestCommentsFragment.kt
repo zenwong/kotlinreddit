@@ -12,6 +12,7 @@ import android.text.Html
 import android.text.format.DateUtils
 import android.util.Log
 import android.view.*
+import android.widget.TextView
 import com.commonsware.cwac.anddown.AndDown
 import com.example.zen.kotlinreddit.*
 import com.hkm.ezwebview.Util.Fx9C
@@ -20,9 +21,12 @@ import com.joanzapata.iconify.IconDrawable
 import com.joanzapata.iconify.fonts.FontAwesomeIcons
 import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter
 import com.squareup.picasso.Picasso
+import com.yydcdut.rxmarkdown.RxMarkdown
+import com.yydcdut.rxmarkdown.factory.TextFactory
 import kotlinx.android.synthetic.main.header.*
 import kotlinx.android.synthetic.main.recycler.*
 import rx.Observable
+import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
 import rx.schedulers.Schedulers
@@ -37,10 +41,10 @@ class TestCommentsFragment : BaseFragment() {
 	var parent = ""
 	var url = ""
 	val getBestComments = Observable.fromCallable { Reddit.getComments(url, parent) }
-	val getNewComments  = Observable.fromCallable { Reddit.getComments("$url?sort=new", parent) }
+	val getNewComments = Observable.fromCallable { Reddit.getComments("$url?sort=new", parent) }
 	val getControversialComments = Observable.fromCallable { Reddit.getComments("$url?sort=controversial", parent) }
-	val getOldComments  = Observable.fromCallable { Reddit.getComments("$url?sort=old", parent) }
-	val getQAComments  = Observable.fromCallable { Reddit.getComments("$url?sort=qa", parent) }
+	val getOldComments = Observable.fromCallable { Reddit.getComments("$url?sort=old", parent) }
+	val getQAComments = Observable.fromCallable { Reddit.getComments("$url?sort=qa", parent) }
 	val md = AndDown()
 
 	val clearObs = Observable.fromCallable {
@@ -70,10 +74,6 @@ class TestCommentsFragment : BaseFragment() {
 		url = arguments.getString("url")
 		parent = arguments.getString("parent")
 
-		Log.d("DDDD", "url: $url parent: $parent")
-
-		//val adapter = CommentAdapter(context)
-
 		var test = ArrayList<TComment>()
 		val lm = LinearLayoutManager(context)
 		val adapter = ParallaxAdapter(context, test)
@@ -86,7 +86,7 @@ class TestCommentsFragment : BaseFragment() {
 		val source = "https://i.redditmedia.com/e8S5WZkcryD1WRc07ngpE8C_AkKdfxdSpHFlyL05uCM.gif?fm=jpg&amp;s=cb37aac6b70c9777cb0e9cc80111b515".replace("amp;", "")
 		var mp4: String? = null
 
-		subs.add(Observable.fromCallable { Reddit.getComments(url, parent) }
+		subs.add(Observable.fromCallable { Reddit.getComments(url, parent, 200) }
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe())
@@ -101,19 +101,31 @@ class TestCommentsFragment : BaseFragment() {
 			.mapToOne(THeader.MAPPER)
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe {
-				if(txtCommentHeaderTitle != null) {
+				if (txtCommentHeaderTitle != null) {
 					commentProgress.visibility = View.GONE
 
 					txtCommentHeaderTitle.text = it.title
 					txtCommentHeaderAuthor.text = it.author
 					adapter.originalAuthor = it.author
-					txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
+					//txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
+
+					RxMarkdown.with(it.selftext, context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
+						override fun onCompleted() {
+						}
+
+						override fun onError(e: Throwable) {
+						}
+
+						override fun onNext(charSequence: CharSequence) {
+							txtCommentHeaderSelfText.setText(charSequence, TextView.BufferType.SPANNABLE)
+						}
+					})
 
 					txtCommentHeaderTitle.setOnClickListener { click ->
 						startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
 					}
 
-					if(it.preview == null) {
+					if (it.preview == null) {
 						frameCommentHeader.visibility = View.GONE
 					} else {
 						imgCommentHeaderPreview.visibility = View.VISIBLE
@@ -126,7 +138,7 @@ class TestCommentsFragment : BaseFragment() {
 
 					//mp4 = "https://g.redditmedia.com/LL25GBmeVYQRq1czEHcphmMD0p9F935iyNXL6ITHhpA.gif?fit=crop&crop=faces%2Centropy&arh=2&w=108&fm=mp4&mp4-fragmented=false&s=f483ae822896d4f08c6ec501a82693d8"
 					//mp4 = "https://g.redditmedia.com/ue0DjQCfHnTn7yXpiol3qTtZGAyTO1ma4OS07c5TvqQ.gif?fit=crop&crop=faces%2Centropy&arh=2&w=320&fm=mp4&mp4-fragmented=false&s=4f251ec415e6c57c40a4d0061deae4ee"
-					if(it.mp4 != null) {
+					if (it.mp4 != null) {
 						mp4Player.visibility = View.VISIBLE
 						mp4Player.setUp(it.mp4, it.title)
 						mp4Player.setLoop(true)
@@ -136,9 +148,9 @@ class TestCommentsFragment : BaseFragment() {
 							.into(mp4Player.thumbImageView)
 					}
 
-					if(it.embed != null) {
+					if (it.embed != null) {
 						val iframe = Html.fromHtml(it.embed).toString()
-						Fx9C.setup_web_video(this, framevideoplayer, videoplayer,	progressloadingbarpx,	iframe,
+						Fx9C.setup_web_video(this, framevideoplayer, videoplayer, progressloadingbarpx, iframe,
 							object : HClient.Callback {
 								override fun overridedefaultlogic(url: String, activity: Activity): Boolean {
 									return true
@@ -227,8 +239,21 @@ class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRec
 	override fun onBindViewHolderImpl(vh: RecyclerView.ViewHolder, adapter: ParallaxRecyclerAdapter<TComment>, idx: Int) {
 		val holder: CommentsViewHolder = vh as CommentsViewHolder
 		holder.txtAuthor.text = data[idx].author
-		if(data[idx].author == originalAuthor) holder.txtAuthor.setTextColor(color)
-		holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
+		if (data[idx].author == originalAuthor) holder.txtAuthor.setTextColor(color)
+		//holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
+
+		RxMarkdown.with(data[idx].body, context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
+			override fun onCompleted() {
+			}
+
+			override fun onError(e: Throwable) {
+			}
+
+			override fun onNext(charSequence: CharSequence) {
+				holder.txtBody.setText(charSequence, TextView.BufferType.SPANNABLE)
+			}
+		})
+
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(data[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}
 

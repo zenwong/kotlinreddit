@@ -57,41 +57,35 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 	fun loadAppropriateFragment() {
 		val ft = supportFragmentManager.beginTransaction()
 		var frag: Fragment? = null
-		if(App.accessToken != null) {
 
-			if(intent.dataString != null) {
-				//toolbar_title.text = intent.dataString
-				val paths = intent.data.pathSegments
+		if (intent.dataString != null) {
+			//toolbar_title.text = intent.dataString
+			val paths = intent.data.pathSegments
 
-				// handle various types of reddit links
-				when(paths.size) {
-					0 -> {
-						currentTag = PostsFragment.TAG
-						frag = PostsFragment()
-					}
-					2 -> {
-						val subreddit = paths[1]
-						currentTag = PostsFragment.TAG
-						frag = PostsFragment.forSubreddit(subreddit)
-					}
-					else -> {
-						val parent = paths[3]
-						currentTag = TestCommentsFragment.TAG
-						frag = TestCommentsFragment.newInstance(intent.dataString, parent)
-					}
-				}
-			}	else {
-				if(state == null) {
+			// handle various types of reddit links
+			when (paths.size) {
+				0 -> {
 					currentTag = PostsFragment.TAG
 					frag = PostsFragment()
-				} else {
-					frag = supportFragmentManager.getFragment(state, currentTag)
+				}
+				2 -> {
+					val subreddit = paths[1]
+					currentTag = PostsFragment.TAG
+					frag = PostsFragment.forSubreddit(subreddit)
+				}
+				else -> {
+					val parent = paths[3]
+					currentTag = TestCommentsFragment.TAG
+					frag = TestCommentsFragment.newInstance(intent.dataString, parent)
 				}
 			}
 		} else {
-			toolbar_title.text = "Kotlin Reddit"
-			currentTag = BrowserFragment.TAG
-			frag = BrowserFragment()
+			if (state == null) {
+				currentTag = PostsFragment.TAG
+				frag = PostsFragment()
+			} else {
+				frag = supportFragmentManager.getFragment(state, currentTag)
+			}
 		}
 
 		frag?.let {

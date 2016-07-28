@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.models.CommentsRequest
+import com.example.zen.kotlinreddit.models.FilterSubreddit
 import com.example.zen.kotlinreddit.models.Title
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.row_post.view.*
@@ -66,7 +67,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 				holder.txtComments.text = "${posts[idx].comments} {fa-comments}"
 				holder.txtSubreddit.text = "{fa-reddit} ${posts[idx].subreddit}"
 				holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"
-				holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!! * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
+				holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 
 				Picasso.with(context).load(posts[idx].preview)
 					.fit()
@@ -79,7 +80,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 				holder.txtComments.text = "${posts[idx].comments} {fa-comments}"
 				holder.txtSubreddit.text = "{fa-reddit} ${posts[idx].subreddit}"
 				holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"
-				holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created!! * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
+				holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(posts[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 			}
 		}
 	}
@@ -119,6 +120,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 			}
 
 			txtSubreddit.setOnClickListener {
+				EventBus.getDefault().post(FilterSubreddit(posts[adapterPosition].subreddit!!))
 				println("subreddit adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}
 		}
@@ -139,7 +141,12 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 				handleTxtComments(adapterPosition)
 			}
 
+			txtTitle.setOnClickListener {
+				handleTxtComments(adapterPosition)
+			}
+
 			txtSubreddit.setOnClickListener {
+				EventBus.getDefault().post(FilterSubreddit(posts[adapterPosition].subreddit!!))
 				println("subreddit adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}
 		}
