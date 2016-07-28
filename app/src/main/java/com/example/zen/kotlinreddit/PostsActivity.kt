@@ -127,7 +127,7 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 	override fun onNavigationItemSelected(item: MenuItem): Boolean {
 
 		when(item.itemId) {
-			R.id.nav_bookmarks -> {}
+			R.id.nav_bookmarks -> supportFragmentManager.beginTransaction().replace(R.id.contentFrame, BookmarksFragment(), BookmarksFragment.TAG).addToBackStack(BookmarksFragment.TAG).commit()
 			R.id.nav_messages -> supportFragmentManager.beginTransaction().replace(R.id.contentFrame, MessageFragment(), MessageFragment.TAG).addToBackStack(MessageFragment.TAG).commit()
 		}
 
