@@ -89,7 +89,8 @@ class PostsFragment : BaseFragment() {
 		val layoutManager = LinearLayoutManager(context)
 		layoutManager.orientation = LinearLayoutManager.VERTICAL
 
-		rv.setHasFixedSize(true)
+		// disabling this makes scrolling seem smoother?
+		//rv.setHasFixedSize(true)
 		rv.layoutManager = layoutManager
 		rv.adapter = adapter
 

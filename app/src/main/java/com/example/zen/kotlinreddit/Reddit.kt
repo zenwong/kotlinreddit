@@ -65,7 +65,7 @@ object Reddit {
 								val access = jp.valueAsString
 								App.accessToken = access
 								EventBus.getDefault().post(AccessToken(access))
-								//EventBus.getDefault().post(Navigation(FRONT))
+								EventBus.getDefault().post(Navigation(FRONT))
 							}
 							"refresh_token" -> {
 								jp.nextToken()
