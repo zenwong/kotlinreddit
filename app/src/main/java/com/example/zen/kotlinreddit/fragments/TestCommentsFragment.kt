@@ -109,7 +109,7 @@ class TestCommentsFragment : BaseFragment() {
 					adapter.originalAuthor = it.author
 					//txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
 
-					RxMarkdown.with(it.selftext, context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
+					RxMarkdown.with(Html.fromHtml(it.selftext).toString(), context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
 						override fun onCompleted() {
 						}
 
@@ -242,7 +242,7 @@ class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRec
 		if (data[idx].author == originalAuthor) holder.txtAuthor.setTextColor(color)
 		//holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
 
-		RxMarkdown.with(data[idx].body, context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
+		RxMarkdown.with(Html.fromHtml(data[idx].body).toString(), context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
 			override fun onCompleted() {
 			}
 

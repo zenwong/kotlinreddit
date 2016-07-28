@@ -125,19 +125,10 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 	}
 
 	override fun onNavigationItemSelected(item: MenuItem): Boolean {
-		val id = item.itemId
 
-		if (id == R.id.nav_camera) {
-		} else if (id == R.id.nav_gallery) {
-			supportFragmentManager.beginTransaction().replace(R.id.contentFrame, MessageFragment(), MessageFragment.TAG).addToBackStack(MessageFragment.TAG).commit()
-		} else if (id == R.id.nav_slideshow) {
-
-		} else if (id == R.id.nav_manage) {
-
-		} else if (id == R.id.nav_share) {
-
-		} else if (id == R.id.nav_send) {
-
+		when(item.itemId) {
+			R.id.nav_bookmarks -> {}
+			R.id.nav_messages -> supportFragmentManager.beginTransaction().replace(R.id.contentFrame, MessageFragment(), MessageFragment.TAG).addToBackStack(MessageFragment.TAG).commit()
 		}
 
 		drawer_layout.closeDrawer(GravityCompat.START)
