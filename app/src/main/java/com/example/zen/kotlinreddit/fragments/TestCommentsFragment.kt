@@ -40,11 +40,11 @@ class TestCommentsFragment : BaseFragment() {
 	override val layout = R.layout.comments
 	var parent = ""
 	var url = ""
-	val getBestComments = Observable.fromCallable { Reddit.parseComments(url, parent) }
-	val getNewComments = Observable.fromCallable { Reddit.parseComments("$url?sort=new", parent) }
-	val getControversialComments = Observable.fromCallable { Reddit.parseComments("$url?sort=controversial", parent) }
-	val getOldComments = Observable.fromCallable { Reddit.parseComments("$url?sort=old", parent) }
-	val getQAComments = Observable.fromCallable { Reddit.parseComments("$url?sort=qa", parent) }
+	val getBestComments = Observable.fromCallable { Reddit.getComments(url, parent) }
+	val getNewComments = Observable.fromCallable { Reddit.getComments("$url?sort=new", parent) }
+	val getControversialComments = Observable.fromCallable { Reddit.getComments("$url?sort=controversial", parent) }
+	val getOldComments = Observable.fromCallable { Reddit.getComments("$url?sort=old", parent) }
+	val getQAComments = Observable.fromCallable { Reddit.getComments("$url?sort=qa", parent) }
 	val md = AndDown()
 
 	val clearObs = Observable.fromCallable {
@@ -74,11 +74,6 @@ class TestCommentsFragment : BaseFragment() {
 		url = arguments.getString("url")
 		parent = arguments.getString("parent")
 
-		subs.add(Observable.fromCallable { Reddit.parseComments(url, parent, 200) }
-			.subscribeOn(Schedulers.newThread())
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe())
-
 		var test = ArrayList<TComment>()
 		val lm = LinearLayoutManager(context)
 		val adapter = ParallaxAdapter(context, test)
@@ -90,6 +85,11 @@ class TestCommentsFragment : BaseFragment() {
 
 		val source = "https://i.redditmedia.com/e8S5WZkcryD1WRc07ngpE8C_AkKdfxdSpHFlyL05uCM.gif?fm=jpg&amp;s=cb37aac6b70c9777cb0e9cc80111b515".replace("amp;", "")
 		var mp4: String? = null
+
+		subs.add(Observable.fromCallable { Reddit.getComments(url, parent, 200) }
+			.subscribeOn(Schedulers.newThread())
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe())
 
 		subs.add(App.sdb.createQuery(tComment, "select * from $tComment where parent = ?", parent)
 			.mapToList(TComment.MAPPER)
