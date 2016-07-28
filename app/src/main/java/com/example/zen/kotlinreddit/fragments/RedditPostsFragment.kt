@@ -66,7 +66,6 @@ class RedditPostsFragment : Fragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		println("PostsFragment onViewCreated")
-		//val layout = LinearLayoutManager(context)
 		val layoutManager = LinearLayoutManager(activity)
 		layoutManager.orientation = LinearLayoutManager.VERTICAL
 

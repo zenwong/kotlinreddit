@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.support.v4.app.Fragment
 import com.example.zen.kotlinreddit.models.AccessToken
 import com.example.zen.kotlinreddit.models.CommentsRequest
@@ -12,6 +13,8 @@ import com.joanzapata.iconify.Iconify
 import com.joanzapata.iconify.fonts.FontAwesomeModule
 import com.squareup.sqlbrite.BriteDatabase
 import com.squareup.sqlbrite.SqlBrite
+import com.yydcdut.rxmarkdown.RxMDConfiguration
+import com.yydcdut.rxmarkdown.loader.DefaultLoader
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -32,7 +35,7 @@ class App : Application() {
 		lateinit var sqlBrite : SqlBrite
 		lateinit var sdb: BriteDatabase
 		lateinit var cdir: File
-		//lateinit var rxMdConfig: RxMDConfiguration
+		lateinit var rxMdConfig: RxMDConfiguration
 	}
 
 	override fun onCreate() {
@@ -49,25 +52,24 @@ class App : Application() {
 		accessToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("ACCESS_TOKEN", null)
 		refreshToken = getSharedPreferences(TAG, Context.MODE_PRIVATE).getString("REFRESH_TOKEN", null)
 
-//		rxMdConfig = RxMDConfiguration.Builder(this).setDefaultImageSize(100, 100)//default image width & height
-//			.setBlockQuotesColor(Color.LTGRAY)//default color of block quotes
-//			.setHeader1RelativeSize(1.6f)//default relative size of header1
-//			.setHeader2RelativeSize(1.5f)//default relative size of header2
-//			.setHeader3RelativeSize(1.4f)//default relative size of header3
-//			.setHeader4RelativeSize(1.3f)//default relative size of header4
-//			.setHeader5RelativeSize(1.2f)//default relative size of header5
-//			.setHeader6RelativeSize(1.1f)//default relative size of header6
-//			.setHorizontalRulesColor(Color.LTGRAY)//default color of horizontal rules's background
-//			.setInlineCodeBgColor(Color.LTGRAY)//default color of inline code's background
-//			.setCodeBgColor(Color.LTGRAY)//default color of code's background
-//			.setTodoColor(Color.DKGRAY)//default color of todo
-//			.setTodoDoneColor(Color.DKGRAY)//default color of done
-//			.setUnOrderListColor(Color.BLACK)//default color of unorder list
-//			.setLinkColor(Color.RED)//default color of link text
-//			.setLinkUnderline(true)//default value of whether displays link underline
-//			.setRxMDImageLoader(DefaultLoader(this))//default image loader
-//			.setDebug(true)//default value of debug
-//			.build()
+		rxMdConfig = RxMDConfiguration.Builder(this).setDefaultImageSize(100, 100)//default image width & height
+			.setBlockQuotesColor(Color.LTGRAY)//default color of block quotes
+			.setHeader1RelativeSize(1.6f)//default relative size of header1
+			.setHeader2RelativeSize(1.5f)//default relative size of header2
+			.setHeader3RelativeSize(1.4f)//default relative size of header3
+			.setHeader4RelativeSize(1.3f)//default relative size of header4
+			.setHeader5RelativeSize(1.2f)//default relative size of header5
+			.setHeader6RelativeSize(1.1f)//default relative size of header6
+			.setHorizontalRulesColor(Color.LTGRAY)//default color of horizontal rules's background
+			.setInlineCodeBgColor(Color.LTGRAY)//default color of inline code's background
+			.setCodeBgColor(Color.LTGRAY)//default color of code's background
+			.setTodoColor(Color.DKGRAY)//default color of todo
+			.setTodoDoneColor(Color.DKGRAY)//default color of done
+			.setUnOrderListColor(Color.BLACK)//default color of unorder list
+			.setLinkColor(Color.RED)//default color of link text
+			.setLinkUnderline(true)//default value of whether displays link underline
+			.setRxMDImageLoader(DefaultLoader(this))//default image loader
+			.build()
 	}
 
 	override fun onTerminate() {

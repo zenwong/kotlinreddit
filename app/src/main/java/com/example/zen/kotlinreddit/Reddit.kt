@@ -225,13 +225,14 @@ object Reddit {
 
 	fun normalizeCommentsUrl(url: String, limit: Int = 10) : String {
 		val uri = Uri.parse(url)
-		val ret = "$REDDIT_FRONT${uri.path}.json?limit=$limit"
-		//println("DDDD url: $ret")
-		return ret
+		if(uri.pathSegments.last().equals(".json"))
+		  return  "$REDDIT_FRONT${uri.path}?limit=$limit"
+		return "$REDDIT_FRONT${uri.path}.json?limit=$limit"
 	}
 
 	fun parseComments(url: String, parent: String, limit: Int = 10) {
-		val resp = client.newCall(Request.Builder().url(normalizeCommentsUrl(url)).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute()
+		println(normalizeCommentsUrl(url, limit))
+		val resp = client.newCall(Request.Builder().url(normalizeCommentsUrl(url, limit)).addHeader("Authorization", "Bearer ${App.accessToken}").build()).execute()
 
 		if(resp.isSuccessful) {
 			val json = resp.body().string()
