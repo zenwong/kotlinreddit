@@ -14,7 +14,6 @@ import com.example.zen.kotlinreddit.adapters.PostsAdapter
 import com.example.zen.kotlinreddit.models.Post
 import com.example.zen.kotlinreddit.models.PostSort
 import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
-import com.example.zen.kotlinreddit.views.PreCachingLayoutManager
 import com.squareup.sqlbrite.SqlBrite
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.recycler.*
@@ -68,9 +67,8 @@ class RedditPostsFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		println("PostsFragment onViewCreated")
 		//val layout = LinearLayoutManager(context)
-		val layoutManager = PreCachingLayoutManager(activity)
+		val layoutManager = LinearLayoutManager(activity)
 		layoutManager.orientation = LinearLayoutManager.VERTICAL
-		layoutManager.setExtraLayoutSpace(resources.displayMetrics.heightPixels)
 
 		rv.setHasFixedSize(true)
 		rv.layoutManager = layoutManager

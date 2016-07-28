@@ -55,7 +55,7 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-core:2.7.4'
     compile 'org.greenrobot:eventbus:3.0.0'
 
-    compile 'com.yydcdut:rxmarkdown:0.0.3'
+    //compile 'com.yydcdut:rxmarkdown:0.0.3'
 
     compile 'io.reactivex:rxjava:1.1.8'
     compile 'io.reactivex:rxandroid:1.2.1'
@@ -73,9 +73,9 @@ dependencies {
 //    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
 //    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
 
-    testCompile 'io.kotlintest:kotlintest:+'
-    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+//    testCompile 'io.kotlintest:kotlintest:+'
+//    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+//    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }
 repositories {
     maven {
@@ -86,13 +86,4 @@ repositories {
 }
 kapt {
     generateStubs = true
-}
-
-afterEvaluate {
-    android.sourceSets.all { sourceSet ->
-        if (!sourceSet.name.startsWith("test"))
-        {
-            sourceSet.kotlin.setSrcDirs([])
-        }
-    }
 }

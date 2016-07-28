@@ -9,7 +9,6 @@ import android.view.View
 import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.adapters.PostsAdapter
 import com.example.zen.kotlinreddit.views.EndlessRecyclerViewScrollListener
-import com.example.zen.kotlinreddit.views.PreCachingLayoutManager
 import kotlinx.android.synthetic.main.recycler.*
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
@@ -87,9 +86,8 @@ class PostsFragment : BaseFragment() {
 			adapter.sortBy(sort, order)
 		}
 
-		val layoutManager = PreCachingLayoutManager(context)
+		val layoutManager = LinearLayoutManager(context)
 		layoutManager.orientation = LinearLayoutManager.VERTICAL
-		layoutManager.setExtraLayoutSpace(resources.displayMetrics.heightPixels)
 
 		rv.setHasFixedSize(true)
 		rv.layoutManager = layoutManager

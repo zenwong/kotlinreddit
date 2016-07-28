@@ -12,7 +12,6 @@ import android.text.Html
 import android.text.format.DateUtils
 import android.util.Log
 import android.view.*
-import android.widget.TextView
 import com.commonsware.cwac.anddown.AndDown
 import com.example.zen.kotlinreddit.*
 import com.hkm.ezwebview.Util.Fx9C
@@ -21,12 +20,9 @@ import com.joanzapata.iconify.IconDrawable
 import com.joanzapata.iconify.fonts.FontAwesomeIcons
 import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter
 import com.squareup.picasso.Picasso
-import com.yydcdut.rxmarkdown.RxMarkdown
-import com.yydcdut.rxmarkdown.factory.TextFactory
 import kotlinx.android.synthetic.main.header.*
 import kotlinx.android.synthetic.main.recycler.*
 import rx.Observable
-import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
 import rx.schedulers.Schedulers
@@ -111,19 +107,19 @@ class TestCommentsFragment : BaseFragment() {
 					txtCommentHeaderTitle.text = it.title
 					txtCommentHeaderAuthor.text = it.author
 					adapter.originalAuthor = it.author
-					//txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
+					txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
 
-					RxMarkdown.with(it.selftext, context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
-						override fun onCompleted() {
-						}
-
-						override fun onError(e: Throwable) {
-						}
-
-						override fun onNext(charSequence: CharSequence) {
-							txtCommentHeaderSelfText.setText(charSequence, TextView.BufferType.SPANNABLE)
-						}
-					})
+//					RxMarkdown.with(it.selftext, context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
+//						override fun onCompleted() {
+//						}
+//
+//						override fun onError(e: Throwable) {
+//						}
+//
+//						override fun onNext(charSequence: CharSequence) {
+//							txtCommentHeaderSelfText.setText(charSequence, TextView.BufferType.SPANNABLE)
+//						}
+//					})
 
 					txtCommentHeaderTitle.setOnClickListener { click ->
 						startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
@@ -244,19 +240,19 @@ class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRec
 		val holder: CommentsViewHolder = vh as CommentsViewHolder
 		holder.txtAuthor.text = data[idx].author
 		if(data[idx].author == originalAuthor) holder.txtAuthor.setTextColor(color)
-		//holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
+		holder.txtBody.text = Html.fromHtml(md.markdownToHtml(data[idx].body))
 
-		RxMarkdown.with(data[idx].body, context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
-			override fun onCompleted() {
-			}
-
-			override fun onError(e: Throwable) {
-			}
-
-			override fun onNext(charSequence: CharSequence) {
-				holder.txtBody.setText(charSequence, TextView.BufferType.SPANNABLE)
-			}
-		})
+//		RxMarkdown.with(data[idx].body, context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
+//			override fun onCompleted() {
+//			}
+//
+//			override fun onError(e: Throwable) {
+//			}
+//
+//			override fun onNext(charSequence: CharSequence) {
+//				holder.txtBody.setText(charSequence, TextView.BufferType.SPANNABLE)
+//			}
+//		})
 
 		holder.txtCreated.text = DateUtils.getRelativeTimeSpanString(data[idx].created * 1000L, now, DateUtils.MINUTE_IN_MILLIS)
 	}
