@@ -139,6 +139,10 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 				handleTxtComments(adapterPosition)
 			}
 
+			txtTitle.setOnClickListener {
+				handleTxtComments(adapterPosition)
+			}
+
 			txtSubreddit.setOnClickListener {
 				println("subreddit adapterPosition: $adapterPosition, title: ${posts[adapterPosition].title}")
 			}

@@ -8,7 +8,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 abstract class EndlessRecyclerViewScrollListener : RecyclerView.OnScrollListener {
 	// The minimum amount of items to have below your current scroll position
 	// before loading more.
-	private var visibleThreshold = 5
+	private var visibleThreshold = 10
 	// The current offset index of data you have loaded
 	private var currentPage = 0
 	// The total number of items in the dataset after the last load
@@ -50,18 +50,18 @@ abstract class EndlessRecyclerViewScrollListener : RecyclerView.OnScrollListener
 	// We are given a few useful parameters to help us work out if we need to load some more data,
 	// but first we check if we are waiting for the previous load to finish.
 	override fun onScrolled(view: RecyclerView, dx: Int, dy: Int) {
-		var lastVisibleItemPosition = 0
-		val totalItemCount = mLayoutManager.getItemCount()
+		val lastVisibleItemPosition = (mLayoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+		val totalItemCount = mLayoutManager.itemCount
 
-		if (mLayoutManager is StaggeredGridLayoutManager) {
-			val lastVisibleItemPositions = (mLayoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(null)
-			// get maximum element within the list
-			lastVisibleItemPosition = getLastVisibleItem(lastVisibleItemPositions)
-		} else if (mLayoutManager is LinearLayoutManager) {
-			lastVisibleItemPosition = (mLayoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-		} else if (mLayoutManager is GridLayoutManager) {
-			lastVisibleItemPosition = (mLayoutManager as GridLayoutManager).findLastVisibleItemPosition()
-		}
+//		if (mLayoutManager is StaggeredGridLayoutManager) {
+//			val lastVisibleItemPositions = (mLayoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(null)
+//			// get maximum element within the list
+//			lastVisibleItemPosition = getLastVisibleItem(lastVisibleItemPositions)
+//		} else if (mLayoutManager is LinearLayoutManager) {
+//			lastVisibleItemPosition = (mLayoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+//		} else if (mLayoutManager is GridLayoutManager) {
+//			lastVisibleItemPosition = (mLayoutManager as GridLayoutManager).findLastVisibleItemPosition()
+//		}
 
 		// If the total item count is zero and the previous isn't, assume the
 		// list is invalidated and should be reset back to initial state
