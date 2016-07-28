@@ -10,13 +10,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.example.zen.kotlinreddit.App
 import com.example.zen.kotlinreddit.R
+import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.THeader
+import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.hkm.ezwebview.Util.Fx9C
 import com.hkm.ezwebview.webviewclients.HClient
 import com.squareup.picasso.Picasso
 import com.yydcdut.rxmarkdown.RxMarkdown
 import com.yydcdut.rxmarkdown.factory.TextFactory
 import kotlinx.android.synthetic.main.header.view.*
+import org.greenrobot.eventbus.EventBus
 import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
@@ -98,6 +101,12 @@ class BookmarkAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
 		notifyDataSetChanged()
 	}
 
+	fun handleTxtComments(adapterPosition: Int) {
+		val url = "${Reddit.REDDIT_FRONT}${data[adapterPosition].url}.json"
+		val req = CommentsRequest(url, 0, data[adapterPosition].id!!)
+		EventBus.getDefault().post(req)
+	}
+
 	inner class BookmarkViewHolder(iv: View) : RecyclerView.ViewHolder(iv) {
 		val txtTitle = iv.txtCommentHeaderTitle
 		val txtAuthor = iv.txtCommentHeaderAuthor
@@ -110,6 +119,11 @@ class BookmarkAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
 
 		val commentProgress = iv.commentProgress
 		val frameCommentHeader = iv.frameCommentHeader
+
+		init {
+			imgCommentHeaderPreview.setOnClickListener { handleTxtComments(adapterPosition) }
+			txtTitle.setOnClickListener { handleTxtComments(adapterPosition) }
+		}
 	}
 
 }
