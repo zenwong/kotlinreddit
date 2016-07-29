@@ -112,8 +112,8 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
-		super.onSaveInstanceState(outState)
 		outState.putString("currentTag", currentTag)
+		//super.onSaveInstanceState(outState)
 	}
 
 	override fun onBackPressed() {

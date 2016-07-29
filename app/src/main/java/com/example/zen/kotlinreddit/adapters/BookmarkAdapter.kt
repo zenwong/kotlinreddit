@@ -108,6 +108,7 @@ class BookmarkAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
 	}
 
 	inner class BookmarkViewHolder(iv: View) : RecyclerView.ViewHolder(iv) {
+		val card = iv.headerCard
 		val txtTitle = iv.txtCommentHeaderTitle
 		val txtAuthor = iv.txtCommentHeaderAuthor
 		val txtSelfText = iv.txtCommentHeaderSelfText
@@ -121,8 +122,7 @@ class BookmarkAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
 		val frameCommentHeader = iv.frameCommentHeader
 
 		init {
-			imgCommentHeaderPreview.setOnClickListener { handleTxtComments(adapterPosition) }
-			txtTitle.setOnClickListener { handleTxtComments(adapterPosition) }
+			card.setOnClickListener { handleTxtComments(adapterPosition) }
 		}
 	}
 
