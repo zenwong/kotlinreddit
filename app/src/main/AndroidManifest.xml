@@ -31,9 +31,26 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data android:host="*.reddit.com"/>
-                <data android:scheme="https"/>
-                <data android:pathPattern="/.*"/>
+                <!--<data android:host="*.reddit.com"/>-->
+                <!--<data android:scheme="https"/>-->
+                <!--<data android:pathPattern="/.*"/>-->
+
+                <data android:scheme="https" android:host="*.reddit.com" android:pathPattern="/r/.*/" />
+                <data android:scheme="https" android:host="redd.it" android:pathPattern="/" />
+            </intent-filter>
+        </activity>
+
+        <activity
+          android:name=".CommentsActivity"
+          android:launchMode="singleInstance"
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data android:scheme="https" android:host="*.reddit.com" android:pathPattern="/r/.*/comments/.*" />
             </intent-filter>
         </activity>
 

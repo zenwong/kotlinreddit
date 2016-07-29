@@ -120,7 +120,9 @@ class TestCommentsFragment : BaseFragment() {
 					})
 
 					txtCommentHeaderTitle.setOnClickListener { click ->
-						startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
+						val uri = Uri.parse(it.url)
+						Log.d("host", "host: ${uri.host}")
+						if(!uri.host.equals("www.reddit.com")) startActivity(Intent(Intent.ACTION_VIEW, uri))
 					}
 
 					if (it.preview == null) {

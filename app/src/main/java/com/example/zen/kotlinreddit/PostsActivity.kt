@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.MenuItem
 import android.webkit.CookieManager
 import android.webkit.CookieSyncManager
@@ -52,6 +53,11 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		toggle.syncState()
 
 		nav_view.setNavigationItemSelectedListener(this)
+
+		supportFragmentManager.addOnBackStackChangedListener {
+			for (i in 0..supportFragmentManager.backStackEntryCount - 1)
+				Log.d("BACKSTACK", supportFragmentManager.getBackStackEntryAt(i).name)
+		}
 	}
 
 	fun loadAppropriateFragment() {
@@ -63,6 +69,7 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 			val paths = intent.data.pathSegments
 
 			// handle various types of reddit links
+			Log.d("loadFragment", "intent: ${intent.dataString}")
 			when (paths.size) {
 				0 -> {
 					currentTag = PostsFragment.TAG
@@ -84,12 +91,16 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 				currentTag = PostsFragment.TAG
 				frag = PostsFragment()
 			} else {
+				Log.d("loadFragment", "get fragment $currentTag")
 				frag = supportFragmentManager.getFragment(state, currentTag)
 			}
 		}
 
+		Log.d("loadFragment", "currentTag: $currentTag")
+
 		frag?.let {
 			ft.replace(R.id.contentFrame, frag, currentTag)
+			if(!currentTag.equals(PostsFragment.TAG)) ft.addToBackStack(currentTag)
 		}
 		ft.commit()
 	}
@@ -126,7 +137,7 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 	override fun onNavigationItemSelected(item: MenuItem): Boolean {
 
-		when(item.itemId) {
+		when (item.itemId) {
 			R.id.nav_bookmarks -> supportFragmentManager.beginTransaction().replace(R.id.contentFrame, BookmarksFragment(), BookmarksFragment.TAG).addToBackStack(BookmarksFragment.TAG).commit()
 			R.id.nav_messages -> supportFragmentManager.beginTransaction().replace(R.id.contentFrame, MessageFragment(), MessageFragment.TAG).addToBackStack(MessageFragment.TAG).commit()
 		}
