@@ -57,12 +57,13 @@ class PostsFragment : BaseFragment() {
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
-		//super.onSaveInstanceState(outState)
 		outState.putString("subreddit", subreddit)
 		outState.putInt("currentSort", currentSort)
 		outState.putBoolean("currentOrder", toggleSort[currentSort]!!)
 
 		outState.putParcelable("scrollState", rv.layoutManager.onSaveInstanceState())
+
+		super.onSaveInstanceState(outState)
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,9 +88,12 @@ class PostsFragment : BaseFragment() {
 		subs.add(query.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
 	}
 
-	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+	override fun onResume() {
+		super.onResume()
 		setTitleBaseOnSort()
+	}
 
+	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
 		val layoutManager = LinearLayoutManager(context)
 		layoutManager.orientation = LinearLayoutManager.VERTICAL
 		rv.layoutManager = layoutManager
@@ -104,7 +108,6 @@ class PostsFragment : BaseFragment() {
 
 		// disabling this makes scrolling seem smoother?
 		rv.setHasFixedSize(true)
-
 
 		rv.addOnScrollListener(object : EndlessRecyclerViewScrollListener(layoutManager) {
 			override fun onLoadMore(page: Int, totalItemsCount: Int) {
