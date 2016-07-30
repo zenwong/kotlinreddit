@@ -102,10 +102,10 @@ class TestCommentsFragment : BaseFragment() {
 				if (txtCommentHeaderTitle != null) {
 					commentProgress.visibility = View.GONE
 
+					setTitle(it.title!!)
 					txtCommentHeaderTitle.text = it.title
 					txtCommentHeaderAuthor.text = it.author
 					adapter.originalAuthor = it.author
-					//txtCommentHeaderSelfText.text = Html.fromHtml(md.markdownToHtml(it.selftext))
 
 					RxMarkdown.with(Html.fromHtml(it.selftext).toString(), context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
 						override fun onCompleted() {

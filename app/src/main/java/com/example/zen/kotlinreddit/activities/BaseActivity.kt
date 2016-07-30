@@ -1,18 +1,18 @@
-package com.example.zen.kotlinreddit
+package com.example.zen.kotlinreddit.activities
 
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
-import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.MenuItem
 import android.webkit.CookieManager
 import android.webkit.CookieSyncManager
+import com.example.zen.kotlinreddit.*
+import com.example.zen.kotlinreddit.activities.CommentsActivity
 import com.example.zen.kotlinreddit.fragments.*
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
@@ -25,106 +25,39 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import rx.subscriptions.CompositeSubscription
 
-class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-	var subs = CompositeSubscription()
-	var state: Bundle? = null
+abstract class BaseActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 	var currentTag = ""
+	var state: Bundle? = null
+	var subs = CompositeSubscription()
+
+	abstract fun init()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-
-		savedInstanceState?.let {
-			state = savedInstanceState
-			currentTag = savedInstanceState.getString("currentTag")
-			println("Current Tag $currentTag")
-			val frag = supportFragmentManager.getFragment(savedInstanceState, currentTag)
-
-			frag?.let {
-				supportFragmentManager.beginTransaction().replace(R.id.contentFrame, frag, currentTag).commit()
-			}
-		}
-
 		setContentView(R.layout.posts)
 		setSupportActionBar(postsToolbar)
 		supportActionBar?.setDisplayShowTitleEnabled(false)
-
 		val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
 		drawer_layout.addDrawerListener(toggle)
 		toggle.syncState()
-
 		nav_view.setNavigationItemSelectedListener(this)
 
-		supportFragmentManager.addOnBackStackChangedListener {
-			for (i in 0..supportFragmentManager.backStackEntryCount - 1)
-				Log.d("BACKSTACK", supportFragmentManager.getBackStackEntryAt(i).name)
-		}
+		init()
 	}
 
-	fun loadAppropriateFragment() {
-		val ft = supportFragmentManager.beginTransaction()
-		var frag: Fragment? = null
-
-		if (intent.dataString != null) {
-			//toolbar_title.text = intent.dataString
-			val paths = intent.data.pathSegments
-
-			// handle various types of reddit links
-			Log.d("loadFragment", "intent: ${intent.dataString}")
-			when (paths.size) {
-				0 -> {
-					currentTag = PostsFragment.TAG
-					frag = PostsFragment()
-				}
-				2 -> {
-					val subreddit = paths[1]
-					currentTag = PostsFragment.TAG
-					frag = PostsFragment.forSubreddit(subreddit)
-				}
-				else -> {
-					val parent = paths[3]
-					currentTag = TestCommentsFragment.TAG
-					frag = TestCommentsFragment.newInstance(intent.dataString, parent)
-				}
-			}
-		} else {
-			if (state == null) {
-				currentTag = PostsFragment.TAG
-				frag = PostsFragment()
-			} else {
-				Log.d("loadFragment", "get fragment $currentTag")
-				frag = supportFragmentManager.getFragment(state, currentTag)
-			}
+	override fun onNavigationItemSelected(item: MenuItem): Boolean {
+		when (item.itemId) {
+			R.id.nav_bookmarks -> supportFragmentManager.beginTransaction().replace(R.id.contentFrame, BookmarksFragment(), BookmarksFragment.TAG).addToBackStack(BookmarksFragment.TAG).commit()
+			R.id.nav_messages -> supportFragmentManager.beginTransaction().replace(R.id.contentFrame, MessageFragment(), MessageFragment.TAG).addToBackStack(MessageFragment.TAG).commit()
 		}
 
-		Log.d("loadFragment", "currentTag: $currentTag")
-
-		frag?.let {
-			ft.replace(R.id.contentFrame, frag, currentTag)
-			if(!currentTag.equals(PostsFragment.TAG)) ft.addToBackStack(currentTag)
-		}
-		ft.commit()
-	}
-
-	override fun onNewIntent(intent: Intent) {
-		super.onNewIntent(intent)
-		setIntent(intent)
-	}
-
-	override fun onResume() {
-		super.onResume()
-		loadAppropriateFragment()
-		EventBus.getDefault().register(this)
-	}
-
-	override fun onPause() {
-		subs.unsubscribe()
-		EventBus.getDefault().unregister(this)
-		super.onPause()
+		drawer_layout.closeDrawer(GravityCompat.START)
+		return true
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
 		outState.putString("currentTag", currentTag)
-		//super.onSaveInstanceState(outState)
+		//outState.putParcelable("scrollPosition", rv.layoutManager.onSaveInstanceState())
 	}
 
 	override fun onBackPressed() {
@@ -133,17 +66,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		} else {
 			super.onBackPressed()
 		}
-	}
-
-	override fun onNavigationItemSelected(item: MenuItem): Boolean {
-
-		when (item.itemId) {
-			R.id.nav_bookmarks -> supportFragmentManager.beginTransaction().replace(R.id.contentFrame, BookmarksFragment(), BookmarksFragment.TAG).addToBackStack(BookmarksFragment.TAG).commit()
-			R.id.nav_messages -> supportFragmentManager.beginTransaction().replace(R.id.contentFrame, MessageFragment(), MessageFragment.TAG).addToBackStack(MessageFragment.TAG).commit()
-		}
-
-		drawer_layout.closeDrawer(GravityCompat.START)
-		return true
 	}
 
 	@SuppressWarnings("deprecation")
@@ -161,7 +83,6 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 			cookieSyncMngr.sync()
 		}
 	}
-
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onTitle(t: Title) {
@@ -186,9 +107,10 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 				ft.addToBackStack(PostsFragment.TAG)
 			}
 			COMMENTS -> {
-				//ft.replace(R.id.content, CommentsFragment.newInstance(nav.id!!))
-				ft.replace(R.id.contentFrame, CommentsFragment.newInstance(nav.pid!!))
-				ft.addToBackStack("CommentsFragment")
+//				ft.replace(R.id.contentFrame, CommentsFragment.newInstance(nav.pid!!))
+//				ft.addToBackStack("CommentsFragment")
+
+				startActivity(Intent(this, CommentsActivity::class.java))
 			}
 			BROWSER -> {
 				clearCookies(this)
@@ -200,4 +122,21 @@ class PostsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 		}
 		ft.commit()
 	}
+
+	override fun onNewIntent(intent: Intent) {
+		super.onNewIntent(intent)
+		setIntent(intent)
+	}
+
+	override fun onResume() {
+		super.onResume()
+		EventBus.getDefault().register(this)
+	}
+
+	override fun onPause() {
+		subs.unsubscribe()
+		EventBus.getDefault().unregister(this)
+		super.onPause()
+	}
+
 }

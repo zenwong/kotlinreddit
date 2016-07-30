@@ -9,6 +9,7 @@ import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
+import com.example.zen.kotlinreddit.activities.PostsActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

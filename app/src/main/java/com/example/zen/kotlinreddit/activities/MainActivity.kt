@@ -1,4 +1,4 @@
-package com.example.zen.kotlinreddit
+package com.example.zen.kotlinreddit.activities
 
 import android.content.Context
 import android.content.Intent
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.webkit.CookieManager
 import android.webkit.CookieSyncManager
+import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
 import com.example.zen.kotlinreddit.fragments.CommentsFragment
 import com.example.zen.kotlinreddit.fragments.PostsFragment

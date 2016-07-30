@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-          android:name=".MainActivity"
+          android:name=".activities.MainActivity"
         >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -22,18 +22,37 @@
         </activity>
 
         <activity
-            android:name=".PostsActivity"
+            android:name=".activities.PostsActivity"
             android:launchMode="singleInstance"
-           >
+            android:configChanges="keyboardHidden|orientation"
+
+        >
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.VIEW"/>-->
+
+                <!--<category android:name="android.intent.category.DEFAULT"/>-->
+                <!--<category android:name="android.intent.category.BROWSABLE"/>-->
+
+                <!--&lt;!&ndash;<data android:host="*.reddit.com"/>&ndash;&gt;-->
+                <!--&lt;!&ndash;<data android:scheme="https"/>&ndash;&gt;-->
+                <!--&lt;!&ndash;<data android:pathPattern="/.*"/>&ndash;&gt;-->
+
+                <!--<data android:scheme="https" android:host="*.reddit.com" android:pathPattern="/r/.*/" />-->
+                <!--<data android:scheme="https" android:host="redd.it" android:pathPattern="/" />-->
+            <!--</intent-filter>-->
+        </activity>
+
+        <activity
+          android:name=".activities.SubredditActivity"
+          android:launchMode="singleInstance"
+          android:configChanges="keyboardHidden|orientation"
+
+        >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-
-                <!--<data android:host="*.reddit.com"/>-->
-                <!--<data android:scheme="https"/>-->
-                <!--<data android:pathPattern="/.*"/>-->
 
                 <data android:scheme="https" android:host="*.reddit.com" android:pathPattern="/r/.*/" />
                 <data android:scheme="https" android:host="redd.it" android:pathPattern="/" />
@@ -41,8 +60,10 @@
         </activity>
 
         <activity
-          android:name=".CommentsActivity"
+          android:name=".activities.CommentsActivity"
           android:launchMode="singleInstance"
+          android:configChanges="keyboardHidden|orientation"
+
         >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
