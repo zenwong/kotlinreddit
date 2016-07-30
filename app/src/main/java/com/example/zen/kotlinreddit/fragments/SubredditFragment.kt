@@ -15,7 +15,7 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 
 class SubredditFragment : BaseFragment() {
-	var currentSort = SORT_HOT
+	var currentSort = SORT_SUBREDDIT
 	var subreddit: String = ""
 	var rvState: Parcelable? = null
 	override val layout = R.layout.front_page
@@ -50,6 +50,11 @@ class SubredditFragment : BaseFragment() {
 
 		subs.add(Observable.fromCallable { Reddit.getSubredditPosts(subreddit) }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe())
 		subs.add(App.sdb.createQuery("$table", "select * from $table where subreddit = ?", subreddit).mapToList(TPost.MAPPER).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(adapter))
+	}
+
+	override fun onResume() {
+		super.onResume()
+		setTitleBaseOnSort()
 	}
 
 	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -101,6 +106,30 @@ class SubredditFragment : BaseFragment() {
 		outState.putParcelable("scrollState", rv.layoutManager.onSaveInstanceState())
 
 		super.onSaveInstanceState(outState)
+	}
+
+	fun setTitleBaseOnSort() {
+		when (currentSort) {
+			SORT_HOT -> setTitle("Hot")
+			SORT_NEW -> setTitle("New")
+			SORT_PREVIEW -> {
+				if (toggleSort[currentSort] == true) setTitle("Preview  {fa-arrow-down}")
+				else setTitle("Preview Ascending")
+			}
+			SORT_SUBREDDIT -> {
+				if (toggleSort[currentSort] == true) setTitle("$subreddit  {fa-arrow-down}")
+				else setTitle("$subreddit  {fa-arrow-up}")
+			}
+			SORT_SCORE -> {
+				if (toggleSort[currentSort] == true) setTitle("Score Descending")
+				else setTitle("Score Ascending")
+			}
+			SORT_COMMENTS -> {
+				if (toggleSort[currentSort] == true) setTitle("Comments Descending")
+				else setTitle("Comments Ascending")
+			}
+			else -> setTitle("Hot")
+		}
 	}
 
 }

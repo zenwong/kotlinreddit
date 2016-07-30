@@ -178,20 +178,20 @@ class PostsFragment : BaseFragment() {
 			SORT_HOT -> setTitle("Hot")
 			SORT_NEW -> setTitle("New")
 			SORT_PREVIEW -> {
-				if (toggleSort[currentSort] == true) setTitle("Preview Descending")
-				else setTitle("Preview Ascending")
+				if (toggleSort[currentSort] == true) setTitle("Preview  {fa-arrow-down}")
+				else setTitle("Preview  {fa-arrow-up}")
 			}
 			SORT_SUBREDDIT -> {
-				if (toggleSort[currentSort] == true) setTitle("Subreddit Descending")
-				else setTitle("Subreddit Ascending")
+				if (toggleSort[currentSort] == true) setTitle("Subreddit  {fa-arrow-down}")
+				else setTitle("Subreddit  {fa-arrow-up}")
 			}
 			SORT_SCORE -> {
-				if (toggleSort[currentSort] == true) setTitle("Score Descending")
-				else setTitle("Score Ascending")
+				if (toggleSort[currentSort] == true) setTitle("Score  {fa-arrow-down}")
+				else setTitle("Score  {fa-arrow-up}")
 			}
 			SORT_COMMENTS -> {
-				if (toggleSort[currentSort] == true) setTitle("Comments Descending")
-				else setTitle("Comments Ascending")
+				if (toggleSort[currentSort] == true) setTitle("Comments  {fa-arrow-down}")
+				else setTitle("Comments  {fa-arrow-up}")
 			}
 			else -> setTitle("Hot")
 		}

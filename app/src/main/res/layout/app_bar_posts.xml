@@ -27,7 +27,7 @@
                 android:layout_height="match_parent"
                 >
 
-                <TextView
+                <com.joanzapata.iconify.widget.IconTextView
                     android:id="@+id/toolbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
