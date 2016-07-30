@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
@@ -37,6 +38,7 @@ class TestCommentsFragment : BaseFragment() {
 	val tHeader = THeader().getTableName()
 	val tComment = TComment().getTableName()
 	override val layout = R.layout.comments
+	var rvState: Parcelable? = null
 	var parent = ""
 	var url = ""
 	val getBestComments = Observable.fromCallable { Reddit.getComments(url, parent) }
@@ -65,33 +67,34 @@ class TestCommentsFragment : BaseFragment() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		retainInstance = true
-	}
-
-	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		setHasOptionsMenu(true)
+
 		url = arguments.getString("url")
 		parent = arguments.getString("parent")
-
-		var test = ArrayList<TComment>()
-		val lm = LinearLayoutManager(context)
-		val adapter = ParallaxAdapter(context, test)
-		adapter.setParallaxHeader(headerView, rv)
-
-		rv.setHasFixedSize(true)
-		rv.layoutManager = lm
-		rv.adapter = adapter
-
-		val source = "https://i.redditmedia.com/e8S5WZkcryD1WRc07ngpE8C_AkKdfxdSpHFlyL05uCM.gif?fm=jpg&amp;s=cb37aac6b70c9777cb0e9cc80111b515".replace("amp;", "")
-		var mp4: String? = null
 
 		subs.add(Observable.fromCallable { Reddit.getComments(url, parent, 200) }
 			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe())
+	}
+
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		var test = ArrayList<TComment>()
+		val lm = LinearLayoutManager(context)
+		lm.orientation = LinearLayoutManager.VERTICAL
+		val adapter = ParallaxAdapter(context, test)
+		adapter.setParallaxHeader(headerView, rv)
+
+		//rv.setHasFixedSize(true)
+		rv.layoutManager = lm
+		rv.adapter = adapter
+
+		if (savedInstanceState != null) {
+			rv.layoutManager.onRestoreInstanceState(rvState)
+		}
 
 		subs.add(App.sdb.createQuery(tComment, "select * from $tComment where parent = ?", parent)
 			.mapToList(TComment.MAPPER)
-			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
 
@@ -164,6 +167,19 @@ class TestCommentsFragment : BaseFragment() {
 				}
 
 			})
+
+	}
+
+	override fun onActivityCreated(savedInstanceState: Bundle?) {
+		super.onActivityCreated(savedInstanceState)
+		if (savedInstanceState != null) {
+			rvState = savedInstanceState.getParcelable("scrollState")
+		}
+	}
+
+	override fun onSaveInstanceState(outState: Bundle) {
+		super.onSaveInstanceState(outState)
+		outState.putParcelable("scrollState", rv.layoutManager.onSaveInstanceState())
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

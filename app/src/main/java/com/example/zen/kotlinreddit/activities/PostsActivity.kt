@@ -1,12 +1,17 @@
 package com.example.zen.kotlinreddit.activities
 
+import android.os.Bundle
 import com.example.zen.kotlinreddit.R
-import com.example.zen.kotlinreddit.activities.BaseActivity
 import com.example.zen.kotlinreddit.fragments.PostsFragment
 
 class PostsActivity: BaseActivity() {
-	override fun init() {
-		supportFragmentManager.beginTransaction().replace(R.id.contentFrame, PostsFragment(), PostsFragment.TAG).commit()
+	override fun init(savedInstanceState: Bundle?) {
+		if(savedInstanceState != null) {
+			val frag = supportFragmentManager.findFragmentByTag(PostsFragment.TAG)
+			supportFragmentManager.beginTransaction().replace(R.id.contentFrame, frag, PostsFragment.TAG).commit()
+		} else {
+			supportFragmentManager.beginTransaction().replace(R.id.contentFrame, PostsFragment(), PostsFragment.TAG).commit()
+		}
 	}
 
 }

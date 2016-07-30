@@ -8,12 +8,15 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.MenuItem
 import android.webkit.CookieManager
 import android.webkit.CookieSyncManager
 import com.example.zen.kotlinreddit.*
-import com.example.zen.kotlinreddit.activities.CommentsActivity
-import com.example.zen.kotlinreddit.fragments.*
+import com.example.zen.kotlinreddit.fragments.BookmarksFragment
+import com.example.zen.kotlinreddit.fragments.BrowserFragment
+import com.example.zen.kotlinreddit.fragments.MessageFragment
+import com.example.zen.kotlinreddit.fragments.PostsFragment
 import com.example.zen.kotlinreddit.models.CommentsRequest
 import com.example.zen.kotlinreddit.models.Navigation
 import com.example.zen.kotlinreddit.models.Title
@@ -30,7 +33,7 @@ abstract class BaseActivity: AppCompatActivity(), NavigationView.OnNavigationIte
 	var state: Bundle? = null
 	var subs = CompositeSubscription()
 
-	abstract fun init()
+	abstract fun init(savedInstanceState: Bundle?)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -42,7 +45,7 @@ abstract class BaseActivity: AppCompatActivity(), NavigationView.OnNavigationIte
 		toggle.syncState()
 		nav_view.setNavigationItemSelectedListener(this)
 
-		init()
+		init(savedInstanceState)
 	}
 
 	override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -53,11 +56,6 @@ abstract class BaseActivity: AppCompatActivity(), NavigationView.OnNavigationIte
 
 		drawer_layout.closeDrawer(GravityCompat.START)
 		return true
-	}
-
-	override fun onSaveInstanceState(outState: Bundle) {
-		outState.putString("currentTag", currentTag)
-		//outState.putParcelable("scrollPosition", rv.layoutManager.onSaveInstanceState())
 	}
 
 	override fun onBackPressed() {
@@ -91,11 +89,16 @@ abstract class BaseActivity: AppCompatActivity(), NavigationView.OnNavigationIte
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	fun onCommentsRequest(req: CommentsRequest) {
-		currentTag = TestCommentsFragment.TAG
-		val ft = supportFragmentManager.beginTransaction()
-		ft.replace(R.id.contentFrame, TestCommentsFragment.newInstance(req.url, req.parent), TestCommentsFragment.TAG)
-		ft.addToBackStack(TestCommentsFragment.TAG)
-		ft.commit()
+//		currentTag = TestCommentsFragment.TAG
+//		val ft = supportFragmentManager.beginTransaction()
+//		ft.replace(R.id.contentFrame, TestCommentsFragment.newInstance(req.url, req.parent), TestCommentsFragment.TAG)
+//		ft.addToBackStack(TestCommentsFragment.TAG)
+//		ft.commit()
+
+		val intent = Intent(this, CommentsActivity::class.java)
+		intent.putExtra("url", req.url)
+		intent.putExtra("parent", req.parent)
+		startActivity(intent)
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
@@ -123,13 +126,14 @@ abstract class BaseActivity: AppCompatActivity(), NavigationView.OnNavigationIte
 		ft.commit()
 	}
 
-	override fun onNewIntent(intent: Intent) {
-		super.onNewIntent(intent)
-		setIntent(intent)
-	}
+//	override fun onNewIntent(intent: Intent) {
+//		super.onNewIntent(intent)
+//		setIntent(intent)
+//	}
 
 	override fun onResume() {
 		super.onResume()
+		Log.d("onResume", javaClass.simpleName)
 		EventBus.getDefault().register(this)
 	}
 

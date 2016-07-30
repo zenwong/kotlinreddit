@@ -13,8 +13,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-          android:name=".activities.MainActivity"
-        >
+          android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -23,31 +22,12 @@
 
         <activity
             android:name=".activities.PostsActivity"
-            android:launchMode="singleInstance"
-            android:configChanges="keyboardHidden|orientation"
-
-        >
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.VIEW"/>-->
-
-                <!--<category android:name="android.intent.category.DEFAULT"/>-->
-                <!--<category android:name="android.intent.category.BROWSABLE"/>-->
-
-                <!--&lt;!&ndash;<data android:host="*.reddit.com"/>&ndash;&gt;-->
-                <!--&lt;!&ndash;<data android:scheme="https"/>&ndash;&gt;-->
-                <!--&lt;!&ndash;<data android:pathPattern="/.*"/>&ndash;&gt;-->
-
-                <!--<data android:scheme="https" android:host="*.reddit.com" android:pathPattern="/r/.*/" />-->
-                <!--<data android:scheme="https" android:host="redd.it" android:pathPattern="/" />-->
-            <!--</intent-filter>-->
+            android:configChanges="keyboardHidden|orientation">
         </activity>
 
         <activity
           android:name=".activities.SubredditActivity"
-          android:launchMode="singleInstance"
-          android:configChanges="keyboardHidden|orientation"
-
-        >
+          android:configChanges="keyboardHidden|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -61,10 +41,7 @@
 
         <activity
           android:name=".activities.CommentsActivity"
-          android:launchMode="singleInstance"
-          android:configChanges="keyboardHidden|orientation"
-
-        >
+          android:configChanges="keyboardHidden|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 

@@ -1,6 +1,7 @@
 package com.example.zen.kotlinreddit.fragments
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuInflater
@@ -22,8 +23,9 @@ class PostsFragment : BaseFragment() {
 	var currentSort = SORT_HOT
 	var subreddit: String? = null
 	override val layout = R.layout.front_page
-	lateinit var adapter : PostsAdapter
+	lateinit var adapter: PostsAdapter
 	val table = TPost().getTableName()
+	var rvState: Parcelable? = null
 
 	val clearSub = Observable.fromCallable {
 		App.sdb.delete(table, null)
@@ -49,14 +51,18 @@ class PostsFragment : BaseFragment() {
 			subreddit = savedInstanceState.getString("subreddit")
 			currentSort = savedInstanceState.getInt("currentSort")
 			toggleSort[currentSort] = savedInstanceState.getBoolean("currentOrder")
+
+			rvState = savedInstanceState.getParcelable("scrollState")
 		}
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
-		super.onSaveInstanceState(outState)
+		//super.onSaveInstanceState(outState)
 		outState.putString("subreddit", subreddit)
 		outState.putInt("currentSort", currentSort)
 		outState.putBoolean("currentOrder", toggleSort[currentSort]!!)
+
+		outState.putParcelable("scrollState", rv.layoutManager.onSaveInstanceState())
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,19 +90,21 @@ class PostsFragment : BaseFragment() {
 	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
 		setTitleBaseOnSort()
 
-		if(savedInstanceState != null) {
+		val layoutManager = LinearLayoutManager(context)
+		layoutManager.orientation = LinearLayoutManager.VERTICAL
+		rv.layoutManager = layoutManager
+		rv.adapter = adapter
+
+		if (savedInstanceState != null) {
 			val sort = savedInstanceState.getInt("currentSort")
 			val order = savedInstanceState.getBoolean("currentOrder").not()
 			adapter.sortBy(sort, order)
+			rv.layoutManager.onRestoreInstanceState(rvState)
 		}
 
-		val layoutManager = LinearLayoutManager(context)
-		layoutManager.orientation = LinearLayoutManager.VERTICAL
-
 		// disabling this makes scrolling seem smoother?
-		//rv.setHasFixedSize(true)
-		rv.layoutManager = layoutManager
-		rv.adapter = adapter
+		rv.setHasFixedSize(true)
+
 
 		rv.addOnScrollListener(object : EndlessRecyclerViewScrollListener(layoutManager) {
 			override fun onLoadMore(page: Int, totalItemsCount: Int) {
@@ -163,23 +171,23 @@ class PostsFragment : BaseFragment() {
 	}
 
 	fun setTitleBaseOnSort() {
-		when(currentSort) {
+		when (currentSort) {
 			SORT_HOT -> setTitle("Hot")
 			SORT_NEW -> setTitle("New")
 			SORT_PREVIEW -> {
-				if(toggleSort[currentSort] == true) setTitle("Preview Descending")
+				if (toggleSort[currentSort] == true) setTitle("Preview Descending")
 				else setTitle("Preview Ascending")
 			}
 			SORT_SUBREDDIT -> {
-				if(toggleSort[currentSort] == true) setTitle("Subreddit Descending")
+				if (toggleSort[currentSort] == true) setTitle("Subreddit Descending")
 				else setTitle("Subreddit Ascending")
 			}
 			SORT_SCORE -> {
-				if(toggleSort[currentSort] == true) setTitle("Score Descending")
+				if (toggleSort[currentSort] == true) setTitle("Score Descending")
 				else setTitle("Score Ascending")
 			}
 			SORT_COMMENTS -> {
-				if(toggleSort[currentSort] == true) setTitle("Comments Descending")
+				if (toggleSort[currentSort] == true) setTitle("Comments Descending")
 				else setTitle("Comments Ascending")
 			}
 			else -> setTitle("Hot")
@@ -194,5 +202,4 @@ class PostsFragment : BaseFragment() {
 			.addToBackStack(SubredditFragment.TAG)
 			.commit()
 	}
-
 }

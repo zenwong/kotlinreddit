@@ -1,6 +1,7 @@
 package com.example.zen.kotlinreddit.activities
 
 import android.net.Uri
+import android.os.Bundle
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.Reddit
 import com.example.zen.kotlinreddit.fragments.TestCommentsFragment
@@ -17,8 +18,13 @@ class CommentsActivity : BaseActivity() {
 		ret
 	}
 
-	override fun init() {
-		supportFragmentManager.beginTransaction().replace(R.id.contentFrame, TestCommentsFragment.newInstance(url, parent)).commit()
+	override fun init(savedInstanceState: Bundle?) {
+		if(savedInstanceState != null) {
+			val frag = supportFragmentManager.findFragmentByTag(TestCommentsFragment.TAG)
+			supportFragmentManager.beginTransaction().replace(R.id.contentFrame, frag, TestCommentsFragment.TAG).commit()
+		} else {
+			supportFragmentManager.beginTransaction().replace(R.id.contentFrame, TestCommentsFragment.newInstance(url, parent), TestCommentsFragment.TAG).commit()
+		}
 	}
 
 }
