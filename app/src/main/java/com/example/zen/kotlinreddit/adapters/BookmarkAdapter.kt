@@ -35,7 +35,7 @@ class BookmarkAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
 
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, idx: Int) {
 		holder as BookmarkViewHolder
-		holder.commentProgress.visibility = View.GONE
+		//holder.commentProgress.visibility = View.GONE
 
 		holder.txtTitle.text = data[idx].title
 		holder.txtAuthor.text = data[idx].author
@@ -118,7 +118,7 @@ class BookmarkAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
 		val videoplayer = iv.videoplayer
 		val progressloadingbarpx = iv.progressloadingbarpx
 
-		val commentProgress = iv.commentProgress
+		//val commentProgress = iv.commentProgress
 		val frameCommentHeader = iv.frameCommentHeader
 
 		init {

@@ -80,7 +80,7 @@ class TestCommentsFragment : BaseFragment() {
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-		var test = ArrayList<TComment>()
+		val test = ArrayList<TComment>()
 		val lm = LinearLayoutManager(context)
 		lm.orientation = LinearLayoutManager.VERTICAL
 		val adapter = ParallaxAdapter(context, test)
@@ -96,15 +96,17 @@ class TestCommentsFragment : BaseFragment() {
 
 		subs.add(App.sdb.createQuery(tComment, "select * from $tComment where parent = ?", parent)
 			.mapToList(TComment.MAPPER)
+			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(adapter))
 
 		subs.add(App.sdb.createQuery(tHeader, "select * from $tHeader where id = ? limit 1", parent)
 			.mapToOne(THeader.MAPPER)
+			.subscribeOn(Schedulers.newThread())
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe {
 				if (txtCommentHeaderTitle != null) {
-					commentProgress.visibility = View.GONE
+					//commentProgress.visibility = View.GONE
 
 					setTitle(it.title!!)
 					txtCommentHeaderTitle.text = it.title
@@ -224,7 +226,6 @@ class TestCommentsFragment : BaseFragment() {
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 		subs = CompositeSubscription()
-		Log.d("DDDD", "oncreateView")
 		headerView = inflater.inflate(R.layout.header, container, false)
 		return inflater.inflate(layout, container, false)
 	}
