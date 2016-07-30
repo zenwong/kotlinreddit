@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.*
 import android.widget.TextView
 import com.example.zen.kotlinreddit.*
+import com.example.zen.kotlinreddit.views.CommentsViewHolder
 import com.hkm.ezwebview.Util.Fx9C
 import com.hkm.ezwebview.webviewclients.HClient
 import com.joanzapata.iconify.IconDrawable

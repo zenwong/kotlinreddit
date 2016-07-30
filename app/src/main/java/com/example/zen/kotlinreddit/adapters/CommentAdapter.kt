@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.zen.kotlinreddit.R
 import com.example.zen.kotlinreddit.TComment
-import com.example.zen.kotlinreddit.fragments.CommentsViewHolder
+import com.example.zen.kotlinreddit.views.CommentsViewHolder
 import rx.functions.Action1
 import java.util.*
 

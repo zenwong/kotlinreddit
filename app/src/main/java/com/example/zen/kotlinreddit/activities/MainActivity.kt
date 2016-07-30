@@ -9,7 +9,6 @@ import android.webkit.CookieManager
 import android.webkit.CookieSyncManager
 import com.example.zen.kotlinreddit.*
 import com.example.zen.kotlinreddit.fragments.BrowserFragment
-import com.example.zen.kotlinreddit.fragments.CommentsFragment
 import com.example.zen.kotlinreddit.fragments.PostsFragment
 import com.example.zen.kotlinreddit.models.Navigation
 import kotlinx.android.synthetic.main.app_bar_posts.*
@@ -41,11 +40,6 @@ class MainActivity : AppCompatActivity() {
 			FRONT -> {
 				ft.replace(R.id.contentFrame, PostsFragment(), PostsFragment.TAG)
 				ft.addToBackStack(PostsFragment.TAG)
-			}
-			COMMENTS -> {
-				//ft.replace(R.id.content, CommentsFragment.newInstance(nav.id!!))
-				ft.replace(R.id.contentFrame, CommentsFragment.newInstance(nav.pid!!))
-				ft.addToBackStack("CommentsFragment")
 			}
 			BROWSER -> {
 				clearCookies(this)
