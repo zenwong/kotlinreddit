@@ -13,6 +13,7 @@ import com.example.zen.kotlinreddit.models.Title
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.row_post.view.*
 import org.greenrobot.eventbus.EventBus
+import org.unbescape.html.HtmlEscape
 import rx.functions.Action1
 import java.util.*
 
@@ -63,7 +64,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 		when (holder.itemViewType) {
 			IMG_POST -> {
 				holder as ImagePostViewHolder
-				holder.txtTitle.text = posts[idx].title
+				holder.txtTitle.text = HtmlEscape.unescapeHtml(posts[idx].title)
 				holder.txtComments.text = "${posts[idx].comments} {fa-comments}"
 				holder.txtSubreddit.text = "{fa-reddit} ${posts[idx].subreddit}"
 				holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"
@@ -76,7 +77,7 @@ class PostsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.Vie
 			}
 			TXT_POST -> {
 				holder as TextPostViewHolder
-				holder.txtTitle.text = posts[idx].title
+				holder.txtTitle.text = HtmlEscape.unescapeHtml(posts[idx].title)
 				holder.txtComments.text = "${posts[idx].comments} {fa-comments}"
 				holder.txtSubreddit.text = "{fa-reddit} ${posts[idx].subreddit}"
 				holder.txtScore.text = "${posts[idx].score} {fa-thumbs-up}"

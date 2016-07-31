@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.text.format.DateUtils
-import android.util.Log
 import android.view.*
 import android.widget.TextView
 import com.example.zen.kotlinreddit.*
@@ -26,6 +25,7 @@ import com.yydcdut.rxmarkdown.RxMarkdown
 import com.yydcdut.rxmarkdown.factory.TextFactory
 import kotlinx.android.synthetic.main.header.*
 import kotlinx.android.synthetic.main.recycler.*
+import org.unbescape.html.HtmlEscape
 import rx.Observable
 import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
@@ -106,14 +106,16 @@ class TestCommentsFragment : BaseFragment() {
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe {
 				if (txtCommentHeaderTitle != null) {
-					//commentProgress.visibility = View.GONE
+					commentProgress.visibility = View.GONE
 
-					setTitle(it.title!!)
-					txtCommentHeaderTitle.text = it.title
+					val title = HtmlEscape.unescapeHtml(it.title)
+
+					setTitle(title)
+					txtCommentHeaderTitle.text = title
 					txtCommentHeaderAuthor.text = it.author
 					adapter.originalAuthor = it.author
 
-					RxMarkdown.with(Html.fromHtml(it.selftext).toString(), context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
+					RxMarkdown.with(HtmlEscape.unescapeHtml(it.selftext).toString(), context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
 						override fun onCompleted() {
 						}
 
@@ -127,7 +129,6 @@ class TestCommentsFragment : BaseFragment() {
 
 					txtCommentHeaderTitle.setOnClickListener { click ->
 						val uri = Uri.parse(it.url)
-						Log.d("host", "host: ${uri.host}")
 						if(!uri.host.equals("www.reddit.com")) startActivity(Intent(Intent.ACTION_VIEW, uri))
 					}
 
@@ -167,6 +168,7 @@ class TestCommentsFragment : BaseFragment() {
 								}
 							}, null)
 					}
+
 				}
 
 			})
@@ -258,7 +260,7 @@ class ParallaxAdapter(val context: Context, list: List<TComment>?) : ParallaxRec
 		holder.txtAuthor.text = data[idx].author
 		if (data[idx].author == originalAuthor) holder.txtAuthor.setTextColor(color)
 
-		RxMarkdown.with(Html.fromHtml(data[idx].body).toString(), context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
+		RxMarkdown.with(HtmlEscape.unescapeHtml(data[idx].body).toString(), context).config(App.rxMdConfig).factory(TextFactory.create()).intoObservable().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(object : Subscriber<CharSequence>() {
 			override fun onCompleted() {
 			}
 
